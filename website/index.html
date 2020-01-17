@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Changing Lives - App Manager Site</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!--Bootstrap scripts-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- Links to local files-->
+    <link rel = "stylesheet" href="style.css">
+    <script src="script.js" ></script>
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+    <div class="site-header-container">
+        <div class="site-logo">
+            <a class="logo-dark" href="https://www.changing-lives.org.uk/">
+            <img src="https://www.changing-lives.org.uk/wp-content/uploads/2018/04/logo.png" alt="changing lives charity north east homelessness employment women children addiction drug alcohol" />
+            </a>
+        </div>
+        <div class="site-header-right">
+            <div class="search-container">
+                <form role="search" method="get" class="searchform group" action="https://www.changing-lives.org.uk/">
+                    <label class="search-bar">
+                    <input type="search" class="search-field" placeholder="Search..." value="" name="s" title="Search for:" />
+                    </label>
+                    <input type="submit" value="&#xf002;" class="search-submit">
+                </form>
+            </div>
+            <div class="contact-details">
+                <a class="contact-phone" href="tel:+441912738891"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp; 0191 273 8891</a>
+                <a class="contact-email" href="javascript:m_sfcon('central.office')"><i class="fa fa-envelope-o" aria-hidden="true"></i>&nbsp; central.office@changing-lives.org.uk</a>
+            </div>
+        </div>
+    </div> <!-- This is all for the navigation banner, only a link to CL home is incldued for now, but it does work with all of them or none-->
+    <div class="nav-container">
+        <nav class="navigation">                     
+        <div class="menu-menu-container"><ul id="menu-menu" class="menu"><li id="menu-item-10761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-10761"><a href="https://www.changing-lives.org.uk/">Home</a></li>
+    </div>
+    </header>
+    <!-- Couldn't get the collapsing menu to work properly so it is ommitted for now
+    need to decide whether to even link the page to other CL pages-->
+    <br />
+    <!-- Login modal -->
+    <div class="modal hide fade in" id="login_box" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+
+            <div class="modal-header">
+                <h3 class="modal-title">Log in</h3>
+            </div>
+
+            <div class="modal-body">
+            <form action="" method="GET" id="login_form" enctype="multipart/form-data" class="was-validated">
+                <div class="form-group">
+                    <label for="username" >Username: </label>
+                    <input name="username" id ="username" type="text" class="form-control" required>
+                    <div class="invalid-feedback">Please fill out this field.</div>
+                </div>
+                <div class="form-group">
+                        <label for="password" >Password: </label>
+                        <input name="password" id ="password" type="password" class="form-control" required>
+                        <div class="invalid-feedback">Please fill out this field.</div>
+                </div>
+                <!-- Can't get this button to go to the right at the moment-->
+                <div class = "form-group pull-right">
+                    <input type="submit" onclick="$('#login_box').modal('hide');" class="btn btn-primary pull-right" value="Log in">
+                </div>
+            </form>
+            </div>
+            </div>
+        </div>
+    </div>
+    <h1>Welcome to the <span class="highlight">Changing Lives</span> App Manager Site!</h1>
+    <p>From here you can create and manage users and edit the app content</p>
+  </body>
