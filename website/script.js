@@ -56,6 +56,37 @@ function editSection(event,sectionId) { //this loads up the box for editing a se
     }
     $('#section_modal').modal('show');
 }
+var file_boxes = 0;
+function fileAdd() {
+    let newHTML = '';
+    for (let i = 0; i <= file_boxes; i++) {
+        let prevVal = [document.getElementById(`section_link_title${i}`).value,document.getElementById(`section_links${i}`).value];
+        newHTML +=
+        `<div class="list-group">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <input name="section_link_title" id ="section_link_title${i}" value="${prevVal[0]}" type="text" class="form-control" placeholder="Link Name"> <!--<span class="input-group-text"><h4>File Link:</h4> </span> -->
+                </div>
+                <input name="section_links" id ="section_links${i}" value="${prevVal[1]}" type="text" class="form-control" placeholder="Link"> 
+            </div>
+        </div>`;
+    }
+    file_boxes += 1;
+    newHTML +=
+    `<div class="list-group">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <input name="section_link_title" id ="section_link_title${file_boxes}" type="text" class="form-control" placeholder="Link Name"> <!--<span class="input-group-text"><h4>File Link:</h4> </span> -->
+            </div>
+            <input name="section_links" id ="section_links${file_boxes}" type="text" class="form-control" placeholder="Link"> 
+            <div class="input-group-append" id="file_append${file_boxes}">
+                <button class="btn btn-success" type="button" id="file_add">More</button>
+            </div>
+        </div>
+    </div>`;
+    document.getElementById('file_box_list').innerHTML = newHTML;
+    document.getElementById('file_add').addEventListener('click', fileAdd );
+}
 
 function userClick(event) { //this is the event that triggers when the users tab is clicked on
     event.preventDefault();
@@ -65,6 +96,7 @@ function userClick(event) { //this is the event that triggers when the users tab
 }
 
 document.addEventListener('DOMContentLoaded', function() { //set up listeners
+    document.getElementById('file_add').addEventListener('click', fileAdd );
     document.getElementById('login_form').addEventListener('submit', logIn );
     document.getElementById('users').addEventListener('click', userClick );
     document.getElementById('content').addEventListener('click', contentClick );
