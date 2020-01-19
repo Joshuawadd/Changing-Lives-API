@@ -84,6 +84,35 @@
     </div>
     <h1>Welcome to the <span class="highlight">Changing Lives</span> App Manager Site!</h1>
     <p>From here you can create and manage users and edit the app content</p>
-    <div id="main_content">
+    <!-- NEW/EDIT SECTION MODAL-->
+    <div class="modal fade" id="section_modal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h3 class="modal-title" id="section_edit_title">Edit a section</h3>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <form action="" method="POST" id="edit_section" enctype="multipart/form-data" class="was-validated">
+                        <div class="form-group">
+                            <label for="section_name" ><h4>Name:</h4> </label>
+                            <input name="section_name" id ="section_name" type="text" class="form-control" required> 
+                            <div class="invalid-feedback">Please provide a name for this section.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="section_text" ><h4>Section Text:</h4> </label>
+                            <textarea name="section_text" id ="section_text" rows = "5" class="form-control" ></textarea>
+                        </div>
+                        <input type="submit" class="btn btn-primary" value="OK">
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-  </body>
+    <!-- div for main page display-->
+    <div id="main_content">
+        
+    </div>
+</body>
