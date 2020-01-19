@@ -105,10 +105,19 @@
                             <label for="section_text" ><h4>Section Text:</h4> </label>
                             <textarea name="section_text" id ="section_text" rows = "5" class="form-control" ></textarea>
                         </div>
-                        <div class="form-group">
-                            <!-- Need to think about a way to make this work for multiple files which can also be removed-->
-                            <label for="section_links" ><h4>File Link:</h4> </label>
-                            <input name="section_links" id ="section_links" type="text" class="form-control"> 
+                        <label for="section_links" ><h4>File Links:</h4> </label>
+                        <div class="form-group" id="section_links">
+                            <div class="list-group" id="file_box_list">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <input name="section_link_title" id ="section_link_title0" type="text" class="form-control" placeholder="Link Name">
+                                    </div>
+                                    <input name="section_links" id ="section_links0" type="text" class="form-control" placeholder="Link"> 
+                                    <div class="input-group-append" id="file_append0">
+                                        <button class="btn btn-success" type="button" id="file_add">More</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <input type="submit" class="btn btn-primary" value="OK">
                     </form>
