@@ -1,7 +1,2 @@
-extends layout
-
-block content
-  .login-panel
-    include includes/login-form
-  .register-panel
-    include includes/register-form
+//The app uses pug as its view engine, we can write stuff in the site folder in html but a relative pug file will need to be made that just includes the html fie like below
+include site/index.html
