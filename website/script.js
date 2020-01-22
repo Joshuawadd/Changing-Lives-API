@@ -88,11 +88,49 @@ function fileAdd() {
     document.getElementById('file_add').addEventListener('click', fileAdd );
 }
 
+class User {
+    constructor(id=0,name='',username='',password='') {
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        this.password = password;
+    }
+
+    listHTML() {
+        return `<li class="list-group-item"><h4 class="user-list-title">${this.name}</h4> : ${this.username}
+                    <span class="badge badge-dark"><a href="#" id="edit_btn_${this.id}" onclick="editUser(event,${this.id});">Edit</a></span>
+                    <span class="badge badge-dark"><a href="#" id="rmve_btn_${this.id}">Delete</a></span>
+                </li>`;
+    }
+}
+var users = [new User(0,'User 1','username1','password1'),new User(1,'User 2','username2','password2'),new User(2,'User 3','username3','password3')];
+
 function userClick(event) { //this is the event that triggers when the users tab is clicked on
     event.preventDefault();
+    let usersHTML = '<h3>User List</h3> <button type="button" class="btn btn-outline-dark btn-sm" onclick="newUser()">New User</button><br><div class="list-group">';
+    for (var i = 0; i < users.length; i++) {
+        usersHTML += users[i].listHTML();
+    }
+    usersHTML += '</div>';
+    document.getElementById('main_content').innerHTML = usersHTML;
+}
 
-    document.getElementById('main_content').innerHTML = '<p>The user area is loaded</p>';
-    //the code for loading the user modification area goes here
+function newUser() { //this loads up the box for creating a new user
+    document.getElementById('user_edit_title').innerText = 'New User';
+    $('#user_modal').modal('show');
+}
+
+function editUser(event,userId) { //this loads up the box for editing a user's details
+    event.preventDefault();
+    document.getElementById('user_edit_title').innerText = 'Edit user details';
+    for (var i = 0; i < users.length; i++) {
+        if (users[i].id == userId) {
+            document.getElementById('user_name').value = users[i].name;
+            document.getElementById('user_username').value = users[i].username;
+            document.getElementById('user_password').value = users[i].password;
+        }
+    }
+    $('#user_modal').modal('show');
 }
 
 document.addEventListener('DOMContentLoaded', function() { //set up listeners

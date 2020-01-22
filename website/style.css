@@ -99,6 +99,10 @@ Version: 1.0
     padding: 0 30px 0 30px;
     margin: 0 auto;
     }
+
+    .user-list-title {
+        display: inline;
+    }
     
     .section {
     position: relative;
