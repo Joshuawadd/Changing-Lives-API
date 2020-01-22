@@ -2,10 +2,33 @@
 $(window).on('load',function(){
     $('#login_box').modal('show');
 });
-
-function logIn(event) { //the login function currently only hides the login box
+var currentUname = '';
+var currentPass = '';
+var authToken = '123';
+async function logIn(event) { //the login function currently only hides the login box
     event.preventDefault();
-    $('#login_box').modal('hide');
+    let uname = document.getElementById('username').value;
+    let pass = document.getElementById('password').value;
+    /*let data = new FormData();
+    data.append('username', uname);
+    data.append('password', pass);
+    console.log(data);*/
+    let response = await fetch('/api/example',
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'username=' + uname + '&password=' + pass
+        });
+    if (response.ok) {
+        $('#login_box').modal('hide');
+        currentUname = uname;
+        currentPass = pass;
+    }
+    else {
+        alert('Incorrect Username and/or Password');
+    }
 }
 //CLASSES
 

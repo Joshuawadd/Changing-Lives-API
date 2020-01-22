@@ -8,7 +8,7 @@ const mysql_query = require('../../mysql_query');
 //Postman can be used to test post request {"username": "username", "password": "temppass"}
 router.post('/', (req, res) => {
     const {error} = validate(req.body);
-
+    res.status(200).send('Worked'); //just always sends ok as an example
     if (error) {
         return false;
     }
