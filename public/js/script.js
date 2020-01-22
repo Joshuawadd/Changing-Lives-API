@@ -7,13 +7,15 @@ function logIn(event) { //the login function currently only hides the login box
     event.preventDefault();
     $('#login_box').modal('hide');
 }
+//CLASSES
 
 class Section { //this is the class for an app section or page
-    constructor(id=0,name = '',text='No text added',position=0) {
+    constructor(id=0,name = '',text='No text added',position=0, links = []) {
         this.id = id;
         this.name = name;
         this.text = text;
         this.position =position;
+        this.links = links;
     }
 
     listHTML() {
@@ -26,6 +28,25 @@ class Section { //this is the class for an app section or page
     }
 }
 var sections = [new Section(0,'Section 1','Here is some text about S1',0),new Section(1,'Section 2','Here is some text about S2',1)];
+
+class User {
+    constructor(id=0,name='',username='',password='') {
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        this.password = password;
+    }
+
+    listHTML() {
+        return `<li class="list-group-item"><h4 class="user-list-title">${this.name}</h4> : ${this.username}
+                    <span class="badge badge-dark"><a href="#" id="edit_btn_${this.id}" onclick="editUser(event,${this.id});">Edit</a></span>
+                    <span class="badge badge-dark"><a href="#" id="rmve_btn_${this.id}">Delete</a></span>
+                </li>`;
+    }
+}
+var users = [new User(0,'User 1','username1','password1'),new User(1,'User 2','username2','password2'),new User(2,'User 3','username3','password3')];
+
+//LISTENER FUNCTIONS
 
 function contentClick(event) { //triggers when the content tab is clicked on
     //the code for loading the content modification area goes here
@@ -42,6 +63,19 @@ function contentClick(event) { //triggers when the content tab is clicked on
 
 function newSection() { //this loads up the box for creating a new section
     document.getElementById('section_edit_title').innerText = 'New Section';
+    document.getElementById('section_name').value = '';
+    document.getElementById('section_text').innerText = '';
+    document.getElementById('section_links').innerHTML = `<div class="list-group" id="file_box_list">
+                                                            <div class="input-group mb-3">
+                                                                <div class="input-group-prepend">
+                                                                    <input name="section_link_title" id ="section_link_title0" type="text" class="form-control" placeholder="Link Name">
+                                                                </div>
+                                                                <input name="section_links" id ="section_links0" type="text" class="form-control" placeholder="Link"> 
+                                                                <div class="input-group-append" id="file_append0">
+                                                                    <button class="btn btn-success" type="button" id="file_add">More</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>`;
     $('#section_modal').modal('show');
 }
 
@@ -88,22 +122,7 @@ function fileAdd() {
     document.getElementById('file_add').addEventListener('click', fileAdd );
 }
 
-class User {
-    constructor(id=0,name='',username='',password='') {
-        this.id = id;
-        this.name = name;
-        this.username = username;
-        this.password = password;
-    }
 
-    listHTML() {
-        return `<li class="list-group-item"><h4 class="user-list-title">${this.name}</h4> : ${this.username}
-                    <span class="badge badge-dark"><a href="#" id="edit_btn_${this.id}" onclick="editUser(event,${this.id});">Edit</a></span>
-                    <span class="badge badge-dark"><a href="#" id="rmve_btn_${this.id}">Delete</a></span>
-                </li>`;
-    }
-}
-var users = [new User(0,'User 1','username1','password1'),new User(1,'User 2','username2','password2'),new User(2,'User 3','username3','password3')];
 
 function userClick(event) { //this is the event that triggers when the users tab is clicked on
     event.preventDefault();
@@ -117,6 +136,9 @@ function userClick(event) { //this is the event that triggers when the users tab
 
 function newUser() { //this loads up the box for creating a new user
     document.getElementById('user_edit_title').innerText = 'New User';
+    document.getElementById('user_name').value = '';
+    document.getElementById('user_username').value = '';
+    document.getElementById('user_password').value = '';
     $('#user_modal').modal('show');
 }
 
