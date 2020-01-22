@@ -50,7 +50,7 @@ class Section { //this is the class for an app section or page
                 </li>`;
     }
 }
-var sections = [new Section(0,'Section 1','Here is some text about S1',0),new Section(1,'Section 2','Here is some text about S2',1)];
+//var sections = [new Section(0,'Section 1','Here is some text about S1',0),new Section(1,'Section 2','Here is some text about S2',1)];
 
 class User {
     constructor(id=0,name='',username='',password='') {
@@ -68,11 +68,22 @@ class User {
     }
 }
 var users = [new User(0,'User 1','username1','password1'),new User(1,'User 2','username2','password2'),new User(2,'User 3','username3','password3')];
+//REST FUNCTIONS
+async function getContent() {
+    let response = await fetch('/api/content'); //this isnt working
+    if (response.ok) {
+        let body = await response.text();
+        return JSON.parse(body);
+    }
+    //else do error code stuff
+
+}
 
 //LISTENER FUNCTIONS
 
-function contentClick(event) { //triggers when the content tab is clicked on
+async function contentClick(event) { //triggers when the content tab is clicked on
     //the code for loading the content modification area goes here
+    let sections = await getContent();
     event.preventDefault();
     //build the section HTML (my intent is for the position class variable to be position in the list as well to make this easier)
     let sectionsHTML = '<h3>Content Editor</h3> <button type="button" class="btn btn-outline-dark btn-sm" onclick="newSection()">New Section</button><br><div class="list-group">';
