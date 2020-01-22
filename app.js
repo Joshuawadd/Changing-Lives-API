@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 
 const indexRouter = require('./routes/index');
 const exampleRouter = require('./routes/api/example');
+const contentRouter = require('./routes/api/content');
 
 const app = express();
 const PORT = 3000;
@@ -22,5 +23,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/example', exampleRouter);
+app.use('/api/content', contentRouter);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}...`));

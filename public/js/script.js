@@ -50,7 +50,6 @@ class Section { //this is the class for an app section or page
                 </li>`;
     }
 }
-//var sections = [new Section(0,'Section 1','Here is some text about S1',0),new Section(1,'Section 2','Here is some text about S2',1)];
 
 class User {
     constructor(id=0,name='',username='',password='') {
@@ -73,7 +72,13 @@ async function getContent() {
     let response = await fetch('/api/content'); //this isnt working
     if (response.ok) {
         let body = await response.text();
-        return JSON.parse(body);
+        let contentData = JSON.parse(body);
+        let sects = [];
+        for (var i = 0; i < contentData.length; i++) {
+            let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,contentData[i].links);
+            sects.push(sc);
+        }
+        return sects;
     }
     //else do error code stuff
 
