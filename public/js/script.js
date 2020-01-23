@@ -191,7 +191,7 @@ function editSection(event,sectionId) { //this loads up the box for editing a se
     refreshFileList();
     $('#section_modal').modal('show');
 }
-
+var fileLimbo = []; //stores files 'added' but not yet sent to server
 function refreshFileList() { //this function keeps the file list up to date
     let filer = document.getElementById('file_adder');
     let display = '';
@@ -215,23 +215,34 @@ function refreshFileList() { //this function keeps the file list up to date
                         </div>
                     </div>`;
     }
-    for (var i = j; i < filer.files.length+j; i++) {
+    for (var i = j; i < fileLimbo.length+j; i++) {
         display += `<div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="file_name${i}">${filer.files.item(i-j).name}</span>
+                            <span class="input-group-text" id="file_name${i}">${fileLimbo[i-j].name}</span>
                         </div>
                         <input name="file_title" id ="file_title${i}" type="text" class="form-control" placeholder="Display Title"> 
                         <div class="input-group-append">
                             <button class="btn btn-success" type="button" id="file_view${i}" disabled>View</button>
                         </div>
                         <div class="input-group-append">
-                            <button class="close" type="button" id="file_delete${i}" disabled>&times;</button>
+                            <button class="close" type="button" id="file_delete${i}" onclick="removeFile(${i},true)">&times;</button>
                         </div>
                     </div>`;
     }
     document.getElementById('file_box_list').innerHTML = display;
 }
-
+function removeFile(filePos, limbo) { //limbo is a bool true if the file is not yet on the server, false otherwise
+    if (limbo) {
+        for (var k = 0; k < sections.length; k++) {
+            if (sections[k].id == currentSection) {
+                var fileList = sections[k].files;
+            }
+        }
+        let ind = filePos - fileList.length;
+        fileLimbo.splice(ind,1);
+        refreshFileList();
+    }
+}
 
 function userClick(event) { //this is the event that triggers when the users tab is clicked on
     event.preventDefault();
@@ -268,12 +279,21 @@ document.addEventListener('DOMContentLoaded', function() { //set up listeners
     document.getElementById('login_form').addEventListener('submit', logIn );
     document.getElementById('users').addEventListener('click', userClick );
     document.getElementById('content').addEventListener('click', contentClick );
+    document.getElementById('file_add').addEventListener('click', function() {
+        let filer = document.getElementById('file_adder');
+        for (var i = 0; i < filer.files.length; i++) {
+            fileLimbo.push(filer.files.item(i));
+        }
+        console.log(fileLimbo);
+        document.getElementById('file_adder').value = '';
+        document.getElementById('file_adder_label').innerText = 'Choose file(s)';
+        refreshFileList();
+    });
     document.getElementById('file_adder').addEventListener('change', function() {
         let txt = ' file chosen';
         if (this.files.length != 1) {
             txt = ' files chosen';
         }
         document.getElementById('file_adder_label').innerText = this.files.length + txt;
-        refreshFileList();
     });
 });
