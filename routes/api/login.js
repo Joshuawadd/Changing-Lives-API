@@ -43,13 +43,15 @@ router.post('/', (req, res) => {
         if(rows.length === 1){ // username in the database
             password_in_database = rows[0]['password'];
             if(password === password_in_database){ //password matches the password in the database
+                res.status(200).send(token);
                 return true // user should log into the system here
             }
         }
+        res.status(500).send('Incorrect Fields');
         return false // user shouldn't log into the system
 })
     connection.end();
-    res.end()
+    // res.end()
 });
 router.get('/silent', (req, res) => {
     var token = req.query.token;
