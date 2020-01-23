@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
-const mysql_query = require('../../mysql_query');
+// const mysql_query = require('../../mysql_query');
 
 class Section { //this is the class for an app section or page
     constructor(id=0,name = '',text='No text added',position=0, links = []) {
