@@ -3,7 +3,8 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const mysql = require('mysql')
+const mysql = require('mysql');
+const mysql_query = require('../../mysql_query');
 
 
 //Postman can be used to test post request {"username": "username", "password": "temppass"}
@@ -22,21 +23,25 @@ router.post('/', (req, res) => {
     // connection details, will save it in .dev file later
 
     var password_in_database; // used to store the password grabed from database
-    const connection = mysql.createConnection({
-        host:***REMOVED***,
-        user:***REMOVED***,
-        password:***REMOVED***,
-        port: ***REMOVED***,
-        database: ***REMOVED***
-    })
-    connection.connect(function(err){
-        if(err){
-            console.error('error connecting: ' + err.stack);
-        }
-        console.log('connected as id ' + connection.threadId);
-    });
+    
+    // const connection = mysql.createConnection({
+    //     host:***REMOVED***,
+    //     user:***REMOVED***,
+    //     password:***REMOVED***,
+    //     port: ***REMOVED***,
+    //     database: ***REMOVED***
+    // })
+    // connection.connect(function(err){
+    //     if(err){
+    //         console.error('error connecting: ' + err.stack);
+    //     }
+    //     console.log('connected as id ' + connection.threadId);
+    // });
     const queryString = `SELECT password FROM users where username = '${username}' `;
-    connection.query(queryString, (err,rows,fields)=>{
+    // const queryString = `SELECT password FROM users where ?`;
+
+    // mysql_query(queryString,{username: username}, (err,rows,fields)=>{ //parameter error in this way
+    mysql_query(queryString, (err,rows,fields)=>{ 
         if (err){
             throw err
         }
@@ -50,7 +55,6 @@ router.post('/', (req, res) => {
         res.status(500).send('Incorrect Fields');
         return false // user shouldn't log into the system
 })
-    connection.end();
     // res.end()
 });
 router.get('/silent', (req, res) => {
