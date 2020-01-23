@@ -25,6 +25,8 @@ const sqlConnection = (sql, values, next) => {
 
         next.apply(this, arguments);
     });
+
+    connection.end();
 };
 
 module.exports = sqlConnection;
