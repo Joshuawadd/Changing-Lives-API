@@ -121,8 +121,9 @@ async function getSections() {
     }
 }
 
-async function addSection() {
+async function addSection(event) {
     try {
+        event.preventDefault();
         let authToken = getCookie('authToken');
         let sectionName = document.getElementById('section_name').value;
         let sectionText = document.getElementById('section_text').value;
@@ -205,9 +206,11 @@ function refreshFileList() { //this function keeps the file list up to date
     for (var j = 0; j < fileList.length; j++) {
         display += `<div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="file_name${j}">${fileList[j][1]}</span>
+                            <div class="ellipsis">
+                                <span class="input-group-text" id="file_name${j}">${fileList[j][1]}</span>
+                            </div>
                         </div>
-                        <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" value="${fileList[j][0]}"> 
+                        <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" required value="${fileList[j][0]}"> 
                         <div class="input-group-append">
                             <button class="btn btn-success" type="button" id="file_view${j}">View</button>
                         </div>
@@ -219,9 +222,11 @@ function refreshFileList() { //this function keeps the file list up to date
     for (var i = j; i < fileLimbo.length+j; i++) {
         display += `<div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="file_name${i}">${fileLimbo[i-j].name}</span>
+                            <div class="ellipsis">
+                                <span class="input-group-text" id="file_name${i}">${fileLimbo[i-j].name}</span>
+                            </div>
                         </div>
-                        <input name="file_title" id ="file_title${i}" type="text" class="form-control" placeholder="Display Title"> 
+                        <input name="file_title" id ="file_title${i}" type="text" class="form-control" required placeholder="Display Title"> 
                         <div class="input-group-append">
                             <button class="btn btn-success" type="button" id="file_view${i}" disabled>View</button>
                         </div>
@@ -288,7 +293,7 @@ function editUser(event,userId) { //this loads up the box for editing a user's d
 
 document.addEventListener('DOMContentLoaded', function() { //set up listeners
     document.getElementById('login_form').addEventListener('submit', logIn );
-    document.getElementById('submit_section').addEventListener('submit', addSection );
+    document.getElementById('edit_section').addEventListener('submit', addSection );
     document.getElementById('users').addEventListener('click', userClick );
     document.getElementById('content').addEventListener('click', contentClick );
     document.getElementById('file_add').addEventListener('click', addFile );

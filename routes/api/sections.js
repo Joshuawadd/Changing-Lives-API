@@ -4,10 +4,10 @@ const jwt = require('jsonwebtoken');
 
 const multer  = require('multer');
 const storage = multer.diskStorage({
-    destination: '../../public',
+    destination: './public/files',
     filename: function (req, file, cb) {        
         // null as first argument means no error
-        cb(null, Date.now() + '-' + file.originalname );
+        cb(null, file.originalname );
     }
 });
 var upload = multer({ storage: storage });
@@ -42,6 +42,7 @@ router.get('/', (req, res) => {
 router.post('/add', upload.array('section_files[]', 20), (req, res) => {
     let sectionTitle = req.body.sectionTitle;
     let sectionText = req.body.sectionText;
+    console.log(req.files[0].path);
     res.status(200).send('ok');
     return true;
     var token = req.query.token;
