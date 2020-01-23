@@ -7,7 +7,8 @@ Joi.objectId = require('joi-objectid')(Joi);
 const cookieParser = require('cookie-parser');
 
 const indexRouter = require('./routes/index');
-const exampleRouter = require('./routes/api/example');
+const loginRouter = require('./routes/api/login');
+const sectionsRouter = require('./routes/api/sections');
 
 const app = express();
 const PORT = 3000;
@@ -21,6 +22,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/api/example', exampleRouter);
+app.use('/api/login', loginRouter);
+app.use('/api/sections', sectionsRouter);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
