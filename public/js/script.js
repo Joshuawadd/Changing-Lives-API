@@ -120,42 +120,43 @@ async function getSections() {
         return false;
     }
 }
-`
+
 async function addSection() {
     try {
         let authToken = getCookie('authToken');
+        let sectionName = document.getElementById('section_name').value;
+        let sectionText = document.getElementById('section_text').value;
+        let data = new FormData();
+        for (var i = 0; i < fileLimbo.length; i++) { //add all the unadded files
+            data.append('section_files[]', fileLimbo[i]);
+        }
+        data.append('sectionName', sectionName);
+        data.append('sectionText', sectionText);
         let response = await fetch('/api/sections/add',
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'username=' + uname + '&password=' + pass
-        });
-        ?token='+authToken);
+            {
+                method: 'POST',
+                headers: {
+                    'Authorisation': authToken,
+                },
+                body: data
+            });
         if (response.ok) {
-            let body = await response.text();
-            let contentData = JSON.parse(body);
-            let sects = [];
-            for (var i = 0; i < contentData.length; i++) {
-                let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,contentData[i].links);
-                sects.push(sc);
-            }
-            return sects;
+            alert(response.status + ' ' + response.statusText);
+            return true;
         } else {
             throw new Error(response.status+' '+response.statusText);
         }
     } catch(error) {
-        alert('Your session may have expired - please log in.');
-        loginPrompt();
+        alert(error);
         return false;
     }
 }
-`;
+
 //LISTENER FUNCTIONS
 
 async function contentClick(event) { //triggers when the content tab is clicked on
     //the code for loading the content modification area goes here
+    event.preventDefault();
     sections = await getSections();
     if (sections) {
         event.preventDefault();
@@ -244,6 +245,16 @@ function removeFile(filePos, limbo) { //limbo is a bool true if the file is not 
     }
 }
 
+function addFile() { //this adds a file to the list, but does nothing on the server
+    let filer = document.getElementById('file_adder');
+    for (var i = 0; i < filer.files.length; i++) {
+        fileLimbo.push(filer.files.item(i));
+    }
+    document.getElementById('file_adder').value = '';
+    document.getElementById('file_adder_label').innerText = 'Choose file(s)';
+    refreshFileList();
+}
+
 function userClick(event) { //this is the event that triggers when the users tab is clicked on
     event.preventDefault();
     let usersHTML = '<h3>User List</h3> <button type="button" class="btn btn-outline-dark btn-sm" onclick="newUser()">New User</button><br><div class="list-group">';
@@ -277,18 +288,10 @@ function editUser(event,userId) { //this loads up the box for editing a user's d
 
 document.addEventListener('DOMContentLoaded', function() { //set up listeners
     document.getElementById('login_form').addEventListener('submit', logIn );
+    document.getElementById('submit_section').addEventListener('submit', addSection );
     document.getElementById('users').addEventListener('click', userClick );
     document.getElementById('content').addEventListener('click', contentClick );
-    document.getElementById('file_add').addEventListener('click', function() {
-        let filer = document.getElementById('file_adder');
-        for (var i = 0; i < filer.files.length; i++) {
-            fileLimbo.push(filer.files.item(i));
-        }
-        console.log(fileLimbo);
-        document.getElementById('file_adder').value = '';
-        document.getElementById('file_adder_label').innerText = 'Choose file(s)';
-        refreshFileList();
-    });
+    document.getElementById('file_add').addEventListener('click', addFile );
     document.getElementById('file_adder').addEventListener('change', function() {
         let txt = ' file chosen';
         if (this.files.length != 1) {

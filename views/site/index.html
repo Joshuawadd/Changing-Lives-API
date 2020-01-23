@@ -96,9 +96,8 @@
                             <div class="input-group mb-3">
                             <div class="custom-file">
 								<label for="file_adder" class="custom-file-label" id = 'file_adder_label'>Choose file(s) </label>
-                                <input type = "file" name="file_adder" id ="file_adder" accept = "application/pdf" class="custom-file-input" required multiple data-multiple-target="{target} files selected">
+                                <input type = "file" name="file_adder" id ="file_adder" accept = "application/pdf" class="custom-file-input" multiple data-multiple-target="{target} files selected">
                             </div>
-                            <div class="invalid-feedback">Please add a file.</div>
                             <div class="input-group-append">
                                 <button class="btn btn-success" type="button" id="file_add">Add</button>
                             </div>
@@ -108,6 +107,7 @@
                             <div class="list-group" id="file_box_list">
                             </div>
                         </div>
+                        <input type="submit" class="btn btn-primary" id="submit_section" value="OK">
                     </form>
                 </div>
             </div>
