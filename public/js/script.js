@@ -1,32 +1,60 @@
 //load the bootstrap login box when the site loads
 $(window).on('load',function(){
-    $('#login_box').modal('show');
+    loginPrompt();
 });
-var currentUname = '';
-var currentPass = '';
-var authToken = '123';
-async function logIn(event) { //the login function currently only hides the login box
-    event.preventDefault();
-    let uname = document.getElementById('username').value;
-    let pass = document.getElementById('password').value;
-    /*let data = new FormData();
-    data.append('username', uname);
-    data.append('password', pass);
-    console.log(data);*/
-    let response = await fetch('/api/example',
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'username=' + uname + '&password=' + pass
-        });
-    if (response.ok) {
-        $('#login_box').modal('hide');
-        currentUname = uname;
-        currentPass = pass;
+function getCookie(cname) { //adapted from https://www.w3schools.com/js/js_cookies.asp
+    var name = cname + '=';
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
     }
-    else {
+    return '';
+}
+async function loginPrompt() {
+    try {
+        let authToken = getCookie('authToken');
+        let response = await fetch('/api/login/silent?token='+authToken);
+        if (response.ok) {
+            return true;
+        } else {
+            $('#login_box').modal('show');
+            return false;
+        }
+    }
+    catch(error) {
+        console.log(error);
+    }
+}
+
+async function logIn(event) { //the login function currently only hides the login box
+    try {
+        event.preventDefault();
+        let uname = document.getElementById('username').value;
+        let pass = document.getElementById('password').value;
+        let response = await fetch('/api/login',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'username=' + uname + '&password=' + pass
+            });
+        if (response.ok) {
+            $('#login_box').modal('hide');
+            let authToken = await response.text();
+            document.cookie = 'authToken=' + authToken;
+        }
+        else {
+            throw new Error(response.status);
+        }
+    } catch(error) {
         alert('Incorrect Username and/or Password');
     }
 }
@@ -67,37 +95,47 @@ class User {
     }
 }
 var users = [new User(0,'User 1','username1','password1'),new User(1,'User 2','username2','password2'),new User(2,'User 3','username3','password3')];
-//REST FUNCTIONS
-async function getContent() {
-    let response = await fetch('/api/content'); //this isnt working
-    if (response.ok) {
-        let body = await response.text();
-        let contentData = JSON.parse(body);
-        let sects = [];
-        for (var i = 0; i < contentData.length; i++) {
-            let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,contentData[i].links);
-            sects.push(sc);
-        }
-        return sects;
-    }
-    //else do error code stuff
 
+//REST FUNCTIONS
+async function getSections() {
+    try {
+        let authToken = getCookie('authToken');
+        let response = await fetch('/api/sections?token='+authToken);
+        if (response.ok) {
+            let body = await response.text();
+            let contentData = JSON.parse(body);
+            let sects = [];
+            for (var i = 0; i < contentData.length; i++) {
+                let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,contentData[i].links);
+                sects.push(sc);
+            }
+            return sects;
+        } else {
+            throw new Error(response.status+' '+response.statusText);
+        }
+    } catch(error) {
+        alert('Your session may have expired - please log in.');
+        loginPrompt();
+        return false;
+    }
 }
 
 //LISTENER FUNCTIONS
 
 async function contentClick(event) { //triggers when the content tab is clicked on
     //the code for loading the content modification area goes here
-    let sections = await getContent();
-    event.preventDefault();
-    //build the section HTML (my intent is for the position class variable to be position in the list as well to make this easier)
-    let sectionsHTML = '<h3>Content Editor</h3> <button type="button" class="btn btn-outline-dark btn-sm" onclick="newSection()">New Section</button><br><div class="list-group">';
-    for (var i = 0; i < sections.length; i++) {
-        sectionsHTML += sections[i].listHTML();
+    let sections = await getSections();
+    if (sections) {
+        event.preventDefault();
+        //build the section HTML (my intent is for the position class variable to be position in the list as well to make this easier)
+        let sectionsHTML = '<h3>Content Editor</h3> <button type="button" class="btn btn-outline-dark btn-sm" onclick="newSection()">New Section</button><br><div class="list-group">';
+        for (var i = 0; i < sections.length; i++) {
+            sectionsHTML += sections[i].listHTML();
+        }
+        sectionsHTML += '</div>';
+        //set it to display
+        document.getElementById('main_content').innerHTML = sectionsHTML;
     }
-    sectionsHTML += '</div>';
-    //set it to display
-    document.getElementById('main_content').innerHTML = sectionsHTML;
 }
 
 function newSection() { //this loads up the box for creating a new section
