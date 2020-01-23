@@ -2,6 +2,7 @@
 $(window).on('load',function(){
     loginPrompt();
 });
+var sections = [];
 function getCookie(cname) { //adapted from https://www.w3schools.com/js/js_cookies.asp
     var name = cname + '=';
     var decodedCookie = decodeURIComponent(document.cookie);
@@ -33,7 +34,7 @@ async function loginPrompt() {
     }
 }
 
-async function logIn(event) { //the login function currently only hides the login box
+async function logIn(event) { //sends a login request and sets the authToken cookie if successful
     try {
         event.preventDefault();
         let uname = document.getElementById('username').value;
@@ -61,12 +62,12 @@ async function logIn(event) { //the login function currently only hides the logi
 //CLASSES
 
 class Section { //this is the class for an app section or page
-    constructor(id=0,name = '',text='No text added',position=0, links = []) {
+    constructor(id=0,name = '',text='No text added',position=0, files = [['title','path']]) {
         this.id = id;
         this.name = name;
         this.text = text;
         this.position =position;
-        this.links = links;
+        this.files = files;
     }
 
     listHTML() {
@@ -78,7 +79,7 @@ class Section { //this is the class for an app section or page
                 </li>`;
     }
 }
-
+var currentSection = 0;
 class User {
     constructor(id=0,name='',username='',password='') {
         this.id = id;
@@ -106,6 +107,37 @@ async function getSections() {
             let contentData = JSON.parse(body);
             let sects = [];
             for (var i = 0; i < contentData.length; i++) {
+                let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,contentData[i].files);
+                sects.push(sc);
+            }
+            return sects;
+        } else {
+            throw new Error(response.status+' '+response.statusText);
+        }
+    } catch(error) {
+        alert('Your session may have expired - please log in.');
+        loginPrompt();
+        return false;
+    }
+}
+`
+async function addSection() {
+    try {
+        let authToken = getCookie('authToken');
+        let response = await fetch('/api/sections/add',
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'username=' + uname + '&password=' + pass
+        });
+        ?token='+authToken);
+        if (response.ok) {
+            let body = await response.text();
+            let contentData = JSON.parse(body);
+            let sects = [];
+            for (var i = 0; i < contentData.length; i++) {
                 let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,contentData[i].links);
                 sects.push(sc);
             }
@@ -119,12 +151,12 @@ async function getSections() {
         return false;
     }
 }
-
+`;
 //LISTENER FUNCTIONS
 
 async function contentClick(event) { //triggers when the content tab is clicked on
     //the code for loading the content modification area goes here
-    let sections = await getSections();
+    sections = await getSections();
     if (sections) {
         event.preventDefault();
         //build the section HTML (my intent is for the position class variable to be position in the list as well to make this easier)
@@ -142,17 +174,7 @@ function newSection() { //this loads up the box for creating a new section
     document.getElementById('section_edit_title').innerText = 'New Section';
     document.getElementById('section_name').value = '';
     document.getElementById('section_text').innerText = '';
-    document.getElementById('section_links').innerHTML = `<div class="list-group" id="file_box_list">
-                                                            <div class="input-group mb-3">
-                                                                <div class="input-group-prepend">
-                                                                    <input name="section_link_title" id ="section_link_title0" type="text" class="form-control" placeholder="Link Name">
-                                                                </div>
-                                                                <input name="section_links" id ="section_links0" type="text" class="form-control" placeholder="Link"> 
-                                                                <div class="input-group-append" id="file_append0">
-                                                                    <button class="btn btn-success" type="button" id="file_add">More</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>`;
+    document.getElementById('section_files').innerHTML = '';
     $('#section_modal').modal('show');
 }
 
@@ -165,40 +187,50 @@ function editSection(event,sectionId) { //this loads up the box for editing a se
             document.getElementById('section_text').innerText = sections[i].text;
         }
     }
+    currentSection = sectionId;
+    refreshFileList();
     $('#section_modal').modal('show');
 }
-var file_boxes = 0;
-function fileAdd() {
-    let newHTML = '';
-    for (let i = 0; i <= file_boxes; i++) {
-        let prevVal = [document.getElementById(`section_link_title${i}`).value,document.getElementById(`section_links${i}`).value];
-        newHTML +=
-        `<div class="list-group">
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <input name="section_link_title" id ="section_link_title${i}" value="${prevVal[0]}" type="text" class="form-control" placeholder="Link Name"> <!--<span class="input-group-text"><h4>File Link:</h4> </span> -->
-                </div>
-                <input name="section_links" id ="section_links${i}" value="${prevVal[1]}" type="text" class="form-control" placeholder="Link"> 
-            </div>
-        </div>`;
-    }
-    file_boxes += 1;
-    newHTML +=
-    `<div class="list-group">
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <input name="section_link_title" id ="section_link_title${file_boxes}" type="text" class="form-control" placeholder="Link Name"> <!--<span class="input-group-text"><h4>File Link:</h4> </span> -->
-            </div>
-            <input name="section_links" id ="section_links${file_boxes}" type="text" class="form-control" placeholder="Link"> 
-            <div class="input-group-append" id="file_append${file_boxes}">
-                <button class="btn btn-success" type="button" id="file_add">More</button>
-            </div>
-        </div>
-    </div>`;
-    document.getElementById('file_box_list').innerHTML = newHTML;
-    document.getElementById('file_add').addEventListener('click', fileAdd );
-}
 
+function refreshFileList() { //this function keeps the file list up to date
+    let filer = document.getElementById('file_adder');
+    let display = '';
+    let fileList = [];
+    for (var k = 0; k < sections.length; k++) {
+        if (sections[k].id == currentSection) {
+            fileList = sections[k].files;
+        }
+    }
+    for (var j = 0; j < fileList.length; j++) {
+        display += `<div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="file_name${j}">${fileList[j][1]}</span>
+                        </div>
+                        <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" value="${fileList[j][0]}"> 
+                        <div class="input-group-append">
+                            <button class="btn btn-success" type="button" id="file_view${j}">View</button>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="close" type="button" id="file_delete${j}">&times;</button>
+                        </div>
+                    </div>`;
+    }
+    for (var i = j; i < filer.files.length+j; i++) {
+        display += `<div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="file_name${i}">${filer.files.item(i-j).name}</span>
+                        </div>
+                        <input name="file_title" id ="file_title${i}" type="text" class="form-control" placeholder="Display Title"> 
+                        <div class="input-group-append">
+                            <button class="btn btn-success" type="button" id="file_view${i}" disabled>View</button>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="close" type="button" id="file_delete${i}" disabled>&times;</button>
+                        </div>
+                    </div>`;
+    }
+    document.getElementById('file_box_list').innerHTML = display;
+}
 
 
 function userClick(event) { //this is the event that triggers when the users tab is clicked on
@@ -233,8 +265,15 @@ function editUser(event,userId) { //this loads up the box for editing a user's d
 }
 
 document.addEventListener('DOMContentLoaded', function() { //set up listeners
-    document.getElementById('file_add').addEventListener('click', fileAdd );
     document.getElementById('login_form').addEventListener('submit', logIn );
     document.getElementById('users').addEventListener('click', userClick );
     document.getElementById('content').addEventListener('click', contentClick );
+    document.getElementById('file_adder').addEventListener('change', function() {
+        let txt = ' file chosen';
+        if (this.files.length != 1) {
+            txt = ' files chosen';
+        }
+        document.getElementById('file_adder_label').innerText = this.files.length + txt;
+        refreshFileList();
+    });
 });
