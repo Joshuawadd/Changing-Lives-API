@@ -32,3 +32,6 @@ const sqlConnection = (sql, values, next) => {
 module.exports = sqlConnection;
 
 //Module built with help from https://stackoverflow.com/questions/30545749/how-to-provide-a-mysql-database-connection-in-single-file-in-nodejs
+
+//EXAMPLE
+//mysql_query('SELECT * from your_table where ?', {id: '1'}, (err, rows) => {console.log(rows);});
