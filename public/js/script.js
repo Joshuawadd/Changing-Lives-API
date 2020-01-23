@@ -121,7 +121,7 @@ async function getSections() {
     }
 }
 
-async function addSection(event) {
+async function addSection(event) { //in fact this can also edit a section it seems
     try {
         event.preventDefault();
         let authToken = getCookie('authToken');
@@ -133,6 +133,14 @@ async function addSection(event) {
         }
         data.append('sectionName', sectionName);
         data.append('sectionText', sectionText);
+        for (var k = 0; k < sections.length; k++) {
+            if (sections[k].id == currentSection) {
+                var fileList = sections[k].files;
+            }
+        }
+        for (var j = 0; j < fileList.length + fileLimbo.length; j++) {//update the display titles of all files
+            data.append('file_titles[]', document.getElementById(`file_title${j}`).value);
+        }
         let response = await fetch('/api/sections/add',
             {
                 method: 'POST',
