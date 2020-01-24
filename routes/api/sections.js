@@ -67,52 +67,7 @@ router.get('/', (req, res) => {
         return false;
     }
     
-});
-        
-
-
-
-
-
-
-
-
-
-                `
-                mysql_query(queryStringFiles, (err,rows,fields)=>{ //having problems with async functions
-                    if (err){
-                        throw err;
-                    }
-                    for (let i = 0; i < rows.length; i++) {
-                        files.push(rows[i]);
-                    }
-                    console.log('files',files);
-                });
-                mysql_query(queryStringSections, (err,rows,fields)=>{ 
-                    if (err){
-                        throw err;
-                    }
-                    if(rows.length >= 1){ // some sections exist
-                        for (let i = 0; i < rows.length; i++ ) {
-                            let secFiles = []
-                            for (var j = 0; j < files.length; j++) {
-                                if (files[j]['section_id'] == rows[i]['section_id']) {
-                                    secFiles.push([files[j]['file_name'],files[j]['file_link']])
-                                }
-                            }
-                            sections.push(new Section(rows[i]['section_id'],rows[i]['section_name'],rows[i]['article_text'],secFiles));
-                            console.log('sc',sections);
-                        }
-                    } else {
-                        res.status(500).send('No sections exist');
-                        return false; // user shouldn't log into the system
-                    }
-                });
-                console.log(sections);
-                sections.push(new Section(0,'Section','hello',0,[]));
-                let sections_send = JSON.stringify(sections);
-                res.status(200).send(sections_send); //just always sends ok as an example`
-            
+});         
 
 router.post('/add', upload.array('section_files[]', 20), (req, res) => {
     try {
