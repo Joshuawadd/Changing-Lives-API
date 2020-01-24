@@ -79,7 +79,7 @@ class Section { //this is the class for an app section or page
                 </li>`;
     }
 }
-var currentSection = 0;
+var currentSection = -1;
 class User {
     constructor(id=0,name='',username='',password='') {
         this.id = id;
@@ -111,12 +111,15 @@ async function getSections() {
                 sects.push(sc);
             }
             return sects;
+        } else if (response.status === 403) {
+            alert('Your session may have expired - please log in.');
+            loginPrompt();
+            return false;
         } else {
             throw new Error(response.status+' '+response.statusText);
         }
     } catch(error) {
-        alert('Your session may have expired - please log in.');
-        loginPrompt();
+        alert(error);
         return false;
     }
 }
@@ -133,6 +136,8 @@ async function addSection(event) { //in fact this can also edit a section it see
         }
         data.append('sectionName', sectionName);
         data.append('sectionText', sectionText);
+        //data.append('sectionId', currentSection); not required for new sections
+        fileList = [];
         for (var k = 0; k < sections.length; k++) {
             if (sections[k].id == currentSection) {
                 var fileList = sections[k].files;
@@ -185,6 +190,7 @@ function newSection() { //this loads up the box for creating a new section
     document.getElementById('section_name').value = '';
     document.getElementById('section_text').innerText = '';
     document.getElementById('section_files').innerHTML = '';
+    currentSection = -1; //this signifies to create a new one
     $('#section_modal').modal('show');
 }
 
@@ -301,7 +307,11 @@ function editUser(event,userId) { //this loads up the box for editing a user's d
 
 document.addEventListener('DOMContentLoaded', function() { //set up listeners
     document.getElementById('login_form').addEventListener('submit', logIn );
-    document.getElementById('edit_section').addEventListener('submit', addSection );
+    document.getElementById('edit_section').addEventListener('submit', function(event) {
+        if (currentSection == -1) {
+            addSection(event);
+        }
+    });
     document.getElementById('users').addEventListener('click', userClick );
     document.getElementById('content').addEventListener('click', contentClick );
     document.getElementById('file_add').addEventListener('click', addFile );
