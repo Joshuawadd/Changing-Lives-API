@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const mysql = require('mysql');
 const multer  = require('multer');
 const storage = multer.diskStorage({
     destination: './public/files',
@@ -29,10 +30,55 @@ router.get('/', (req, res) => {
         var token = req.query.token;
         jwt.verify(token, 'userToken', function(err, decoded){
             if(!err){
-                const queryStringSections = `SELECT * FROM sections;`; //for now there are no params so always return all
-                const queryStringFiles = `SELECT * FROM files;`; //get all files too
-                var sections = []; //define sections variable
-                var files = [];
+                const connection = mysql.createConnection({
+                    host: process.env.MYSQL_HOST,
+                    user: process.env.MYSQL_USER,
+                    password: process.env.MYSQL_PASSWORD,
+                    database: process.env.MYSQL_DATABASE
+                });
+
+                connection.connect((err) => {
+                    if (err) throw err;
+                });
+
+                function getList(){
+                    return new Promise((resolve, reject) => {
+                        connection.query(`SELECT sections.section_id, sections.article_text, sections.section_name, files.file_name, files.file_link FROM sections
+                                            LEFT JOIN files ON sections.section_id = files.section_id
+                                            `, [], (err, results) => {
+                            if (err) throw res.sendStatus(400);
+                            resolve(results);
+                        });
+                    });
+                }
+                getList().then(result => {
+                    return res.status(200).send(JSON.stringify(result));
+                }).finally(() => {
+                    //return res.sendStatus(200);
+                });
+                connection.end();
+            } else {
+                res.status(403).send(err);
+            }
+        });
+    } catch(err) {
+        console.log(err);
+        res.status(500).send(err);
+        return false;
+    }
+    
+});
+        
+
+
+
+
+
+
+
+
+
+                `
                 mysql_query(queryStringFiles, (err,rows,fields)=>{ //having problems with async functions
                     if (err){
                         throw err;
@@ -65,16 +111,8 @@ router.get('/', (req, res) => {
                 console.log(sections);
                 sections.push(new Section(0,'Section','hello',0,[]));
                 let sections_send = JSON.stringify(sections);
-                res.status(200).send(sections_send); //just always sends ok as an example
-            } else {
-                res.status(403).send(err);
-            }
-        });
-    } catch(err) {
-        res.status(500).send(err);
-        return false;
-    }
-});
+                res.status(200).send(sections_send); //just always sends ok as an example`
+            
 
 router.post('/add', upload.array('section_files[]', 20), (req, res) => {
     try {
