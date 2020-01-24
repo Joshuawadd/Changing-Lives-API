@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 
-router.get('/', (req, res) => {
+//Postman can be used to test post request {"section_id": 1}
+router.post('/', (req, res) => {
+
+    const section_id = req.body.section_id;
 
     const connection = mysql.createConnection({
         host: process.env.MYSQL_HOST,
@@ -15,9 +18,9 @@ router.get('/', (req, res) => {
         if (err) throw err;
     });
 
-    function getList(){
+    function getList() {
         return new Promise((resolve, reject) => {
-            connection.query('SELECT * FROM child_comments', [], (err, results) => {
+            connection.query('SELECT * FROM files WHERE section_id = ?', [section_id], (err, results) => {
                 if (err) throw res.sendStatus(400);
                 resolve(results);
             });
@@ -29,6 +32,7 @@ router.get('/', (req, res) => {
     }).finally(() => {
         connection.end();
     });
+
 });
 
 module.exports = router;
