@@ -108,8 +108,26 @@ async function getSections() {
             let contentData = JSON.parse(body);
             let sects = [];
             for (var i = 0; i < contentData.length; i++) {
-                let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,contentData[i].files);
-                sects.push(sc);
+                let nw = -1;
+                for (var j = 0; j < sects.length; j++) {
+                    if (contentData[i].section_id == sects[j].id) {
+                        nw = j;
+                        break;
+                    }
+                }
+                if (nw == -1) {
+                    var fileAdds;
+                    if (contentData[i].file_link != null){
+                        fileAdds = [[contentData[i].file_name,contentData[i].file_link]];
+                    } else {
+                        fileAdds = [] ;
+                    }
+                    let sc = new Section(contentData[i].section_id,contentData[i].section_name,contentData[i].article_text,0,fileAdds);
+                    sects.push(sc);
+                }
+                else {
+                    sects[nw].files.push([contentData[i].file_name,contentData[i].file_link]);
+                }
             }
             return sects;
         } else if (response.status === 403) {
