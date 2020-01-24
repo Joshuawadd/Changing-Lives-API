@@ -4,8 +4,6 @@ const mysql = require('mysql');
 
 router.get('/', (req, res) => {
 
-    //WORK NEEDS DOING HERE, CANNOT SEEM TO RETURN THE RESULTS
-
     const connection = mysql.createConnection({
         host: process.env.MYSQL_HOST,
         user: process.env.MYSQL_USER,
@@ -29,10 +27,9 @@ router.get('/', (req, res) => {
     getList().then(result => {
         return res.send(result);
     }).finally(() => {
-        return res.sendStatus(400);
+        connection.end();
     });
 
-    connection.end();
 });
 
 module.exports = router;
