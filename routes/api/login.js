@@ -43,7 +43,7 @@ router.post('/', (req, res) => {
     // mysql_query(queryString,{username: username}, (err,rows,fields)=>{ //parameter error in this way
     mysql_query(queryString, (err,rows,fields)=>{ 
         if (err){
-            throw err
+            throw err;
         }
         if(rows.length === 1){ // username in the database
             password_in_database = rows[0]['password'];
@@ -53,15 +53,15 @@ router.post('/', (req, res) => {
             }
         }
         res.status(500).send('Incorrect Fields');
-        return false // user shouldn't log into the system
-})
+        return false; // user shouldn't log into the system
+    });
     // res.end()
 });
-router.get('/silent', (req, res) => {
+router.get('/silent', (req, res) => { //silently logs in if page is refreshed and token is still in date
     var token = req.query.token;
     jwt.verify(token, 'userToken', function(err, decoded){
         if(!err){
-            res.status(200).send('OK'); //just always sends ok as an example
+            res.status(200).send('OK');
         } else {
             res.status(403).send(err);
         }
