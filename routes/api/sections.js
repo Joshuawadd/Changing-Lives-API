@@ -26,42 +26,45 @@ class Section { //this is the class for an app section or page
 //Postman can be used to test post request {"username": "username", "password": "temppass"}
 router.get('/', (req, res) => {
     try {
-        const queryStringSections = `SELECT * FROM sections`; //for now there are no params so always return all
-        const queryStringFiles = `SELECT * FROM files`; //get all files too
-        var sections = []; //define sections variable
-        var files = [];
-        mysql_query(queryStringFiles, (err,rows,fields)=>{
-            if (err){
-                throw err;
-            }
-            for (let i = 0; i < rows.length; i++) {
-                files.push(rows[i]);
-            }
-        });
-        mysql_query(queryStringSections, (err,rows,fields)=>{ 
-            if (err){
-                throw err;
-            }
-            if(rows.length >= 1){ // some sections exist
-                for (let i = 0; i < rows.length; i++ ) {
-                    let secFiles = []
-                    for (var j = 0; j < files.length; j++) {
-                        if (files[j]['section_id'] == rows[i]['section_id']) {
-                            secFiles.push([files[j]['file_name'],files[j]['file_link']])
-                        }
-                    }
-                    sections.push(new Section(rows[i]['section_id'],rows[i]['section_name'],rows[i]['article_text'],secFiles));
-                }
-            } else {
-                res.status(500).send('No sections exist');
-                return false; // user shouldn't log into the system
-            }
-        });
-        sections.push(new Section(0,'Section','hello',0,[]));
-        let sections_send = JSON.stringify(sections);
         var token = req.query.token;
         jwt.verify(token, 'userToken', function(err, decoded){
             if(!err){
+                const queryStringSections = `SELECT * FROM sections;`; //for now there are no params so always return all
+                const queryStringFiles = `SELECT * FROM files;`; //get all files too
+                var sections = []; //define sections variable
+                var files = [];
+                mysql_query(queryStringFiles, (err,rows,fields)=>{ //having problems with async functions
+                    if (err){
+                        throw err;
+                    }
+                    for (let i = 0; i < rows.length; i++) {
+                        files.push(rows[i]);
+                    }
+                    console.log('files',files);
+                });
+                mysql_query(queryStringSections, (err,rows,fields)=>{ 
+                    if (err){
+                        throw err;
+                    }
+                    if(rows.length >= 1){ // some sections exist
+                        for (let i = 0; i < rows.length; i++ ) {
+                            let secFiles = []
+                            for (var j = 0; j < files.length; j++) {
+                                if (files[j]['section_id'] == rows[i]['section_id']) {
+                                    secFiles.push([files[j]['file_name'],files[j]['file_link']])
+                                }
+                            }
+                            sections.push(new Section(rows[i]['section_id'],rows[i]['section_name'],rows[i]['article_text'],secFiles));
+                            console.log('sc',sections);
+                        }
+                    } else {
+                        res.status(500).send('No sections exist');
+                        return false; // user shouldn't log into the system
+                    }
+                });
+                console.log(sections);
+                sections.push(new Section(0,'Section','hello',0,[]));
+                let sections_send = JSON.stringify(sections);
                 res.status(200).send(sections_send); //just always sends ok as an example
             } else {
                 res.status(403).send(err);
@@ -80,13 +83,13 @@ router.post('/add', upload.array('section_files[]', 20), (req, res) => {
             if(!err){
                 let sectionTitle = req.body.sectionName;
                 let sectionText = req.body.sectionText;
-                console.log(sectionTitle, sectionText);
+                console.log('sec',sectionTitle, sectionText);
                 //let sectionId = req.body.sectionId; not required for new sections
                 let sectionFiles = [];
                 for (var i = 0; i < req.files.length; i++) {
-                    sectionFiles.push('',req.files[i].originalname);
+                    sectionFiles.push(req.files[i].originalname);
                 }
-                let fileTitles = req.body.fileTitles;
+                let fileTitles = JSON.parse(req.body.fileTitles);
                 var sectionId = -1;
                 const queryStringSection = `INSERT INTO sections (section_name, article_text, user_id)
                                             VALUES ('${sectionTitle}', '${sectionText}', 0);`; //also needs section position
@@ -96,9 +99,10 @@ router.post('/add', upload.array('section_files[]', 20), (req, res) => {
                     }
                     sectionId = rows.insertId; //get the id the new section was inserted at
                 });
-                for (var i = 0; i < fileTitles.length; i++) {
+                console.log(fileTitles, sectionFiles);
+                for (var k = 0; k < fileTitles.length; k++) {
                     let queryStringFiles = `INSERT INTO files (file_name, file_link, section_id, user_id)
-                                            VALUES ('${fileTitles[i]}', '${sectionFiles[i]}', 0)`;
+                                            VALUES ('${fileTitles[k][0]}', '${sectionFiles[k]}',${sectionId}, 0);`;
                     mysql_query(queryStringFiles, (err,rows,fields)=>{
                         if (err){
                             throw err;
@@ -111,6 +115,7 @@ router.post('/add', upload.array('section_files[]', 20), (req, res) => {
             }
         });
     } catch(err) {
+        console.log(err);
         res.status(500).send(err);
         return false;
     }

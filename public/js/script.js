@@ -20,6 +20,7 @@ function getCookie(cname) { //adapted from https://www.w3schools.com/js/js_cooki
 }
 async function loginPrompt() {
     try {
+        $('.modal').modal('hide');
         let authToken = getCookie('authToken');
         let response = await fetch('/api/login/silent?token='+authToken);
         if (response.ok) {
@@ -143,9 +144,11 @@ async function addSection(event) { //in fact this can also edit a section it see
                 var fileList = sections[k].files;
             }
         }
-        for (var j = 0; j < fileList.length + fileLimbo.length; j++) {//update the display titles of all files
-            data.append('file_titles[]', document.getElementById(`file_title${j}`).value);
+        let len = fileList.length + fileLimbo.length;
+        for (var j = 0; j < len; j++) {//update the display titles of all files
+            fileList.push([document.getElementById(`file_title${j}`).value,'']);
         }
+        data.append('fileTitles', JSON.stringify(fileList));
         let response = await fetch('/api/sections/add',
             {
                 method: 'POST',
@@ -156,7 +159,12 @@ async function addSection(event) { //in fact this can also edit a section it see
             });
         if (response.ok) {
             alert(response.status + ' ' + response.statusText);
+            $('#section_modal').modal('hide');
             return true;
+        } else if (response.status === 403){
+            alert('Your session may have expired - please log in.');
+            await loginPrompt();
+            $('#section_modal').modal('show');
         } else {
             throw new Error(response.status+' '+response.statusText);
         }
@@ -189,8 +197,9 @@ function newSection() { //this loads up the box for creating a new section
     document.getElementById('section_edit_title').innerText = 'New Section';
     document.getElementById('section_name').value = '';
     document.getElementById('section_text').innerText = '';
-    document.getElementById('section_files').innerHTML = '';
+    document.getElementById('file_box_list').innerHTML = '';
     currentSection = -1; //this signifies to create a new one
+    refreshFileList();
     $('#section_modal').modal('show');
 }
 
@@ -209,7 +218,6 @@ function editSection(event,sectionId) { //this loads up the box for editing a se
 }
 var fileLimbo = []; //stores files 'added' but not yet sent to server
 function refreshFileList() { //this function keeps the file list up to date
-    let filer = document.getElementById('file_adder');
     let display = '';
     let fileList = [];
     for (var k = 0; k < sections.length; k++) {
@@ -226,7 +234,7 @@ function refreshFileList() { //this function keeps the file list up to date
                         </div>
                         <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" required value="${fileList[j][0]}"> 
                         <div class="input-group-append">
-                            <button class="btn btn-success" type="button" id="file_view${j}">View</button>
+                            <button class="btn btn-success" type="button" id="file_view${j}" onclick="function {window.open('./${fileList[j][1]}?token=${getCookie('authToken')}','_blank');}">View</button>
                         </div>
                         <div class="input-group-append">
                             <button class="close" type="button" id="file_delete${j}">&times;</button>
@@ -242,7 +250,7 @@ function refreshFileList() { //this function keeps the file list up to date
                         </div>
                         <input name="file_title" id ="file_title${i}" type="text" class="form-control" required placeholder="Display Title"> 
                         <div class="input-group-append">
-                            <button class="btn btn-success" type="button" id="file_view${i}" disabled>View</button>
+                            <button class="btn btn-success" type="button" id="file_view${i} disabled>View</button>
                         </div>
                         <div class="input-group-append">
                             <button class="close" type="button" id="file_delete${i}" onclick="removeFile(${i},true)">&times;</button>
