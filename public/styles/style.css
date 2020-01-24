@@ -4781,11 +4781,11 @@ Version: 1.0
   }
   }
   
-  @media only screen and (max-width:1000px) {
+  /*@media only screen and (max-width:1000px) {
   .navigation {
   display:none;
   }
-  }
+  }*/
   
   @media only screen and (min-width:961px) and (max-width:1150px) {
   .email-container, .submit-container {
@@ -10697,11 +10697,11 @@ Version: 1.0
     }
     }
     
-    @media only screen and (max-width:1000px) {
+    /*@media only screen and (max-width:1000px) {
     .navigation {
     display:none;
     }
-    }
+    }*/
     
     @media only screen and (min-width:961px) and (max-width:1150px) {
     .email-container, .submit-container {
@@ -11844,3 +11844,14 @@ Version: 1.0
     .modal {
         z-index: 100001 !important;
     }
+
+    /* remove rounding from cards, buttons and inputs */
+    .card, .btn, .form-control { border-radius: 0; }
+
+    .ellipsis {
+        width: 200px;
+        overflow: hidden;
+        display: inline-block;
+        text-overflow: ellipsis; /*this doesn't work for some reason*/
+        white-space: nowrap;
+        }
