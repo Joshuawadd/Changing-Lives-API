@@ -48,6 +48,7 @@ const topicChildRemoveRouter = require('./routes/api/topics/child/remove');
 const topicChildListRouter = require('./routes/api/topics/child/list');
 
 const sectionCreateRouter = require('./routes/api/sections/create');
+const sectionEditRouter = require('./routes/api/sections/edit');
 const sectionRemoveRouter = require('./routes/api/sections/remove');
 const sectionListRouter = require('./routes/api/sections/list');
 
@@ -84,6 +85,7 @@ app.use('/api/topic/child/remove', topicChildRemoveRouter);
 app.use('/api/topic/child/list', topicChildListRouter);
 
 app.use('/api/section/create', sectionCreateRouter);
+app.use('/api/section/edit', sectionEditRouter);
 app.use('/api/section/remove', sectionRemoveRouter);
 app.use('/api/section/list', sectionListRouter);
 
