@@ -163,8 +163,9 @@ async function addSection(event) { //in fact this can also edit a section it see
             return true;
         } else if (response.status === 403){
             alert('Your session may have expired - please log in.');
-            await loginPrompt();
-            $('#section_modal').modal('show');
+            loginPrompt().then(result => {
+                $('#section_modal').modal('show');
+            });
         } else {
             throw new Error(response.status+' '+response.statusText);
         }
