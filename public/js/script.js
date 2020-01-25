@@ -196,7 +196,7 @@ async function contentClick(event) { //triggers when the content tab is clicked 
 function newSection() { //this loads up the box for creating a new section
     document.getElementById('section_edit_title').innerText = 'New Section';
     document.getElementById('section_name').value = '';
-    document.getElementById('section_text').innerText = '';
+    document.getElementById('section_text').value = '';
     document.getElementById('file_box_list').innerHTML = '';
     currentSection = -1; //this signifies to create a new one
     refreshFileList();
@@ -234,7 +234,7 @@ function refreshFileList() { //this function keeps the file list up to date
                         </div>
                         <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" required value="${fileList[j][0]}"> 
                         <div class="input-group-append">
-                            <button class="btn btn-success" type="button" id="file_view${j}" onclick="function() {window.open('./${fileList[j][1]}?token=${getCookie('authToken')}','_blank');}">View</button>
+                            <button class="btn btn-success" type="button" id="file_view${j}" onclick="(function(){window.open('./${fileList[j][1]}?token=${getCookie('authToken')}','_blank');})();">View</button>
                         </div>
                         <div class="input-group-append">
                             <button class="close" type="button" id="file_delete${j}">&times;</button>
@@ -250,7 +250,7 @@ function refreshFileList() { //this function keeps the file list up to date
                         </div>
                         <input name="file_title" id ="file_title${i}" type="text" class="form-control" required placeholder="Display Title"> 
                         <div class="input-group-append">
-                            <button class="btn btn-success" type="button" id="file_view${i} disabled>View</button>
+                            <button class="btn btn-success" type="button" id="file_view${i}" disabled>View</button>
                         </div>
                         <div class="input-group-append">
                             <button class="close" type="button" id="file_delete${i}" onclick="removeFile(${i},true)">&times;</button>
