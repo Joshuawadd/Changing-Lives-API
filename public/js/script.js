@@ -125,7 +125,7 @@ async function getSections() {
     }
 }
 
-async function addSection(event) { //in fact this can also edit a section it seems
+async function addSection(event) {
     try {
         event.preventDefault();
         let authToken = getCookie('authToken');
@@ -139,14 +139,9 @@ async function addSection(event) { //in fact this can also edit a section it see
         data.append('sectionText', sectionText);
         //data.append('sectionId', currentSection); not required for new sections
         fileList = [];
-        for (var k = 0; k < sections.length; k++) {
-            if (sections[k].id == currentSection) {
-                var fileList = sections[k].files;
-            }
-        }
-        let len = fileList.length + fileLimbo.length;
+        let len = fileLimbo.length;
         for (var j = 0; j < len; j++) {//update the display titles of all files
-            fileList.push([document.getElementById(`file_title${j}`).value,'']);
+            fileList.push(document.getElementById(`file_title${j}`).value);
         }
         data.append('fileTitles', JSON.stringify(fileList));
         let response = await fetch('/api/section/create',
@@ -160,7 +155,65 @@ async function addSection(event) { //in fact this can also edit a section it see
         if (response.ok) {
             alert('Section added successfully!');
             $('#section_modal').modal('hide');
+            fileLimbo = [];
+            document.getElementById('file_adder').value = '';
+            document.getElementById('file_adder_label').innerText = 'Choose file(s)';
             document.getElementById('content').click();
+            return true;
+        } else if (response.status === 403){
+            alert('Your session may have expired - please log in.');
+            await loginPrompt();
+            $('.modal').modal('hide');
+            $('#section_modal').modal('show');
+        } else {
+            throw new Error(response.status+' '+response.statusText);
+        }
+    } catch(error) {
+        alert(error);
+        return false;
+    }
+}
+
+async function updateSection(event) {
+    event.preventDefault();
+    try {
+        let authToken = getCookie('authToken');
+        let sectionName = document.getElementById('section_name').value;
+        let sectionText = document.getElementById('section_text').value;
+        let data = new FormData();
+        for (var i = 0; i < fileLimbo.length; i++) { //add all the unadded files
+            data.append('section_files[]', fileLimbo[i]);
+        }
+        data.append('sectionName', sectionName);
+        data.append('sectionText', sectionText);
+        data.append('sectionId', currentSection);
+        fileList = [];
+        for (var k = 0; k < sections.length; k++) {
+            if (sections[k].id == currentSection) {
+                var fileList = sections[k].files;
+            }
+        }
+        let len = fileList.length + fileLimbo.length;
+        fileList = []
+        for (var j = 0; j < len; j++) {//update the display titles of all files
+            fileList.push(document.getElementById(`file_title${j}`).value);
+        }
+        data.append('fileTitles', JSON.stringify(fileList));
+        let response = await fetch('/api/section/edit',
+            {
+                method: 'POST',
+                headers: {
+                    'Authorisation': authToken,
+                },
+                body: data
+            });
+        if (response.ok) {
+            alert('Section edited successfully!');
+            $('#section_modal').modal('hide');
+            document.getElementById('content').click();
+            fileLimbo = [];
+            document.getElementById('file_adder').value = '';
+            document.getElementById('file_adder_label').innerText = 'Choose file(s)';
             return true;
         } else if (response.status === 403){
             alert('Your session may have expired - please log in.');
@@ -190,8 +243,8 @@ async function rmSection(event, sec_id, sec_name) {
                     body: 'section_id=' + sec_id
                 });
             if (response.ok) {
-                document.getElementById('content').click();
                 alert('Section removed successfully!');
+                document.getElementById('content').click();
             } else if (response.status === 403){
                 alert('Your session may have expired - please log in.');
                 loginPrompt();
@@ -244,6 +297,7 @@ function editSection(event,sectionId) { //this loads up the box for editing a se
         }
     }
     currentSection = sectionId;
+    fileLimbo = [];
     refreshFileList();
     $('#section_modal').modal('show');
 }
@@ -267,7 +321,7 @@ function refreshFileList() { //this function keeps the file list up to date
                         </div>
                         <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" required value="${fileList[j][0]}"> 
                         <div class="input-group-append">
-                            <button class="btn btn-success" type="button" id="file_view${j}" onclick="(function(){window.open('./${fileList[j][1]}?token=${getCookie('authToken')}','_blank');})();">View</button>
+                            <button class="btn btn-success" type="button" id="file_view${j}" onclick="(function(){window.open('./files/${fileList[j][1]}?token=${getCookie('authToken')}','_blank');})();">View</button>
                         </div>
                         <div class="input-group-append">
                             <button class="close" type="button" id="file_delete${j}" onclick="removeFileDB(${j})">&times;</button>
@@ -353,7 +407,10 @@ document.addEventListener('DOMContentLoaded', function() { //set up listeners
     document.getElementById('edit_section').addEventListener('submit', function(event) {
         if (currentSection == -1) {
             addSection(event);
+        } else if (currentSection >= 0) {
+            updateSection(event);
         }
+        
     });
     document.getElementById('users').addEventListener('click', userClick );
     document.getElementById('content').addEventListener('click', contentClick );
