@@ -68,7 +68,7 @@ router.get('/', (req, res) => {
     }
     
 });         
-
+/*
 router.post('/add', upload.array('section_files[]', 20), (req, res) => {
     try {
         var token = req.header('Authorisation');
@@ -113,5 +113,5 @@ router.post('/add', upload.array('section_files[]', 20), (req, res) => {
         return false;
     }
 });
-
+*/
 module.exports = router;
