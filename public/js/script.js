@@ -76,7 +76,7 @@ class Section { //this is the class for an app section or page
                     <span class="badge badge-dark"><a href="#" id="edit_btn_${this.id}" onclick="editSection(event,${this.id});">Edit</a></span>
                     <span class="badge badge-dark"><a href="#" id="mvup_btn_${this.id}">Move Up</a></span>
                     <span class="badge badge-dark"><a href="#" id="mvdn_btn_${this.id}">Move Down</a></span>
-                    <span class="badge badge-dark"><a href="#" id="rmve_btn_${this.id}">Remove</a></span>
+                    <span class="badge badge-dark"><a href="#" id="rmve_btn_${this.id}" onclick="rmSection(event,${this.id},'${this.name}');">Remove</a></span>
                 </li>`;
     }
 }
@@ -92,7 +92,7 @@ class User {
     listHTML() {
         return `<li class="list-group-item"><h4 class="user-list-title">${this.name}</h4> : ${this.username}
                     <span class="badge badge-dark"><a href="#" id="edit_btn_${this.id}" onclick="editUser(event,${this.id});">Edit</a></span>
-                    <span class="badge badge-dark"><a href="#" id="rmve_btn_${this.id}">Delete</a></span>
+                    <span class="badge badge-dark"><a href="#" id="rmve_btn_${this.id}" >Delete</a></span>
                 </li>`;
     }
 }
@@ -158,16 +158,46 @@ async function addSection(event) { //in fact this can also edit a section it see
                 body: data
             });
         if (response.ok) {
-            alert(response.status + ' ' + response.statusText);
+            alert('Section added successfully!');
             $('#section_modal').modal('hide');
+            document.getElementById('content').click();
             return true;
         } else if (response.status === 403){
             alert('Your session may have expired - please log in.');
-            loginPrompt().then(result => {
-                $('#section_modal').modal('show');
-            });
+            await loginPrompt();
+            $('.modal').modal('hide');
+            $('#section_modal').modal('show');
         } else {
             throw new Error(response.status+' '+response.statusText);
+        }
+    } catch(error) {
+        alert(error);
+        return false;
+    }
+}
+
+async function rmSection(event, sec_id, sec_name) {
+    try {
+        event.preventDefault();
+        if (window.confirm(`Are you sure you want to remove the section titled ${sec_name}?`)) {
+            let response = await fetch('/api/section/remove',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorisation': getCookie('authToken'),
+                    },
+                    body: 'section_id=' + sec_id
+                });
+            if (response.ok) {
+                document.getElementById('content').click();
+                alert('Section removed successfully!');
+            } else if (response.status === 403){
+                alert('Your session may have expired - please log in.');
+                loginPrompt();
+            } else {
+                throw new Error(response.status+' '+response.statusText);
+            }
         }
     } catch(error) {
         alert(error);
@@ -182,7 +212,6 @@ async function contentClick(event) { //triggers when the content tab is clicked 
     event.preventDefault();
     sections = await getSections();
     if (sections) {
-        event.preventDefault();
         //build the section HTML (my intent is for the position class variable to be position in the list as well to make this easier)
         let sectionsHTML = '<h3>Content Editor</h3> <button type="button" class="btn btn-outline-dark btn-sm" onclick="newSection()">New Section</button><br><div class="list-group">';
         for (var i = 0; i < sections.length; i++) {
@@ -199,6 +228,7 @@ function newSection() { //this loads up the box for creating a new section
     document.getElementById('section_name').value = '';
     document.getElementById('section_text').value = '';
     document.getElementById('file_box_list').innerHTML = '';
+    fileLimbo = [];
     currentSection = -1; //this signifies to create a new one
     refreshFileList();
     $('#section_modal').modal('show');
@@ -217,6 +247,8 @@ function editSection(event,sectionId) { //this loads up the box for editing a se
     refreshFileList();
     $('#section_modal').modal('show');
 }
+
+
 var fileLimbo = []; //stores files 'added' but not yet sent to server
 function refreshFileList() { //this function keeps the file list up to date
     let display = '';
@@ -238,7 +270,7 @@ function refreshFileList() { //this function keeps the file list up to date
                             <button class="btn btn-success" type="button" id="file_view${j}" onclick="(function(){window.open('./${fileList[j][1]}?token=${getCookie('authToken')}','_blank');})();">View</button>
                         </div>
                         <div class="input-group-append">
-                            <button class="close" type="button" id="file_delete${j}">&times;</button>
+                            <button class="close" type="button" id="file_delete${j}" onclick="removeFileDB(${j})">&times;</button>
                         </div>
                     </div>`;
     }
@@ -254,23 +286,25 @@ function refreshFileList() { //this function keeps the file list up to date
                             <button class="btn btn-success" type="button" id="file_view${i}" disabled>View</button>
                         </div>
                         <div class="input-group-append">
-                            <button class="close" type="button" id="file_delete${i}" onclick="removeFile(${i},true)">&times;</button>
+                            <button class="close" type="button" id="file_delete${i}" onclick="removeFile(${i})">&times;</button>
                         </div>
                     </div>`;
     }
     document.getElementById('file_box_list').innerHTML = display;
 }
-function removeFile(filePos, limbo) { //limbo is a bool true if the file is not yet on the server, false otherwise
-    if (limbo) {
-        for (var k = 0; k < sections.length; k++) {
-            if (sections[k].id == currentSection) {
-                var fileList = sections[k].files;
-            }
+function removeFile(filePos) { //this is for files not yet on the db
+    for (var k = 0; k < sections.length; k++) {
+        if (sections[k].id == currentSection) {
+            var fileList = sections[k].files;
         }
-        let ind = filePos - fileList.length;
-        fileLimbo.splice(ind,1);
-        refreshFileList();
     }
+    let ind = filePos - fileList.length;
+    fileLimbo.splice(ind,1);
+    refreshFileList();
+}
+
+function removeFileDB(filePos) {
+    alert('does nothing yet');
 }
 
 function addFile() { //this adds a file to the list, but does nothing on the server
