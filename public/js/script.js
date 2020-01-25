@@ -102,32 +102,14 @@ var users = [new User(0,'User 1','username1','password1'),new User(1,'User 2','u
 async function getSections() {
     try {
         let authToken = getCookie('authToken');
-        let response = await fetch('/api/sections?token='+authToken);
+        let response = await fetch('/api/section/list?token='+authToken);
         if (response.ok) {
             let body = await response.text();
             let contentData = JSON.parse(body);
             let sects = [];
             for (var i = 0; i < contentData.length; i++) {
-                let nw = -1;
-                for (var j = 0; j < sects.length; j++) {
-                    if (contentData[i].section_id == sects[j].id) {
-                        nw = j;
-                        break;
-                    }
-                }
-                if (nw == -1) {
-                    var fileAdds;
-                    if (contentData[i].file_link != null){
-                        fileAdds = [[contentData[i].file_name,contentData[i].file_link]];
-                    } else {
-                        fileAdds = [] ;
-                    }
-                    let sc = new Section(contentData[i].section_id,contentData[i].section_name,contentData[i].article_text,0,fileAdds);
-                    sects.push(sc);
-                }
-                else {
-                    sects[nw].files.push([contentData[i].file_name,contentData[i].file_link]);
-                }
+                let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,contentData[i].files);
+                sects.push(sc);
             }
             return sects;
         } else if (response.status === 403) {
@@ -167,7 +149,7 @@ async function addSection(event) { //in fact this can also edit a section it see
             fileList.push([document.getElementById(`file_title${j}`).value,'']);
         }
         data.append('fileTitles', JSON.stringify(fileList));
-        let response = await fetch('/api/sections/add',
+        let response = await fetch('/api/section/create',
             {
                 method: 'POST',
                 headers: {
@@ -252,7 +234,7 @@ function refreshFileList() { //this function keeps the file list up to date
                         </div>
                         <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" required value="${fileList[j][0]}"> 
                         <div class="input-group-append">
-                            <button class="btn btn-success" type="button" id="file_view${j}" onclick="function {window.open('./${fileList[j][1]}?token=${getCookie('authToken')}','_blank');}">View</button>
+                            <button class="btn btn-success" type="button" id="file_view${j}" onclick="function() {window.open('./${fileList[j][1]}?token=${getCookie('authToken')}','_blank');}">View</button>
                         </div>
                         <div class="input-group-append">
                             <button class="close" type="button" id="file_delete${j}">&times;</button>
