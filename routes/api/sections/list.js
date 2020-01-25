@@ -30,6 +30,7 @@ router.get('/', (req, res) => {
         var token = req.query.token;
         jwt.verify(token, 'userToken', function(err, decoded){
             if(!err){
+                let sec_id = parseInt(req.query.sec_id,10) || 'All';
                 const connection = mysql.createConnection({
                     host: process.env.MYSQL_HOST,
                     user: process.env.MYSQL_USER,
@@ -40,11 +41,14 @@ router.get('/', (req, res) => {
                 connection.connect((err) => {
                     if (err) throw err;
                 });
-
+                var whereString = '';
+                if (sec_id !== 'All'){
+                    whereString = `WHERE sections.section_id = ${sec_id}`;
+                }
                 function getList(){
                     return new Promise((resolve, reject) => {
                         connection.query(`SELECT sections.section_id, sections.article_text, sections.section_name, sections.position, files.file_name, files.file_link FROM sections
-                                            LEFT JOIN files ON sections.section_id = files.section_id
+                                            LEFT JOIN files ON sections.section_id = files.section_id ${whereString}
                                             `, [], (err, results) => {
                             if (err) throw res.sendStatus(400);
                             resolve(results);
