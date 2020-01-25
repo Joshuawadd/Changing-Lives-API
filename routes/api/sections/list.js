@@ -64,7 +64,8 @@ router.get('/', (req, res) => {
                             sects[nw].files.push([contentData[i].file_name,contentData[i].file_link]);
                         }
                     }
-                    return res.status(200).send(JSON.stringify(sects));
+                    console.log(sects[2].files);
+                    return res.status(200).send(sects);
                 }).finally(() => {
                     connection.end();
                 });

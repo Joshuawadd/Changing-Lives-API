@@ -16,8 +16,8 @@ var upload = multer({ storage: storage });
 router.post('/', upload.array('section_files[]', 20), (req, res) => {
 
     //const user_id = req.body.user_id; this isnt useful
-    const section_name = req.body.section_name;
-    const article_text = req.body.article_text;
+    const section_name = req.body.sectionName;
+    const article_text = req.body.sectionText;
     let sectionFiles = [];
     for (var i = 0; i < req.files.length; i++) {
         sectionFiles.push(req.files[i].originalname);
@@ -38,17 +38,15 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
     function addSection(){
         return new Promise((resolve, reject) => {
             connection.query('INSERT INTO sections (user_id,section_name,article_text) VALUES (?,?,?)', [0, section_name, article_text], (err, results) => {
-                if (err) throw res.sendStatus(400);
-                resolve(results.insertId)
+                if (err) {console.log(err);throw res.sendStatus(400);}
+                resolve(results.insertId);
             });
         });
     }
-    addSection().then(result => {
-        sectionId = result;
-    }).then(sId => {
-        console.log(sId);
+    addSection().then(sId => {
+        console.log('s',sId);
         for (var k = 0; k < fileTitles.length; k++) {
-            connection.query('INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?)', [fileTitles[k][0], sectionFiles[k], sId, 0], (err, results) => {
+            connection.query('INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)', [fileTitles[k][0], sectionFiles[k], sId, 0], (err, results) => {
                 if (err) throw res.sendStatus(400);
             });
         }
