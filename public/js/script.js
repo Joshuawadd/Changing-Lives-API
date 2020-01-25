@@ -20,12 +20,12 @@ function getCookie(cname) { //adapted from https://www.w3schools.com/js/js_cooki
 }
 async function loginPrompt() {
     try {
-        $('.modal').modal('hide');
         let authToken = getCookie('authToken');
         let response = await fetch('/api/login/silent?token='+authToken);
         if (response.ok) {
             return true;
         } else {
+            $('.modal').modal('hide');
             $('#login_box').modal('show');
             return false;
         }
@@ -107,7 +107,7 @@ async function getSections() {
             let body = await response.text();
             let contentData = JSON.parse(body);
             let sects = [];
-            for (var i = 0; i < contentData.length; i++) {
+            for (var i = 0; i < contentData.length; i++) { //remember FILES are OBJECTS now
                 let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,contentData[i].files);
                 sects.push(sc);
             }
