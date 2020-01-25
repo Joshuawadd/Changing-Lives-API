@@ -16,7 +16,7 @@ router.post('/', (req, res) => {
     }
     const username = req.body.username;
     const password = req.body.password;
-    var token = jwt.sign({uname: username}, 'userToken',{expiresIn: 120});
+    var token = jwt.sign({uname: username}, 'userToken',{expiresIn: 120}); //the userToken string here should be a private key stored in the .env
     // res.status(200).send(token); //just always sends ok as an example
     // return true;
     
