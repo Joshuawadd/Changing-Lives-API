@@ -5,8 +5,17 @@ const jwt = require('jsonwebtoken');
 
 /*returns a list of all sections ordered by the position variable*/
 
+class SecFile {
+    constructor(id=0,title = '',path='') {
+        this.id = id;
+        this.title = title;
+        this.path = path;
+    }
+
+}
+
 class Section { //this is the class for an app section or page
-    constructor(id=0,name = '',text='No text added',position=0, files=[['name','path']]) {
+    constructor(id=0,name = '',text='No text added',position=0, files = []) {
         this.id = id;
         this.name = name;
         this.text = text;
@@ -14,6 +23,8 @@ class Section { //this is the class for an app section or page
         this.files = files;
     }
 }
+
+
 
 function compare( a, b ) {
     if ( a.position < b.position ){
@@ -47,7 +58,7 @@ router.get('/', (req, res) => {
                 }
                 function getList(){
                     return new Promise((resolve, reject) => {
-                        connection.query(`SELECT sections.section_id, sections.article_text, sections.section_name, sections.position, files.file_name, files.file_link FROM sections
+                        connection.query(`SELECT sections.section_id, sections.article_text, sections.section_name, sections.position, files.file_id, files.file_name, files.file_link FROM sections
                                             LEFT JOIN files ON sections.section_id = files.section_id ${whereString}
                                             `, [], (err, results) => {
                             if (err) throw res.sendStatus(400);
@@ -69,7 +80,7 @@ router.get('/', (req, res) => {
                         if (nw == -1) {
                             var fileAdds;
                             if (contentData[i].file_link != null){
-                                fileAdds = [[contentData[i].file_name,contentData[i].file_link]];
+                                fileAdds = [new SecFile(contentData[i].file_id,contentData[i].file_name,contentData[i].file_link)];
                             } else {
                                 fileAdds = [] ;
                             }
@@ -77,7 +88,7 @@ router.get('/', (req, res) => {
                             sects.push(sc);
                         }
                         else {
-                            sects[nw].files.push([contentData[i].file_name,contentData[i].file_link]);
+                            sects[nw].files.push(new SecFile(contentData[i].file_id,contentData[i].file_name,contentData[i].file_link));
                         }
                     }
                     sects.sort(compare);
