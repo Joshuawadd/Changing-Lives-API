@@ -53,6 +53,7 @@ const sectionRemoveRouter = require('./routes/api/sections/remove');
 const sectionListRouter = require('./routes/api/sections/list');
 
 const userCreateRouter = require('./routes/api/users/create');
+const userEditRouter = require('./routes/api/users/edit');
 const userRemoveRouter = require('./routes/api/users/remove');
 const userListRouter = require('./routes/api/users/list');
 
@@ -90,6 +91,7 @@ app.use('/api/section/remove', sectionRemoveRouter);
 app.use('/api/section/list', sectionListRouter);
 
 app.use('/api/user/create', userCreateRouter);
+app.use('/api/user/edit', userEditRouter);
 app.use('/api/user/remove', userRemoveRouter);
 app.use('/api/user/list', userListRouter);
 
