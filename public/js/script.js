@@ -3,6 +3,7 @@ $(window).on('load',function(){
     loginPrompt();
 });
 var sections = [];
+var users = [];
 function getCookie(cname) { //adapted from https://www.w3schools.com/js/js_cookies.asp
     var name = cname + '=';
     var decodedCookie = decodeURIComponent(document.cookie);
@@ -96,7 +97,7 @@ class User {
                 </li>`;
     }
 }
-var users = [new User(0,'User 1','username1','password1'),new User(1,'User 2','username2','password2'),new User(2,'User 3','username3','password3')];
+var currentUser = -1;
 
 //REST FUNCTIONS
 async function getSections() {
@@ -258,6 +259,71 @@ async function rmSection(event, sec_id, sec_name) {
     }
 }
 
+async function getUsers() {
+    try {
+        let authToken = getCookie('authToken');
+        let response = await fetch('/api/user/list?token='+authToken);
+        if (response.ok) {
+            let body = await response.text();
+            let userData = JSON.parse(body);
+            let usrs = [];
+            for (var i = 0; i < userData.length; i++) {
+                let usr = new User(userData[i].id,userData[i].name,userData[i].username,userData[i].password);
+                usrs.push(usr);
+            }
+            return usrs;
+        } else if (response.status === 403) {
+            alert('Your session may have expired - please log in.');
+            loginPrompt();
+            return false;
+        } else {
+            throw new Error(response.status+' '+response.statusText);
+        }
+    } catch(error) {
+        alert(error);
+        return false;
+    }
+}
+
+async function updateUser(event) {
+    event.preventDefault();
+    try {
+        let authToken = getCookie('authToken');
+        let userName = document.getElementById('user_name').value;
+        let userUname = document.getElementById('user_username').value;
+        let userPass = document.getElementById('user_password').value;
+        let data = new FormData();
+        data.append('userName', userName);
+        data.append('userUname', userUname);
+        data.append('userPass', userPass);
+        data.append('userId', currentUser);
+        let response = await fetch('/api/user/edit',
+            {
+                method: 'POST',
+                headers: {
+                    'Authorisation': authToken,
+                },
+                body: data
+            });
+        if (response.ok) {
+            alert('User details edited successfully!');
+            $('#user_modal').modal('hide');
+            document.getElementById('users').click();
+            return true;
+        } else if (response.status === 403){
+            alert('Your session may have expired - please log in.');
+            await loginPrompt();
+            $('.modal').modal('hide');
+            $('#user_modal').modal('show');
+        } else {
+            throw new Error(response.status+' '+response.statusText);
+        }
+    } catch(error) {
+        alert(error);
+        return false;
+    }
+}
+
 //LISTENER FUNCTIONS
 
 async function contentClick(event) { //triggers when the content tab is clicked on
@@ -371,14 +437,17 @@ function addFile() { //this adds a file to the list, but does nothing on the ser
     refreshFileList();
 }
 
-function userClick(event) { //this is the event that triggers when the users tab is clicked on
+async function userClick(event) { //this is the event that triggers when the users tab is clicked on
     event.preventDefault();
-    let usersHTML = '<h3>User List</h3> <button type="button" class="btn btn-outline-dark btn-sm" onclick="newUser()">New User</button><br><div class="list-group">';
-    for (var i = 0; i < users.length; i++) {
-        usersHTML += users[i].listHTML();
+    users = await getUsers();
+    if (users) {
+        let usersHTML = '<h3>User List</h3> <button type="button" class="btn btn-outline-dark btn-sm" onclick="newUser()">New User</button><br><div class="list-group">';
+        for (var i = 0; i < users.length; i++) {
+            usersHTML += users[i].listHTML();
+        }
+        usersHTML += '</div>';
+        document.getElementById('main_content').innerHTML = usersHTML;
     }
-    usersHTML += '</div>';
-    document.getElementById('main_content').innerHTML = usersHTML;
 }
 
 function newUser() { //this loads up the box for creating a new user
@@ -399,6 +468,7 @@ function editUser(event,userId) { //this loads up the box for editing a user's d
             document.getElementById('user_password').value = users[i].password;
         }
     }
+    currentUser = userId;
     $('#user_modal').modal('show');
 }
 
@@ -411,6 +481,11 @@ document.addEventListener('DOMContentLoaded', function() { //set up listeners
             updateSection(event);
         }
         
+    });
+    document.getElementById('edit_user').addEventListener('submit', function(event) {
+        if (currentUser >= 0) {
+            updateUser(event);
+        }
     });
     document.getElementById('users').addEventListener('click', userClick );
     document.getElementById('content').addEventListener('click', contentClick );
