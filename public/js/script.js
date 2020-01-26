@@ -451,7 +451,7 @@ function refreshFileList() { //this function keeps the file list up to date
                                 <span class="input-group-text" id="file_name${j}">${fileList[j][1]}</span>
                             </div>
                         </div>
-                        <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" required value="${fileList[j][0]}"> 
+                        <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" maxlength="20" required value="${fileList[j][0]}"> 
                         <div class="input-group-append">
                             <button class="btn btn-success" type="button" id="file_view${j}" onclick="(function(){window.open('./files/${fileList[j][1]}?token=${getCookie('authToken')}','_blank');})();">View</button>
                         </div>
@@ -467,7 +467,7 @@ function refreshFileList() { //this function keeps the file list up to date
                                 <span class="input-group-text" id="file_name${i}">${fileLimbo[i-j].name}</span>
                             </div>
                         </div>
-                        <input name="file_title" id ="file_title${i}" type="text" class="form-control" required placeholder="Display Title"> 
+                        <input name="file_title" id ="file_title${i}" type="text" class="form-control" required maxlength="20" placeholder="Display Title"> 
                         <div class="input-group-append">
                             <button class="btn btn-success" type="button" id="file_view${i}" disabled>View</button>
                         </div>
