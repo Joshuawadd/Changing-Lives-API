@@ -45,7 +45,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
                 connection.query('UPDATE sections SET section_name = ?, article_text = ? WHERE section_id = ?', [section_name, article_text, sectionId], (err, results) => {
                     if (err) throw res.sendStatus(400);
                 });
-                console.log(fileTitles);
+                console.log(fileTitles, sectionFiles); //this doesnt update section titles as file_link needs to be replaced by file_id
                 for (var k = 0; k < fileTitles.length; k++) {
                     if (sectionFiles[k] === '') { //file existed before 
                         connection.query('UPDATE files SET file_name = ? WHERE file_link = ?', [fileTitles[k], sectionFiles[k]], (err, results) => {

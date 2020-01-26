@@ -127,18 +127,18 @@
                     <form action="" method="POST" id="edit_user" enctype="multipart/form-data" class="was-validated">
                         <div class="form-group">
                             <label for="user_name" ><h4>Name:</h4> </label>
-                            <input name="user_name" id ="user_name" type="text" class="form-control" required> 
+                            <input name="user_name" id ="user_name" type="text" class="form-control" maxlength="31" required> 
                             <div class="invalid-feedback">Please provide a name for this user.</div>
                         </div>
                         <div id = 'user_edit_forms'>
                             <div class="form-group">
                                 <label for="user_username" ><h4>Username:</h4> </label>
-                                <input name="user_username" id ="user_username" type="text" class="form-control" minlength="5" required> 
+                                <input name="user_username" id ="user_username" type="text" class="form-control" minlength="5" maxlength="31" required> 
                                 <div class="invalid-feedback">Please provide a username for this user.</div>
                             </div>
                             <div class="form-group">
                                 <label for="user_password" ><h4>Password:</h4> </label>
-                                <input name="user_password" id ="user_password" type="text" class="form-control" minlength="5" required> 
+                                <input name="user_password" id ="user_password" type="text" class="form-control" minlength="5" maxlength="100" required> 
                                 <div class="invalid-feedback">Please provide a password for this user.</div>
                             </div>
                         </div>
