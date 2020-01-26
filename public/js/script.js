@@ -93,7 +93,7 @@ class User {
     listHTML() {
         return `<li class="list-group-item"><h4 class="user-list-title">${this.name}</h4> : ${this.username}
                     <span class="badge badge-dark"><a href="#" id="edit_btn_${this.id}" onclick="editUser(event,${this.id});">Edit</a></span>
-                    <span class="badge badge-dark"><a href="#" id="rmve_btn_${this.id}" >Delete</a></span>
+                    <span class="badge badge-dark"><a href="#" id="rmve_btn_${this.id}" onclick="rmUser(event,${this.id},'${this.name}');">Delete</a></span>
                 </li>`;
     }
 }
@@ -237,7 +237,7 @@ async function updateSection(event) {
 async function rmSection(event, sec_id, sec_name) {
     try {
         event.preventDefault();
-        if (window.confirm(`Are you sure you want to remove the section titled ${sec_name}?`)) {
+        if (window.confirm(`Are you sure you want to remove the section: ${sec_name}?`)) {
             let response = await fetch('/api/section/remove',
                 {
                     method: 'POST',
@@ -250,6 +250,35 @@ async function rmSection(event, sec_id, sec_name) {
             if (response.ok) {
                 alert('Section removed successfully!');
                 document.getElementById('content').click();
+            } else if (response.status === 403){
+                alert('Your session may have expired - please log in.');
+                loginPrompt();
+            } else {
+                throw new Error(response.status+' '+response.statusText);
+            }
+        }
+    } catch(error) {
+        alert(error);
+        return false;
+    }
+}
+
+async function rmUser(event, u_id, username) {
+    try {
+        event.preventDefault();
+        if (window.confirm(`Are you sure you want to remove the user: ${username}?`)) {
+            let response = await fetch('/api/user/remove',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorisation': getCookie('authToken'),
+                    },
+                    body: 'user_id=' + u_id
+                });
+            if (response.ok) {
+                alert('User deleted successfully!');
+                document.getElementById('users').click();
             } else if (response.status === 403){
                 alert('Your session may have expired - please log in.');
                 loginPrompt();
@@ -311,6 +340,39 @@ async function updateUser(event) {
             });
         if (response.ok) {
             alert('User details edited successfully!');
+            $('#user_modal').modal('hide');
+            document.getElementById('users').click();
+            return true;
+        } else if (response.status === 403){
+            alert('Your session may have expired - please log in.');
+            await loginPrompt();
+            $('.modal').modal('hide');
+            $('#user_modal').modal('show');
+        } else {
+            throw new Error(response.status+' '+response.statusText);
+        }
+    } catch(error) {
+        alert(error);
+        return false;
+    }
+}
+
+async function addUser(event) {
+    event.preventDefault();
+    try {
+        let authToken = getCookie('authToken');
+        let userName = document.getElementById('user_name').value;
+        let response = await fetch('/api/user/create',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorisation': authToken,
+                },
+                body: 'real_name=' + userName + '&is_admin=0'
+            });
+        if (response.ok) {
+            alert('User created successfully!');
             $('#user_modal').modal('hide');
             document.getElementById('users').click();
             return true;
@@ -456,14 +518,21 @@ async function userClick(event) { //this is the event that triggers when the use
 
 function newUser() { //this loads up the box for creating a new user
     document.getElementById('user_edit_title').innerText = 'New User';
+    currentUser = -1;
     document.getElementById('user_name').value = '';
     document.getElementById('user_username').value = '';
     document.getElementById('user_password').value = '';
+    document.getElementById('user_username').required = false;
+    document.getElementById('user_password').required = false;
+    document.getElementById('user_edit_forms').style.display = 'none';
     $('#user_modal').modal('show');
 }
 
 function editUser(event,userId) { //this loads up the box for editing a user's details
     event.preventDefault();
+    document.getElementById('user_edit_forms').style.display = 'block';
+    document.getElementById('user_username').required = true;
+    document.getElementById('user_password').required = true;
     document.getElementById('user_edit_title').innerText = 'Edit user details';
     for (var i = 0; i < users.length; i++) {
         if (users[i].id == userId) {
@@ -489,6 +558,8 @@ document.addEventListener('DOMContentLoaded', function() { //set up listeners
     document.getElementById('edit_user').addEventListener('submit', function(event) {
         if (currentUser >= 0) {
             updateUser(event);
+        } else if (currentUser == -1) {
+            addUser(event);
         }
     });
     document.getElementById('users').addEventListener('click', userClick );
