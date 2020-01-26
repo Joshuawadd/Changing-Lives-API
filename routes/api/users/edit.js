@@ -14,7 +14,6 @@ router.post('/', upload.none(), (req, res) => {
                 const user_uname = req.body.userUname;
                 const user_pass = req.body.userPass;
                 const userId = req.body.userId;
-
                 const connection = mysql.createConnection({
                     host: process.env.MYSQL_HOST,
                     user: process.env.MYSQL_USER,
