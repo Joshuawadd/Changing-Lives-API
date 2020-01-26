@@ -84,7 +84,7 @@
                     <form action="" method="POST" id="edit_section" enctype="multipart/form-data" class="was-validated">
                         <div class="form-group">
                             <label for="section_name" ><h4>Name:</h4> </label>
-                            <input name="section_name" id ="section_name" type="text" class="form-control" required> 
+                            <input name="section_name" id ="section_name" type="text" class="form-control" maxlength="20" required> 
                             <div class="invalid-feedback">Please provide a name for this section.</div>
                         </div>
                         <div class="form-group">
@@ -133,12 +133,12 @@
                         <div id = 'user_edit_forms'>
                             <div class="form-group">
                                 <label for="user_username" ><h4>Username:</h4> </label>
-                                <input name="user_username" id ="user_username" type="text" class="form-control" required> 
+                                <input name="user_username" id ="user_username" type="text" class="form-control" minlength="5" required> 
                                 <div class="invalid-feedback">Please provide a username for this user.</div>
                             </div>
                             <div class="form-group">
                                 <label for="user_password" ><h4>Password:</h4> </label>
-                                <input name="user_password" id ="user_password" type="text" class="form-control" required> 
+                                <input name="user_password" id ="user_password" type="text" class="form-control" minlength="5" required> 
                                 <div class="invalid-feedback">Please provide a password for this user.</div>
                             </div>
                         </div>
