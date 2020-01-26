@@ -130,15 +130,17 @@
                             <input name="user_name" id ="user_name" type="text" class="form-control" required> 
                             <div class="invalid-feedback">Please provide a name for this user.</div>
                         </div>
-                        <div class="form-group">
-                            <label for="user_username" ><h4>Username:</h4> </label>
-                            <input name="user_username" id ="user_username" type="text" class="form-control" required> 
-                            <div class="invalid-feedback">Please provide a username for this user.</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="user_password" ><h4>Password:</h4> </label>
-                            <input name="user_password" id ="user_password" type="password" class="form-control" required> 
-                            <div class="invalid-feedback">Please provide a password for this user.</div>
+                        <div id = 'user_edit_forms'>
+                            <div class="form-group">
+                                <label for="user_username" ><h4>Username:</h4> </label>
+                                <input name="user_username" id ="user_username" type="text" class="form-control" required> 
+                                <div class="invalid-feedback">Please provide a username for this user.</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="user_password" ><h4>Password:</h4> </label>
+                                <input name="user_password" id ="user_password" type="text" class="form-control" required> 
+                                <div class="invalid-feedback">Please provide a password for this user.</div>
+                            </div>
                         </div>
                         <input type="submit" class="btn btn-primary" value="OK">
                     </form>
