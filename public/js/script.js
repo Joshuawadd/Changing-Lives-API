@@ -108,7 +108,11 @@ async function getSections() {
             let contentData = JSON.parse(body);
             let sects = [];
             for (var i = 0; i < contentData.length; i++) { //remember FILES are OBJECTS now
-                let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,contentData[i].files);
+                let fils = [];
+                for (var j = 0; j < contentData[i].files.length; j++) {;
+                    fils.push([contentData[i].files[j].title,contentData[i].files[j].path]);
+                }
+                let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,fils);
                 sects.push(sc);
             }
             return sects;
