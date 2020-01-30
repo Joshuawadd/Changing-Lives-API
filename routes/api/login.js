@@ -19,24 +19,9 @@ router.post('/', (req, res) => {
     var token = jwt.sign({uname: username}, 'userToken',{expiresIn: 1200}); //the userToken string here should be a private key stored in the .env
     // res.status(200).send(token); //just always sends ok as an example
     // return true;
-    
-    // connection details, will save it in .dev file later
 
-    var password_in_database; // used to store the password grabed from database
+    var password_in_database; // used to store the password grabbed from database
     
-    // const connection = mysql.createConnection({
-    //     host:***REMOVED***,
-    //     user:***REMOVED***,
-    //     password:***REMOVED***,
-    //     port: ***REMOVED***,
-    //     database: ***REMOVED***
-    // })
-    // connection.connect(function(err){
-    //     if(err){
-    //         console.error('error connecting: ' + err.stack);
-    //     }
-    //     console.log('connected as id ' + connection.threadId);
-    // });
     const queryString = `SELECT password FROM users where username = '${username}' `;
     // const queryString = `SELECT password FROM users where ?`;
 
