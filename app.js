@@ -8,13 +8,12 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 
 const indexRouter = require('./routes/index');
-const loginRouter = require('./routes/api/login');
 const sectionsRouter = require('./routes/api/sections');
 
 
 //file protecting adapted from https://stackoverflow.com/questions/11910956/how-to-protect-a-public-dynamic-folder-in-nodejs
 function userIsAllowed(req, callback) {
-    var token = req.query.token;
+    const token = req.query.token;
     jwt.verify(token, 'userToken', function(err, decoded){
         if(!err){
             callback(true);
@@ -24,7 +23,7 @@ function userIsAllowed(req, callback) {
     });
 };
 // This function returns a middleware function
-var protectPath = function(regex) {
+const protectPath = function(regex) {
 return function(req, res, next) {
     if (!regex.test(req.url)) { return next(); }
 
@@ -56,6 +55,7 @@ const userCreateRouter = require('./routes/api/users/create');
 const userEditRouter = require('./routes/api/users/edit');
 const userRemoveRouter = require('./routes/api/users/remove');
 const userListRouter = require('./routes/api/users/list');
+const userLoginRouter = require('./routes/api/users/login');
 
 const fileListRouter = require('./routes/api/files/list');
 
@@ -74,7 +74,6 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/api/login', loginRouter);
 app.use('/api/sections', sectionsRouter);
 
 app.use('/api/topic/parent/create', topicParentCreateRouter);
@@ -94,6 +93,7 @@ app.use('/api/user/create', userCreateRouter);
 app.use('/api/user/edit', userEditRouter);
 app.use('/api/user/remove', userRemoveRouter);
 app.use('/api/user/list', userListRouter);
+app.use('/api/user/login', userLoginRouter);
 
 app.use('/api/file/list', fileListRouter);
 

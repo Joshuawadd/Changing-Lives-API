@@ -4,7 +4,8 @@ const mysql = require('mysql');
 
 //Postman can be used to test post request {"user_id": 1}
 router.post('/', (req, res) => {
-    let uid = req.body.user_id || '';
+    const uid = req.body.user_id || -1;
+
     const connection = mysql.createConnection({
         host: process.env.MYSQL_HOST,
         user: process.env.MYSQL_USER,
@@ -16,7 +17,7 @@ router.post('/', (req, res) => {
         if (err) throw err;
     });
 
-    if (uid !== '') {
+    if (uid >= 0) {
         connection.query('DELETE FROM users WHERE user_id = ?', [uid], (err) => {
             if (err) throw res.sendStatus(400);
         });
