@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
-const jwt = require('jsonwebtoken');
+const tv = require('../tokenVerify');
 const multer = require('multer');
 
 const storage = multer.diskStorage({
@@ -17,8 +17,13 @@ const upload = multer({storage: storage});
 //Postman can be used to test post request {"section_name": "test", "article_text":"This is a comment"}
 router.post('/', upload.array('section_files[]', 20), (req, res) => {
     try {
-        jwt.verify(req.header('Authorisation'), process.env.TOKEN_USER, (err) => {
-            if (err) {
+        function verify() {
+            return new Promise((resolve) => {
+                resolve(tv.tokenVerify(req.header('Authorization')));
+            });
+        }
+        verify().then((result) => {
+            if (!result) {
                 res.sendStatus(403);
                 return;
             }

@@ -1,13 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
-const jwt = require('jsonwebtoken');
+const tv = require('../tokenVerify');
 
 //Postman can be used to test post request {"section_id": 1} or {"user_id": 1}
 router.post('/', (req, res) => {
     try {
-        jwt.verify(req.header('Authorisation'), process.env.TOKEN_USER, (err) => {
-            if (err) {
+        function verify() {
+            return new Promise((resolve) => {
+                resolve(tv.tokenVerify(req.header('Authorization')));
+            });
+        }
+        verify().then((result) => {
+            if (!result) {
                 res.sendStatus(403);
                 return;
             }

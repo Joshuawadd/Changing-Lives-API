@@ -85,7 +85,7 @@ async function addSection(event) {
             {
                 method: 'POST',
                 headers: {
-                    'Authorisation': authToken,
+                    'Authorization': authToken,
                 },
                 body: data
             });
@@ -147,7 +147,7 @@ async function updateSection(event) {
             {
                 method: 'POST',
                 headers: {
-                    'Authorisation': authToken,
+                    'Authorization': authToken,
                 },
                 body: data
             });
@@ -182,7 +182,7 @@ async function rmSection(event, sec_id, sec_name) {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorisation': getCookie('authToken'),
+                        'Authorization': getCookie('authToken'),
                     },
                     body: 'section_id=' + sec_id
                 });
