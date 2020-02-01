@@ -1,6 +1,7 @@
 var sections;
 var currentSection;
 var fileLimbo;
+var fileRemove = [];
 
 var getCookie;
 var loginPrompt;
@@ -131,12 +132,17 @@ async function updateSection(event) {
         }
         var files = [];
         for (var j = 0; j < fileList.length; j++) {//update the display titles of section files
-            files.push(new SecFile(fileList[j].id,document.getElementById(`file_title${j}`).value,fileList[j].path));
+            if (fileRemove.indexOf(fileList[j].id) == -1) {
+                files.push(new SecFile(fileList[j].id,document.getElementById(`file_title${j}`).value,fileList[j].path));
+            } else {
+                files.push(new SecFile(fileList[j].id,'',fileList[j].path));
+            }
         }
         for (var k = j; k < j+fileLimbo.length; k++) {//update the display titles of new files
             files.push(new SecFile(-1,document.getElementById(`file_title${k}`).value,''));
         }
         data.append('files', JSON.stringify(files));
+        data.append('fileRemove', JSON.stringify(fileRemove));
         let response = await fetch('/api/section/edit',
             {
                 method: 'POST',
@@ -220,6 +226,7 @@ function newSection() { //this loads up the box for creating a new section
     document.getElementById('section_text').value = '';
     document.getElementById('file_box_list').innerHTML = '';
     fileLimbo = [];
+    fileRemove = [];
     currentSection = -1; //this signifies to create a new one
     refreshFileList();
     $('#section_modal').modal('show');
@@ -236,6 +243,7 @@ function editSection(event,sectionId) { //this loads up the box for editing a se
     }
     currentSection = sectionId;
     fileLimbo = [];
+    fileRemove = [];
     refreshFileList();
     $('#section_modal').modal('show');
 }
@@ -249,20 +257,22 @@ function refreshFileList() { //this function keeps the file list up to date
         }
     }
     for (var j = 0; j < fileList.length; j++) {
-        display += `<div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <div class="ellipsis">
-                                <span class="input-group-text" id="file_name${j}">${fileList[j].path}</span>
+        if (fileRemove.indexOf(fileList[j].id) == -1) {
+            display += `<div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <div class="ellipsis">
+                                    <span class="input-group-text" id="file_name${j}">${fileList[j].path}</span>
+                                </div>
                             </div>
-                        </div>
-                        <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" maxlength="20" required value="${fileList[j].title}"> 
-                        <div class="input-group-append">
-                            <button class="btn btn-success" type="button" id="file_view${j}" onclick="(function(){window.open('./files/${fileList[j].path}?token=${getCookie('authToken')}','_blank');})();">View</button>
-                        </div>
-                        <div class="input-group-append">
-                            <button class="close" type="button" id="file_delete${j}" onclick="removeFileDB(${j})">&times;</button>
-                        </div>
-                    </div>`;
+                            <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" maxlength="20" required value="${fileList[j].title}"> 
+                            <div class="input-group-append">
+                                <button class="btn btn-success" type="button" id="file_view${j}" onclick="(function(){window.open('./files/${fileList[j].path}?token=${getCookie('authToken')}','_blank');})();">View</button>
+                            </div>
+                            <div class="input-group-append">
+                                <button class="close" type="button" id="file_delete${j}" onclick="removeFileDB(${j})">&times;</button>
+                            </div>
+                        </div>`;
+        }
     }
     for (var i = j; i < fileLimbo.length+j; i++) {
         display += `<div class="input-group mb-3">
@@ -286,6 +296,7 @@ function removeFile(filePos) { //this is for files not yet on the db
     for (var k = 0; k < sections.length; k++) {
         if (sections[k].id == currentSection) {
             var fileList = sections[k].files;
+            break;
         }
     }
     let ind = filePos - fileList.length;
@@ -294,7 +305,14 @@ function removeFile(filePos) { //this is for files not yet on the db
 }
 
 function removeFileDB(filePos) {
-    alert('does nothing yet');
+    for (var k = 0; k < sections.length; k++) {
+        if (sections[k].id == currentSection) {
+            break;
+        }
+    }
+    fileRemove.push(sections[k].files[filePos].id);
+    //sections[k].files.splice(filePos,1);
+    refreshFileList();
 }
 
 function addFile() { //this adds a file to the list, but does nothing on the server

@@ -24,6 +24,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
             }
             const sectionName = req.body.sectionName;
             const sectionText = req.body.sectionText;
+            const sectionId = req.body.sectionId;
             let newFilePaths = [];
 
             for (let i = 0; i < req.files.length; i++) {
@@ -31,14 +32,13 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
             }
 
             const files = JSON.parse(req.body.files);
-            const sectionId = req.body.sectionId;
-
+        
             let numOldFiles = files.length - newFilePaths.length;
 
             for (let i = 0; i < numOldFiles; i++ ) {
                 newFilePaths.unshift('');
             }
-
+            const fileRemove = JSON.parse(req.body.fileRemove);
             const connection = mysql.createConnection({
                 host: process.env.MYSQL_HOST,
                 user: process.env.MYSQL_USER,
@@ -68,6 +68,11 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
                     });
                 }
             }
+            for (let k = 0; k < fileRemove.length; k++) {
+                connection.query('DELETE FROM files WHERE file_id = ?', [fileRemove[k]], (err, results) => {
+                    if (err) throw res.sendStatus(400);
+                });
+            }
 
             connection.end();
 
@@ -75,7 +80,6 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
         });
 
     } catch(err) {
-        console.log(err)
         res.sendStatus(500);
     }
 });
