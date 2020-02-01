@@ -1,3 +1,7 @@
+var sections;
+var currentSection;
+var fileLimbo;
+
 class SecFile {
     constructor(id=0,title = '',path='') {
         this.id = id;
@@ -7,7 +11,7 @@ class SecFile {
 
 }
 class Section { //this is the class for an app section or page
-    constructor(id=0,name = '',text='No text added',position=0, files = [['title','path']]) {
+    constructor(id=0,name = '',text='No text added',position=0, files = []) {
         this.id = id;
         this.name = name;
         this.text = text;
@@ -35,11 +39,8 @@ async function getSections() {
             let body = await response.text();
             let contentData = JSON.parse(body);
             let sects = [];
-            for (var i = 0; i < contentData.length; i++) { //remember FILES are OBJECTS now
-                let fils = [];
-                for (var j = 0; j < contentData[i].files.length; j++) {;
-                    fils.push([contentData[i].files[j].title,contentData[i].files[j].path]);
-                }
+            for (var i = 0; i < contentData.length; i++) {
+                let fils = contentData[i].files.map((f) => new SecFile(f.id, f.title, f.path));
                 let sc = new Section(contentData[i].id,contentData[i].name,contentData[i].text,contentData[i].position,fils);
                 sects.push(sc);
             }
@@ -246,12 +247,12 @@ function refreshFileList() { //this function keeps the file list up to date
         display += `<div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <div class="ellipsis">
-                                <span class="input-group-text" id="file_name${j}">${fileList[j][1]}</span>
+                                <span class="input-group-text" id="file_name${j}">${fileList[j].path}</span>
                             </div>
                         </div>
-                        <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" maxlength="20" required value="${fileList[j][0]}"> 
+                        <input name="file_title" id ="file_title${j}" type="text" class="form-control" placeholder="Display Title" maxlength="20" required value="${fileList[j].title}"> 
                         <div class="input-group-append">
-                            <button class="btn btn-success" type="button" id="file_view${j}" onclick="(function(){window.open('./files/${fileList[j][1]}?token=${getCookie('authToken')}','_blank');})();">View</button>
+                            <button class="btn btn-success" type="button" id="file_view${j}" onclick="(function(){window.open('./files/${fileList[j].path}?token=${getCookie('authToken')}','_blank');})();">View</button>
                         </div>
                         <div class="input-group-append">
                             <button class="close" type="button" id="file_delete${j}" onclick="removeFileDB(${j})">&times;</button>
@@ -265,7 +266,7 @@ function refreshFileList() { //this function keeps the file list up to date
                                 <span class="input-group-text" id="file_name${i}">${fileLimbo[i-j].name}</span>
                             </div>
                         </div>
-                        <input name="file_title" id ="file_title${i}" type="text" class="form-control" required maxlength="20" placeholder="Display Title"> 
+                        <input name="file_title" id ="file_title${i}" type="text" class="form-control" required maxlength="20" placeholder="Display Title" value="${fileLimbo[i-j].name.slice(0,-4)}"> 
                         <div class="input-group-append">
                             <button class="btn btn-success" type="button" id="file_view${i}" disabled>View</button>
                         </div>

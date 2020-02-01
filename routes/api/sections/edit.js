@@ -66,7 +66,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
 
                 } else {
                     //file needs to actually be added to db
-                    connection.query('INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)', [fileTitles[k], sectionFiles[k], sectionId, 0], (err, results) => {
+                    connection.query('INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)', [fileTitles[j], sectionFiles[j], sectionId, 0], (err, results) => {
                         if (err) throw res.sendStatus(400);
                     });
                 }
