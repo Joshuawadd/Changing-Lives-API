@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const functions = require('../../../utils');
 
 //Postman can be used to test post request {"real_name": "James"}
-router.post('/', (req, res) => {y
+router.post('/', (req, res) => {
     try {
         const real_name = req.body.real_name;
         const username = functions.randomUsername();
@@ -34,7 +34,6 @@ router.post('/', (req, res) => {y
 
         res.sendStatus(200);
     } catch (err) {
-        console.log(err)
         res.sendStatus(500);
     }
 });
