@@ -77,14 +77,6 @@ $(window).on('load',function(){
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('login_form').addEventListener('submit', logIn );
-    document.getElementById('edit_section').addEventListener('submit', function(event) {
-        if (currentSection == -1) {
-            addSection(event);
-        } else if (currentSection >= 0) {
-            updateSection(event);
-        }
-        
-    });
     document.getElementById('edit_user').addEventListener('submit', function(event) {
         if (currentUser >= 0) {
             updateUser(event);
@@ -93,8 +85,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     document.getElementById('users').addEventListener('click', userClick );
-    document.getElementById('content').addEventListener('click', contentClick );
-    document.getElementById('file_add').addEventListener('click', addFile );
     document.getElementById('file_adder').addEventListener('change', function() {
         let txt = ' file chosen';
         if (this.files.length != 1) {

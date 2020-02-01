@@ -324,3 +324,23 @@ function addFile() { //this adds a file to the list, but does nothing on the ser
     document.getElementById('file_adder_label').innerText = 'Choose file(s)';
     refreshFileList();
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('edit_section').addEventListener('submit', function(event) {
+        if (currentSection == -1) {
+            addSection(event);
+        } else if (currentSection >= 0) {
+            updateSection(event);
+        }
+        
+    });
+    document.getElementById('content').addEventListener('click', contentClick );
+    document.getElementById('file_add').addEventListener('click', addFile );
+    document.getElementById('file_adder').addEventListener('change', function() {
+        let txt = ' file chosen';
+        if (this.files.length != 1) {
+            txt = ' files chosen';
+        }
+        document.getElementById('file_adder_label').innerText = this.files.length + txt;
+    });
+});

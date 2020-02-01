@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
-const jwt = require('jsonwebtoken');
+const tv = require('../tokenVerify');
 
 /*returns a list of all sections ordered by the position variable*/
 
@@ -36,12 +36,16 @@ function compare(a, b) {
 
 router.get('/', (req, res) => {
     try {
-        jwt.verify(req.query.token, process.env.TOKEN_USER, (err) => {
-            if (err) {
+        function verify() {
+            return new Promise((resolve) => {
+                resolve(tv.tokenVerify(req.query.token));
+            });
+        }
+        verify().then((result) => {
+            if (!result) {
                 res.sendStatus(403);
                 return;
             }
-
             let sec_id = parseInt(req.query.sec_id, 10) || 'All';
             const connection = mysql.createConnection({
                 host: process.env.MYSQL_HOST,
@@ -106,8 +110,11 @@ router.get('/', (req, res) => {
                 connection.end();
             });
 
+
         });
+        
     } catch (err) {
+        console.log(err)
         res.sendStatus(500);
     }
 
