@@ -6,13 +6,13 @@ const bcrypt = require('bcryptjs');
 const functions = require('../../../utils');
 
 //Postman can be used to test post request {"real_name": "James"}
-router.post('/', (req, res) => {
+router.post('/', (req, res) => {y
     try {
         const real_name = req.body.real_name;
         const username = functions.randomUsername();
         const password = functions.randomPassword();
         const salt = bcrypt.genSaltSync(10);
-        const hashed_pass = bcrypt(password, salt);
+        const hashed_pass = bcrypt.hashSync(password, salt);
 
         const connection = mysql.createConnection({
             host: process.env.MYSQL_HOST,
@@ -34,6 +34,7 @@ router.post('/', (req, res) => {
 
         res.sendStatus(200);
     } catch (err) {
+        console.log(err)
         res.sendStatus(500);
     }
 });
