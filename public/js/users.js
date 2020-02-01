@@ -31,7 +31,7 @@ async function rmUser(event, u_id, username) {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorisation': getCookie('authToken'),
+                        'Authorization': getCookie('authToken'),
                     },
                     body: 'user_id=' + u_id
                 });
@@ -93,7 +93,7 @@ async function updateUser(event) {
             {
                 method: 'POST',
                 headers: {
-                    'Authorisation': authToken,
+                    'Authorization': authToken,
                 },
                 body: data
             });
@@ -126,7 +126,7 @@ async function addUser(event) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorisation': authToken,
+                    'Authorization': authToken,
                 },
                 body: 'real_name=' + userName + '&is_admin=0'
             });

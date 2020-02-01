@@ -9,7 +9,7 @@ const upload = multer();
 //Postman can be used to test post request {"real_name":"James", "user_name":"abcd12", "user_password":"abcdefg", "user_id": 0}
 router.post('/', upload.none(), (req, res) => {
     try {
-        jwt.verify(req.header('Authorisation'), process.env.TOKEN_USER, (err) => {
+        jwt.verify(req.header('Authorization'), process.env.TOKEN_USER, (err) => {
 
             if (err) {
                 res.sendStatus(403);

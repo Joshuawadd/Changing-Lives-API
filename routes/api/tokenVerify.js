@@ -15,8 +15,9 @@ function tokenVerify(token, isAdmin = false) {
         jwt.verify(token, process.env.TOKEN_STAFF, (err) => {
             if (err) {
                 val = false; //neither token is valid
+            } else {
+                val = true; //staff token valied
             }
-            val = true; //staff token valied
         });
     }
     return val;
