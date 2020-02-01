@@ -58,9 +58,9 @@ router.post('/', (req, res) => {
 router.get('/silent', (req, res) => {
     jwt.verify(req.query.token, process.env.TOKEN_USER, (err) => {
         if (!err) {
-            res.status(200);
+            res.sendStatus(200);
         } else {
-            res.status(403);
+            res.sendStatus(403);
         }
     });
 });
