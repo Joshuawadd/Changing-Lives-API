@@ -34,10 +34,10 @@ router.post('/', upload.none(), (req, res) => {
 
             connection.end();
 
-            return res.status(200);
+            return res.sendStatus(200);
         });
     } catch (err) {
-        return res.status(500);
+        return res.sendStatus(500);
     }
 });
 

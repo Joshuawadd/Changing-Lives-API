@@ -37,7 +37,7 @@ function compare(a, b) {
 router.get('/', (req, res) => {
     try {
         jwt.verify(req.query.token, process.env.TOKEN_USER, (err) => {
-            if (err) return res.status(403);
+            if (err) return res.sendStatus(403);
 
             let sec_id = parseInt(req.query.sec_id, 10) || 'All';
             const connection = mysql.createConnection({
@@ -105,7 +105,7 @@ router.get('/', (req, res) => {
 
         });
     } catch (err) {
-        return res.status(500);
+        return res.sendStatus(500);
     }
 
 });

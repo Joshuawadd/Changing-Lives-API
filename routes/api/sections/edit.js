@@ -18,7 +18,7 @@ const upload = multer({ storage: storage });
 router.post('/', upload.array('section_files[]', 20), (req, res) => {
     try {
         jwt.verify(req.header('Authorisation'), process.env.TOKEN_USER, (err) => {
-            if (err) return res.status(403);
+            if (err) return res.sendStatus(403);
 
             const section_name = req.body.sectionName;
             const article_text = req.body.sectionText;
@@ -71,11 +71,11 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
 
             connection.end();
 
-            return res.status(200);
+            return res.sendStatus(200);
         });
 
     } catch(err) {
-        return res.status(500);
+        return res.sendStatus(500);
     }
 });
 

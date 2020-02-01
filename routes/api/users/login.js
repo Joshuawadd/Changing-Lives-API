@@ -11,7 +11,7 @@ router.post('/', (req, res) => {
     const {error} = validate(req.body);
 
     if (error) {
-        return res.status(500);
+        return res.sendStatus(500);
     }
 
     const username = req.body.username;
