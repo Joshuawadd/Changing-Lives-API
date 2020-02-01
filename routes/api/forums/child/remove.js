@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 
-//Postman can be used to test post request {"child_id": 1} or {"parent_id": 1}
+//Postman can be used to test post request {"childId": 1} or {"parentId": 1}
 router.post('/', (req, res) => {
 
     const connection = mysql.createConnection({
@@ -16,12 +16,12 @@ router.post('/', (req, res) => {
         if(err) throw err;
     });
 
-    if (req.body.child_id !== 'undefined') {
-        connection.query('DELETE FROM child_comments WHERE child_id = ', [req.body.child_id], (err) => {
+    if (req.body.childId !== 'undefined') {
+        connection.query('DELETE FROM child_comments WHERE child_id = ', [req.body.childId], (err) => {
             if (err) throw res.sendStatus(400);
         });
-    } else if (req.body.parent_id !== 'undefined') {
-        connection.query('DELETE FROM child_comments WHERE parent_id = ', [req.body.parent_id], (err) => {
+    } else if (req.body.parentId !== 'undefined') {
+        connection.query('DELETE FROM child_comments WHERE parent_id = ', [req.body.parentId], (err) => {
             if (err) throw res.sendStatus(400);
         });
     }

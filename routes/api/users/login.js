@@ -15,8 +15,8 @@ router.post('/', (req, res) => {
         res.sendStatus(500);
     }
 
-    const username = req.body.username;
-    const password = req.body.password;
+    const username = req.body.userName;
+    const password = req.body.userPassword;
 
     const token = jwt.sign({uname: username}, process.env.TOKEN_USER, {expiresIn: 1200});
 

@@ -3,16 +3,16 @@ const router = express.Router();
 const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 
-const functions = require('../../../public/js/functions');
+const functions = require('../../../utils');
 
-//Postman can be used to test post request {"real_name": "James"}
+//Postman can be used to test post request {"realName": "James"}
 router.post('/', (req, res) => {
     try {
-        const real_name = req.body.real_name;
+        const realName = req.body.realName;
         const username = functions.randomUsername();
         const password = functions.randomPassword();
         const salt = bcrypt.genSaltSync(10);
-        const hashed_pass = bcrypt(password, salt);
+        const hashed_pass = bcrypt.hashSync(password, salt);
 
         const connection = mysql.createConnection({
             host: process.env.MYSQL_HOST,
@@ -26,7 +26,7 @@ router.post('/', (req, res) => {
         });
 
         connection.query('INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)',
-            [real_name, username, hashed_pass, salt, 0], (err) => {
+            [realName, username, hashed_pass, salt, 0], (err) => {
                 if (err) throw res.sendStatus(400);
             });
 

@@ -2,12 +2,10 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 
-//Postman can be used to test post request {"user_id": 1, "parent_id": 1, "child_comment":"This is a comment"}
+//Postman can be used to test post request {"parentId": 1}
 router.post('/', (req, res) => {
 
-    const user_id = req.body.user_id;
-    const parent_id = req.body.parent_id;
-    const child_comment = req.body.child_comment;
+    const id = req.body.parentId;
 
     const connection = mysql.createConnection({
         host: process.env.MYSQL_HOST,
@@ -20,9 +18,11 @@ router.post('/', (req, res) => {
         if (err) throw err;
     });
 
-    connection.query('INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)', [user_id, parent_id, child_comment], (err) => {
-        if (err) throw res.sendStatus(400);
-    });
+    if (req.body.parentId !== 'undefined') {
+        connection.query('DELETE FROM parent_comments WHERE parent_id = ', [req.body.parentId], (err) => {
+            if (err) throw res.sendStatus(400);
+        });
+    }
 
     connection.end();
 

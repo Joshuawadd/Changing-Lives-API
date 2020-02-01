@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 
-//Postman can be used to test post request {"user_id": 1, "action":"pick from enum", "datetime":time} <- make sure the time is converted to a "mysql" time (check google)
+//Postman can be used to test post request {"userId": 1, "action":"pick from enum", "dateTime":time} <- make sure the time is converted to a "mysql" time (check google)
 router.post('/', (req, res) => {
 
-    const user_id = req.body.user_id;
+    const userId = req.body.userId;
     const action = req.body.action;
-    const date_time = req.body.datetime;
+    const dateTime = req.body.dateTime;
 
     const connection = mysql.createConnection({
         host: process.env.MYSQL_HOST,
@@ -20,7 +20,7 @@ router.post('/', (req, res) => {
         if (err) throw err;
     });
 
-    connection.query('INSERT INTO child_comments (user_id,action,time) VALUES (?,?,?)', [user_id, action, date_time], (err) => {
+    connection.query('INSERT INTO child_comments (user_id,action,time) VALUES (?,?,?)', [userId, action, dateTime], (err) => {
         if (err) throw res.sendStatus(400);
     });
 

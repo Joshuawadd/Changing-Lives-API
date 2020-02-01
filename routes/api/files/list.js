@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 
-//Postman can be used to test post request {"section_id": 1}
+//Postman can be used to test post request {"sectionId": 1}
 router.post('/', (req, res) => {
 
     try{
-        const section_id = req.body.section_id;
+        const sectionId = req.body.sectionId;
 
         const connection = mysql.createConnection({
             host: process.env.MYSQL_HOST,
@@ -21,7 +21,7 @@ router.post('/', (req, res) => {
 
         function getList() {
             return new Promise((resolve) => {
-                connection.query('SELECT * FROM files WHERE section_id = ?', [section_id], (err, results) => {
+                connection.query('SELECT * FROM files WHERE section_id = ?', [sectionId], (err, results) => {
                     if (err) throw res.sendStatus(400);
                     resolve(results);
                 });

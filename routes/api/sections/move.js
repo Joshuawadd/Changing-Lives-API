@@ -3,7 +3,7 @@ const router = express.Router();
 const mysql = require('mysql');
 const tv = require('../tokenVerify');
 
-//Postman can be used to test post request {"section_id": 1} or {"user_id": 1}
+//Postman can be used to test post request {"sectionId": 1} or {"user_id": 1}
 router.post('/', (req, res) => {
     try {
         function verify() {
@@ -23,8 +23,8 @@ router.post('/', (req, res) => {
                 database: process.env.MYSQL_DATABASE
             });
 
-            let sec_id = req.body.section_id || '';
-            let usr_id = req.body.uer_id || '';
+            let sec_id = req.body.sectionId || '';
+            let usr_id = req.body.userId || '';
 
             connection.connect((err) => {
                 if (err) throw err;
