@@ -46,7 +46,7 @@ router.get('/', (req, res) => {
                 res.sendStatus(403);
                 return;
             }
-            let sec_id = parseInt(req.query.sec_id, 10) || 'All';
+            let sectionId = parseInt(req.query.sectionId, 10) || 'All';
             const connection = mysql.createConnection({
                 host: process.env.MYSQL_HOST,
                 user: process.env.MYSQL_USER,
@@ -58,8 +58,8 @@ router.get('/', (req, res) => {
                 if (err) throw err;
             });
             var whereString = '';
-            if (sec_id !== 'All') {
-                whereString = `WHERE sections.section_id = ${sec_id}`;
+            if (sectionId !== 'All') {
+                whereString = `WHERE sections.section_id = ${sectionId}`;
             }
 
             function getList() {

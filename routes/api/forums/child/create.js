@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 
-//Postman can be used to test post request {"user_id": 1, "parent_id": 1, "child_comment":"This is a comment"}
+//Postman can be used to test post request {"userId": 1, "parent_id": 1, "child_comment":"This is a comment"}
 router.post('/', (req, res) => {
 
-    const user_id = req.body.user_id;
+    const userId = req.body.userId;
     const parent_id = req.body.parent_id;
     const child_comment = req.body.child_comment;
 
@@ -20,7 +20,7 @@ router.post('/', (req, res) => {
         if (err) throw err;
     });
 
-    connection.query('INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)', [user_id, parent_id, child_comment], (err) => {
+    connection.query('INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)', [userId, parent_id, child_comment], (err) => {
         if (err) throw res.sendStatus(400);
     });
 

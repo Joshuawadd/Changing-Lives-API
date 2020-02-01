@@ -4,7 +4,7 @@ const mysql = require('mysql');
 
 //Postman can be used to test post request {"user_id": 1}
 router.post('/', (req, res) => {
-    const uid = req.body.user_id || -1;
+    const uid = req.body.userId || -1;
 
     const connection = mysql.createConnection({
         host: process.env.MYSQL_HOST,
