@@ -2,6 +2,9 @@ var sections;
 var currentSection;
 var fileLimbo;
 
+var getCookie;
+var loginPrompt;
+
 class SecFile {
     constructor(id=0,title = '',path='') {
         this.id = id;
@@ -71,7 +74,7 @@ async function addSection(event) {
         data.append('sectionName', sectionName);
         data.append('sectionText', sectionText);
         //data.append('sectionId', currentSection); not required for new sections
-        fileList = [];
+        let fileList = [];
         let len = fileLimbo.length;
         for (var j = 0; j < len; j++) {//update the display titles of all files
             fileList.push(document.getElementById(`file_title${j}`).value);
@@ -114,24 +117,26 @@ async function updateSection(event) {
         let sectionName = document.getElementById('section_name').value;
         let sectionText = document.getElementById('section_text').value;
         let data = new FormData();
-        for (var i = 0; i < fileLimbo.length; i++) { //add all the unadded files
+        for (let i = 0; i < fileLimbo.length; i++) { //add all the unadded files
             data.append('section_files[]', fileLimbo[i]);
         }
         data.append('sectionName', sectionName);
         data.append('sectionText', sectionText);
         data.append('sectionId', currentSection);
-        fileList = [];
-        for (var k = 0; k < sections.length; k++) {
+        var fileList = [];
+        for (let k = 0; k < sections.length; k++) {
             if (sections[k].id == currentSection) {
-                var fileList = sections[k].files;
+                fileList = sections[k].files;
             }
         }
-        let len = fileList.length + fileLimbo.length;
-        fileList = []
-        for (var j = 0; j < len; j++) {//update the display titles of all files
-            fileList.push(document.getElementById(`file_title${j}`).value);
+        var files = [];
+        for (var j = 0; j < fileList.length; j++) {//update the display titles of section files
+            files.push(new SecFile(fileList[j].id,document.getElementById(`file_title${j}`).value,fileList[j].path));
         }
-        data.append('fileTitles', JSON.stringify(fileList));
+        for (var k = j; k < j+fileLimbo.length; k++) {//update the display titles of new files
+            files.push(new SecFile(-1,document.getElementById(`file_title${k}`).value,''));
+        }
+        data.append('files', JSON.stringify(files));
         let response = await fetch('/api/section/edit',
             {
                 method: 'POST',

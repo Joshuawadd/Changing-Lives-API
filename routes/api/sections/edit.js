@@ -22,23 +22,21 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
                 res.sendStatus(403);
                 return;
             }
-
-            const section_name = req.body.sectionName;
-            const article_text = req.body.sectionText;
-
-            let sectionFiles = [];
+            const sectionName = req.body.sectionName;
+            const sectionText = req.body.sectionText;
+            let newFilePaths = [];
 
             for (let i = 0; i < req.files.length; i++) {
-                sectionFiles.push(req.files[i].originalname);
+                newFilePaths.push(req.files[i].originalname);
             }
 
-            const fileTitles = JSON.parse(req.body.fileTitles);
+            const files = JSON.parse(req.body.files);
             const sectionId = req.body.sectionId;
 
-            let numNewFiles = fileTitles.length - sectionFiles.length;
+            let numOldFiles = files.length - newFilePaths.length;
 
-            for (let i = 0; i < numNewFiles; i++ ) {
-                sectionFiles.unshift('');
+            for (let i = 0; i < numOldFiles; i++ ) {
+                newFilePaths.unshift('');
             }
 
             const connection = mysql.createConnection({
@@ -52,21 +50,20 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
                 if (err) throw err;
             });
 
-            connection.query('UPDATE sections SET section_name = ?, article_text = ? WHERE section_id = ?', [section_name, article_text, sectionId], (err) => {
+            connection.query('UPDATE sections SET section_name = ?, article_text = ? WHERE section_id = ?', [sectionName, sectionText, sectionId], (err) => {
                 if (err) throw res.sendStatus(400);
             });
 
-            for (let j = 0; j < fileTitles.length; j++) {
-
+            for (let j = 0; j < files.length; j++) {
                 //file existed before
-                if (sectionFiles[j] === '') {
-                    connection.query('UPDATE files SET file_name = ? WHERE file_link = ?', [fileTitles[j], sectionFiles[j]], (err, results) => {
+                if (newFilePaths[j] === '') {
+                    connection.query('UPDATE files SET file_name = ? WHERE file_id = ?', [files[j].title, files[j].id], (err, results) => {
                         if (err) throw res.sendStatus(400);
                     });
 
                 } else {
                     //file needs to actually be added to db
-                    connection.query('INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)', [fileTitles[j], sectionFiles[j], sectionId, 0], (err, results) => {
+                    connection.query('INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)', [files[j].title, newFilePaths[j], sectionId, 0], (err, results) => {
                         if (err) throw res.sendStatus(400);
                     });
                 }
@@ -78,6 +75,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
         });
 
     } catch(err) {
+        console.log(err)
         res.sendStatus(500);
     }
 });

@@ -1,3 +1,9 @@
+var users;
+var currentUser;
+
+var getCookie;
+var loginPrompt;
+
 class User {
     constructor(id=0,name='',username='',password='') {
         this.id = id;
