@@ -84,7 +84,7 @@ app.use('/api/forums/child/list', forumChildListRouter);
 app.use('/api/sections/create', sectionCreateRouter);
 app.use('/api/sections/edit', sectionEditRouter);
 app.use('/api/sections/remove', sectionRemoveRouter);
-app.use('/api/section/list', sectionListRouter);
+app.use('/api/sections/list', sectionListRouter);
 
 app.use('/api/users/create', userCreateRouter);
 app.use('/api/users/edit', userEditRouter);

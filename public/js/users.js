@@ -26,7 +26,7 @@ async function rmUser(event, u_id, username) {
     try {
         event.preventDefault();
         if (window.confirm(`Are you sure you want to remove the user: ${username}?`)) {
-            let response = await fetch('/api/user/remove',
+            let response = await fetch('/api/users/remove',
                 {
                     method: 'POST',
                     headers: {
@@ -54,7 +54,7 @@ async function rmUser(event, u_id, username) {
 async function getUsers() {
     try {
         let authToken = getCookie('authToken');
-        let response = await fetch('/api/user/list?token='+authToken);
+        let response = await fetch('/api/users/list?token='+authToken);
         if (response.ok) {
             let body = await response.text();
             let userData = JSON.parse(body);
@@ -89,7 +89,7 @@ async function updateUser(event) {
         data.append('userUname', userUname);
         data.append('userPass', userPass);
         data.append('userId', currentUser);
-        let response = await fetch('/api/user/edit',
+        let response = await fetch('/api/users/edit',
             {
                 method: 'POST',
                 headers: {
@@ -121,7 +121,7 @@ async function addUser(event) {
     try {
         let authToken = getCookie('authToken');
         let userName = document.getElementById('user_name').value;
-        let response = await fetch('/api/user/create',
+        let response = await fetch('/api/users/create',
             {
                 method: 'POST',
                 headers: {

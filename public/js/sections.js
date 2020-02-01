@@ -38,7 +38,7 @@ class Section { //this is the class for an app section or page
 async function getSections() {
     try {
         let authToken = getCookie('authToken');
-        let response = await fetch('/api/section/list?token='+authToken);
+        let response = await fetch('/api/sections/list?token='+authToken);
         if (response.ok) {
             let body = await response.text();
             let contentData = JSON.parse(body);
@@ -81,7 +81,7 @@ async function addSection(event) {
             fileList.push(document.getElementById(`file_title${j}`).value);
         }
         data.append('fileTitles', JSON.stringify(fileList));
-        let response = await fetch('/api/section/create',
+        let response = await fetch('/api/sections/create',
             {
                 method: 'POST',
                 headers: {
@@ -143,7 +143,7 @@ async function updateSection(event) {
         }
         data.append('files', JSON.stringify(files));
         data.append('fileRemove', JSON.stringify(fileRemove));
-        let response = await fetch('/api/section/edit',
+        let response = await fetch('/api/sections/edit',
             {
                 method: 'POST',
                 headers: {
@@ -177,7 +177,7 @@ async function rmSection(event, sec_id, sec_name) {
     try {
         event.preventDefault();
         if (window.confirm(`Are you sure you want to remove the section: ${sec_name}?`)) {
-            let response = await fetch('/api/section/remove',
+            let response = await fetch('/api/sections/remove',
                 {
                     method: 'POST',
                     headers: {
