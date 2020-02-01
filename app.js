@@ -35,14 +35,14 @@ const protectPath = function(regex) {
     };
 };
 
-//TOPIC Routers
-const topicParentCreateRouter = require('./routes/api/topics/parent/create');
-const topicParentRemoveRouter = require('./routes/api/topics/parent/remove');
-const topicParentListRouter = require('./routes/api/topics/parent/list');
+// Routers
+const forumParentCreateRouter = require('./routes/api/forums/parent/create');
+const forumParentRemoveRouter = require('./routes/api/forums/parent/remove');
+const forumParentListRouter = require('./routes/api/forums/parent/list');
 
-const topicChildCreateRouter = require('./routes/api/topics/child/create');
-const topicChildRemoveRouter = require('./routes/api/topics/child/remove');
-const topicChildListRouter = require('./routes/api/topics/child/list');
+const forumChildCreateRouter = require('./routes/api/forums/child/create');
+const forumChildRemoveRouter = require('./routes/api/forums/child/remove');
+const forumChildListRouter = require('./routes/api/forums/child/list');
 
 const sectionCreateRouter = require('./routes/api/sections/create');
 const sectionEditRouter = require('./routes/api/sections/edit');
@@ -73,25 +73,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 
-app.use('/api/topic/parent/create', topicParentCreateRouter);
-app.use('/api/topic/parent/remove', topicParentRemoveRouter);
-app.use('/api/topic/parent/list', topicParentListRouter);
+app.use('/api/forums/parent/create', forumParentCreateRouter);
+app.use('/api/forums/parent/remove', forumParentRemoveRouter);
+app.use('/api/forums/parent/list', forumParentListRouter);
 
-app.use('/api/topic/child/create', topicChildCreateRouter);
-app.use('/api/topic/child/remove', topicChildRemoveRouter);
-app.use('/api/topic/child/list', topicChildListRouter);
+app.use('/api/forums/child/create', forumChildCreateRouter);
+app.use('/api/forums/child/remove', forumChildRemoveRouter);
+app.use('/api/forums/child/list', forumChildListRouter);
 
-app.use('/api/section/create', sectionCreateRouter);
-app.use('/api/section/edit', sectionEditRouter);
-app.use('/api/section/remove', sectionRemoveRouter);
+app.use('/api/sections/create', sectionCreateRouter);
+app.use('/api/sections/edit', sectionEditRouter);
+app.use('/api/sections/remove', sectionRemoveRouter);
 app.use('/api/section/list', sectionListRouter);
 
-app.use('/api/user/create', userCreateRouter);
-app.use('/api/user/edit', userEditRouter);
-app.use('/api/user/remove', userRemoveRouter);
-app.use('/api/user/list', userListRouter);
-app.use('/api/user/login', userLoginRouter);
+app.use('/api/users/create', userCreateRouter);
+app.use('/api/users/edit', userEditRouter);
+app.use('/api/users/remove', userRemoveRouter);
+app.use('/api/users/list', userListRouter);
+app.use('/api/users/login', userLoginRouter);
 
-app.use('/api/file/list', fileListRouter);
+app.use('/api/files/list', fileListRouter);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
