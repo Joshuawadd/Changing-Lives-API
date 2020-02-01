@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
     }
 
     getList().then(result => {
-        return res.send(result);
+        res.send(result);
     }).finally(() => {
         connection.end();
     });

@@ -26,7 +26,7 @@ router.post('/', (req, res) => {
 
     connection.end();
 
-    return res.sendStatus(200);
+    res.sendStatus(200);
 });
 
 module.exports = router;

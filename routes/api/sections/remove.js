@@ -38,10 +38,10 @@ router.post('/', (req, res) => {
 
         connection.end();
 
-        return res.sendStatus(200);
+        res.sendStatus(200);
 
     } catch (err) {
-        return res.sendStatus(500);
+        res.sendStatus(500);
     }
 });
 

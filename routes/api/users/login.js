@@ -11,7 +11,7 @@ router.post('/', (req, res) => {
     const {error} = validate(req.body);
 
     if (error) {
-        return res.sendStatus(500);
+        res.sendStatus(500);
     }
 
     const username = req.body.username;
@@ -44,9 +44,9 @@ router.post('/', (req, res) => {
 
     passwordMatch().then((result) => {
         if (result) {
-            return res.status(200).send(token);
+            res.status(200).send(token);
         } else {
-            return res.sendStatus(400);
+            res.sendStatus(400);
         }
     }).finally(() => {
         connection.end();

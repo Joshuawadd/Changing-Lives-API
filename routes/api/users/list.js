@@ -39,7 +39,7 @@ router.get('/', (req, res) => {
         for (let i = 0; i < userData.length; i++) {
             users.push(new User(userData[i].user_id, userData[i].real_name, userData[i].username, userData[i].password));
         }
-        return res.send(users);
+        res.send(users);
 
     }).finally(() => {
         connection.end();

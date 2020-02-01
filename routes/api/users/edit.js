@@ -11,7 +11,10 @@ router.post('/', upload.none(), (req, res) => {
     try {
         jwt.verify(req.header('Authorisation'), process.env.TOKEN_USER, (err) => {
 
-            if (err) return res.sendStatus(403);
+            if (err) {
+                res.sendStatus(403);
+                return;
+            }
 
             const real_name = req.body.real_name;
             const user_name = req.body.user_name;
@@ -34,10 +37,10 @@ router.post('/', upload.none(), (req, res) => {
 
             connection.end();
 
-            return res.sendStatus(200);
+            res.sendStatus(200);
         });
     } catch (err) {
-        return res.sendStatus(500);
+        res.sendStatus(500);
     }
 });
 

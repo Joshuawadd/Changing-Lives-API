@@ -52,9 +52,9 @@ router.get('/', (req, res) => {
                     });
                 }
                 getList().then(result => {
-                    return res.status(200).send(JSON.stringify(result));
+                    res.status(200).send(JSON.stringify(result));
                 }).finally(() => {
-                    //return res.sendStatus(200);
+                    //res.sendStatus(200);
                 });
                 connection.end();
             } else {

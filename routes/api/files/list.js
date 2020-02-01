@@ -29,14 +29,14 @@ router.post('/', (req, res) => {
         }
 
         getList().then(result => {
-            return res.send(result);
+            res.send(result);
 
         }).finally(() => {
             connection.end();
         });
 
     }catch (err) {
-        return res.sendStatus(500);
+        res.sendStatus(500);
     }
 
 });
