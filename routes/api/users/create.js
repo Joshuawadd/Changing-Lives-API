@@ -3,7 +3,7 @@ const router = express.Router();
 const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 
-const functions = require('../../../public/js/functions');
+const functions = require('../../../utils');
 
 //Postman can be used to test post request {"real_name": "James"}
 router.post('/', (req, res) => {
