@@ -48,7 +48,7 @@ function randomPassword(length = 10) {
             n++;
         }
     }
-    return password.join("");
+    return password.join('');
 }
 
 module.exports = {randomPassword, randomUsername};

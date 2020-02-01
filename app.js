@@ -8,13 +8,11 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 
 const indexRouter = require('./routes/index');
-const sectionsRouter = require('./routes/api/sections');
-
 
 //file protecting adapted from https://stackoverflow.com/questions/11910956/how-to-protect-a-public-dynamic-folder-in-nodejs
 function userIsAllowed(req, callback) {
     const token = req.query.token;
-    jwt.verify(token, 'userToken', function(err, decoded){
+    jwt.verify(token, process.env.TOKEN_USER, function(err, decoded){
         if(!err){
             callback(true);
         } else {
@@ -24,17 +22,17 @@ function userIsAllowed(req, callback) {
 };
 // This function returns a middleware function
 const protectPath = function(regex) {
-return function(req, res, next) {
-    if (!regex.test(req.url)) { return next(); }
+    return function(req, res, next) {
+        if (!regex.test(req.url)) { return next(); }
 
-    userIsAllowed(req, function(allowed) {
-    if (allowed) {
-        next(); // send the request to the next handler, which is express.static
-    } else {
-        res.end('You do not have permission to view this file!');
-    }
-    });
-};
+        userIsAllowed(req, function(allowed) {
+            if (allowed) {
+                next(); // send the request to the next handler, which is express.static
+            } else {
+                res.end('You do not have permission to view this file!');
+            }
+        });
+    };
 };
 
 //TOPIC Routers
@@ -74,7 +72,6 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/api/sections', sectionsRouter);
 
 app.use('/api/topic/parent/create', topicParentCreateRouter);
 app.use('/api/topic/parent/remove', topicParentRemoveRouter);

@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const mysql = require('mysql');
 const Joi = require('joi');
+const tv = require('../tokenVerify');
 
 
 router.post('/', (req, res) => {
@@ -33,11 +34,15 @@ router.post('/', (req, res) => {
     function passwordMatch() {
         return new Promise((resolve) => {
             connection.query('SELECT password, password_salt FROM users WHERE username = ?', [username], (err, rows) => {
-                const password_salt = rows[0]['password_salt'];
-                const password_hashed = rows[0]['password'];
+                if (rows.length > 0) {
+                    const password_salt = rows[0]['password_salt'];
+                    const password_hashed = rows[0]['password'];
 
-                const temp_hash = bcrypt.hashSync(password, password_salt);
-                resolve(temp_hash === password_hashed);
+                    const temp_hash = bcrypt.hashSync(password, password_salt);
+                    resolve(temp_hash === password_hashed);
+                } else {
+                    resolve(false);
+                }
             });
         });
     }
@@ -46,7 +51,7 @@ router.post('/', (req, res) => {
         if (result) {
             res.status(200).send(token);
         } else {
-            res.sendStatus(400);
+            res.sendStatus(403);
         }
     }).finally(() => {
         connection.end();
@@ -56,12 +61,17 @@ router.post('/', (req, res) => {
 
 //silently logs in if page is refreshed and token is still in date
 router.get('/silent', (req, res) => {
-    jwt.verify(req.query.token, process.env.TOKEN_USER, (err) => {
-        if (!err) {
-            res.sendStatus(200);
-        } else {
+    function verify() {
+        return new Promise((resolve) => {
+            resolve(tv.tokenVerify(req.query.token));
+        });
+    }
+    verify().then((result) => {
+        if (!result) {
             res.sendStatus(403);
+            return;
         }
+        res.sendStatus(200);
     });
 });
 
