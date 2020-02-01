@@ -28,7 +28,7 @@ function getCookie(cname) { //adapted from https://www.w3schools.com/js/js_cooki
 async function loginPrompt() {
     try {
         let authToken = getCookie('authToken');
-        let response = await fetch('/api/login/silent?token='+authToken);
+        let response = await fetch('/api/user/login/silent?token='+authToken);
         if (response.ok) {
             return true;
         } else {
@@ -47,7 +47,7 @@ async function logIn(event) { //sends a login request and sets the authToken coo
         event.preventDefault();
         let uname = document.getElementById('username').value;
         let pass = document.getElementById('password').value;
-        let response = await fetch('/api/login',
+        let response = await fetch('/api/user/login',
             {
                 method: 'POST',
                 headers: {

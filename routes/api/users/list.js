@@ -3,7 +3,7 @@ const router = express.Router();
 const mysql = require('mysql');
 
 class User {
-    constructor(id=0,name='',username='',password='') {
+    constructor(id = 0, name = '', username = '', password = '') {
         this.id = id;
         this.name = name;
         this.username = username;
@@ -24,8 +24,8 @@ router.get('/', (req, res) => {
         if (err) throw err;
     });
 
-    function getList(){
-        return new Promise((resolve, reject) => {
+    function getList() {
+        return new Promise((resolve) => {
             connection.query('SELECT user_id, real_name, username, password FROM users', [], (err, results) => {
                 if (err) throw res.sendStatus(400);
                 resolve(results);
@@ -35,12 +35,12 @@ router.get('/', (req, res) => {
 
     getList().then(result => {
         let userData = result;
-        let usrs = [];
-        for (var i = 0; i < userData.length; i++) {
-            let usr = new User(userData[i].user_id,userData[i].real_name,userData[i].username,userData[i].password);
-            usrs.push(usr);
+        let users = [];
+        for (let i = 0; i < userData.length; i++) {
+            users.push(new User(userData[i].user_id, userData[i].real_name, userData[i].username, userData[i].password));
         }
-        return res.send(usrs);
+        res.send(users);
+
     }).finally(() => {
         connection.end();
     });

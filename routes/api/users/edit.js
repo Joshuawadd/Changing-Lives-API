@@ -2,40 +2,45 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
-const multer  = require('multer');
-var upload = multer();
+const multer = require('multer');
 
+const upload = multer();
+
+//Postman can be used to test post request {"real_name":"James", "user_name":"abcd12", "user_password":"abcdefg", "user_id": 0}
 router.post('/', upload.none(), (req, res) => {
     try {
-        var token = req.header('Authorisation');
-        jwt.verify(token, 'userToken', function(err, decoded){
-            if(!err){
-                const user_name = req.body.userName;
-                const user_uname = req.body.userUname;
-                const user_pass = req.body.userPass;
-                const userId = req.body.userId;
-                const connection = mysql.createConnection({
-                    host: process.env.MYSQL_HOST,
-                    user: process.env.MYSQL_USER,
-                    password: process.env.MYSQL_PASSWORD,
-                    database: process.env.MYSQL_DATABASE
-                });
+        jwt.verify(req.header('Authorisation'), process.env.TOKEN_USER, (err) => {
 
-                connection.connect((err) => {
-                    if (err) throw err;
-                });
-                connection.query('UPDATE users SET real_name = ?, username = ?, password = ? WHERE user_id = ?', [user_name, user_uname, user_pass, userId], (err, results) => {
-                    if (err) throw res.sendStatus(400);
-                });
-                res.status(200).send('OK');
-                connection.end();
-            } else {
-                res.status(403).send(err);
+            if (err) {
+                res.sendStatus(403);
+                return;
             }
+
+            const real_name = req.body.real_name;
+            const user_name = req.body.user_name;
+            const user_pass = req.body.user_password;
+            const user_id = req.body.user_id;
+
+            const connection = mysql.createConnection({
+                host: process.env.MYSQL_HOST,
+                user: process.env.MYSQL_USER,
+                password: process.env.MYSQL_PASSWORD,
+                database: process.env.MYSQL_DATABASE
+            });
+
+            connection.connect((err) => {
+                if (err) throw err;
+            });
+            connection.query('UPDATE users SET real_name = ?, username = ?, password = ? WHERE user_id = ?', [real_name, user_name, user_pass, user_id], (err) => {
+                if (err) throw res.sendStatus(400);
+            });
+
+            connection.end();
+
+            res.sendStatus(200);
         });
-    } catch(err) {
-        res.status(500).send(err);
-        return false;
+    } catch (err) {
+        res.sendStatus(500);
     }
 });
 
