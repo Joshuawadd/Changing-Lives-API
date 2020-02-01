@@ -9,8 +9,6 @@ const jwt = require('jsonwebtoken');
 
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/api/login');
-const sectionsRouter = require('./routes/api/sections');
-
 
 //file protecting adapted from https://stackoverflow.com/questions/11910956/how-to-protect-a-public-dynamic-folder-in-nodejs
 function userIsAllowed(req, callback) {
@@ -75,7 +73,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/login', loginRouter);
-app.use('/api/sections', sectionsRouter);
 
 app.use('/api/topic/parent/create', topicParentCreateRouter);
 app.use('/api/topic/parent/remove', topicParentRemoveRouter);
