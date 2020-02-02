@@ -3,7 +3,7 @@ const router = express.Router();
 const mysql = require('mysql');
 const tv = require('../tokenVerify');
 const multer  = require('multer');
-
+const utils = require('../../../utils');
 const storage = multer.diskStorage({
     destination: './public/files',
     filename: function (req, file, cb) {        
@@ -45,43 +45,23 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
                 newFilePaths.unshift('');
             }
             const fileRemove = JSON.parse(req.body.fileRemove);
-            const connection = mysql.createConnection({
-                host: process.env.MYSQL_HOST,
-                user: process.env.MYSQL_USER,
-                password: process.env.MYSQL_PASSWORD,
-                database: process.env.MYSQL_DATABASE
-            });
 
-            connection.connect((err) => {
-                if (err) throw err;
-            });
-
-            connection.query('UPDATE sections SET section_name = ?, article_text = ? WHERE section_id = ?', [sectionName, sectionText, sectionId], (err) => {
-                if (err) throw res.sendStatus(400);
-            });
+            const queryString = 'UPDATE sections SET section_name = ?, article_text = ? WHERE section_id = ?';
+            const queryArray = [sectionName, sectionText, sectionId];
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {});
 
             for (let j = 0; j < files.length; j++) {
                 //file existed before
                 if (newFilePaths[j] === '') {
-                    connection.query('UPDATE files SET file_name = ? WHERE file_id = ?', [files[j].title, files[j].id], (err, results) => {
-                        if (err) throw res.sendStatus(400);
-                    });
-
-                } else {
-                    //file needs to actually be added to db
-                    connection.query('INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)', [files[j].title, newFilePaths[j], sectionId, 0], (err, results) => {
-                        if (err) throw res.sendStatus(400);
-                    });
+                    utils.mysql_query(res, 'UPDATE files SET file_name = ? WHERE file_id = ?', [files[j].title, files[j].id], (results, res) => {});
+                } else { //file needs to actually be added to db
+                    utils.mysql_query(res, 'INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)', [files[j].title, newFilePaths[j], sectionId, 0], (results, res) => {});
                 }
             }
-            for (let k = 0; k < fileRemove.length; k++) {
-                connection.query('DELETE FROM files WHERE file_id = ?', [fileRemove[k]], (err, results) => {
-                    if (err) throw res.sendStatus(400);
-                });
+            for (let k = 0; k < fileRemove.length; k++) { //files that have now been removed
+                utils.mysql_query(res, 'DELETE FROM files WHERE file_id = ?', [fileRemove[k]], (results, res) => {});
             }
-
-            connection.end();
-
+            
             res.sendStatus(200);
         });
 
