@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
-const tv = require('../tokenVerify');
 const multer = require('multer');
+const utils = require('../../../utils');
 
 const storage = multer.diskStorage({
     destination: './public/files',
@@ -19,7 +18,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(tv.tokenVerify(req.header('Authorization')));
+                resolve(utils.tokenVerify(req.header('Authorization')));
             });
         }
         verify().then((result) => {
@@ -39,17 +38,25 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
 
             let fileTitles = JSON.parse(req.body.fileTitles);
 
-            const connection = mysql.createConnection({
-                host: process.env.MYSQL_HOST,
-                user: process.env.MYSQL_USER,
-                password: process.env.MYSQL_PASSWORD,
-                database: process.env.MYSQL_DATABASE
+            const queryString = 'INSERT INTO sections (user_id,section_name,article_text, position) VALUES (?,?,?,?)';
+            const queryArray = [0, section_name, article_text, -1];
+
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {
+                const sectionId = results.insertId;
+                const queryString2 = 'UPDATE sections SET position = ? WHERE section_id = ?';
+                const queryArray2 = [sectionId, sectionId];
+                utils.mysql_query(res, queryString2, queryArray2, (results, res) => {} );
+                const queryString3 = 'INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)';
+                let queryArray3 = [];
+                for (let j = 0; j < fileTitles.length; j++) {
+                    queryArray3 = [fileTitles[j], sectionFiles[j], sectionId, 0];
+                    utils.mysql_query(res, queryString3, queryArray3, (results, res) => {});
+                }
+                res.sendStatus(200);
             });
 
-            connection.connect((err) => {
-                if (err) throw err;
-            });
 
+/*
             function addSection() {
                 return new Promise((resolve) => {
                     connection.query('INSERT INTO sections (user_id,section_name,article_text, position) VALUES (?,?,?,?)', [0, section_name, article_text, -1], (err, results) => {
@@ -72,7 +79,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
 
             }).finally(() => {
                 connection.end();
-            });
+            });*/
         });
     } catch (err) {
         res.sendStatus(500);

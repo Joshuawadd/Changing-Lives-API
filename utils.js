@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const jwt = require('jsonwebtoken');
 
 // random generate a user name like cis -abcd12
 function randomUsername() {
@@ -6,11 +7,11 @@ function randomUsername() {
     var id = '';
     var n = 4; // sum of numbers
     for (var i = 0; i < n; i++) {
-        id += arr[Math.floor(Math.random() * 26)]
+        id += arr[Math.floor(Math.random() * 26)];
     }
     var m = 2; // sum of digits
     for (var j = 0; j < m; j++) {
-        id += Math.floor(Math.random() * 10)
+        id += Math.floor(Math.random() * 10);
     }
     return id;
 }
@@ -68,11 +69,11 @@ function log(userId, action, entity, newData=null, oldData=null) {
 
     const dateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
     connection.query('INSERT INTO logs (userId, dateTime, action, entity, newData, oldData) VALUES (?,?,?,?,?,?)',
-            [userId, dateTime, action, entity, newData, oldData], (err) => {
-                if (err) throw err;
-            });
+        [userId, dateTime, action, entity, newData, oldData], (err) => {
+            if (err) throw err;
+        });
 
-        connection.end();
+    connection.end();
 }
 
 function mysql_query(res, queryString, queryArray, callback) {
@@ -85,24 +86,54 @@ function mysql_query(res, queryString, queryArray, callback) {
     });
     connection.connect((err) => {
         if (err) {
-            console.log(err)
+            console.log(err);
             //console.log(`${err}`);
-            res.sendStatus(500)
+            res.sendStatus(500);
         } else {
             connection.query(queryString, queryArray, (err, results) => {
-                connection.end()
+                connection.end();
                 if (err) {
-                    console.log(err)
+                    console.log(err);
                     //console.log(`${err}`);
-                    res.sendStatus(500)
-                    return
+                    res.sendStatus(500);
+                    return;
                 } else {
-                    callback(results, res)
+                    callback(results, res);
                 }
-            })
+            });
             
+        }
+    });
+}
+
+function checkUser(token) { //this will accept user or staff tokens
+    return jwt.verify(token, process.env.USER_KEY, (err, decoded) => {
+        if (err) {
+            return checkStaff(token); //user check failed, so check for staff token
+        } else {
+            return decoded.userId; //user token valid
         }
     })
 }
 
-module.exports = {randomPassword, randomUsername, log, mysql_query};
+function checkStaff (token) {
+    return jwt.verify(token, process.env.STAFF_KEY, (err, decoded) => {
+        if (err) {
+            return undefined; //staff check failed
+        } else {
+            return decoded.userId; //staff token valid
+        }
+    })
+}
+
+function tokenVerify(token, isAdmin = false) {
+    if (!isAdmin) { 
+        return checkUser(token);
+    } else {
+        return checkStaff(token);
+    }
+}
+
+module.exports = {tokenVerify};
+
+module.exports = {randomPassword, randomUsername, log, mysql_query, tokenVerify};

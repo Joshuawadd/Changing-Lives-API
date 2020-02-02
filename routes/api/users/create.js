@@ -1,38 +1,34 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
-
-const functions = require('../../../utils');
+const utils = require('../../../utils');
 
 //Postman can be used to test post request {"realName": "James"}
 router.post('/', (req, res) => {
     try {
-        const realName = req.body.realName;
-        const username = functions.randomUsername();
-        const password = functions.randomPassword();
-        const salt = bcrypt.genSaltSync(10);
-        const hashed_pass = bcrypt.hashSync(password, salt);
-
-        const connection = mysql.createConnection({
-            host: process.env.MYSQL_HOST,
-            user: process.env.MYSQL_USER,
-            password: process.env.MYSQL_PASSWORD,
-            database: process.env.MYSQL_DATABASE
-        });
-
-        connection.connect((err) => {
-            if (err) throw err;
-        });
-
-        connection.query('INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)',
-            [realName, username, hashed_pass, salt, 0], (err) => {
-                if (err) throw res.sendStatus(400);
+        function verify() {
+            return new Promise((resolve) => {
+                resolve(utils.tokenVerify(req.header('Authorization')));
             });
+        }
+        verify().then((result) => {
+            if (!result) {
+                res.sendStatus(403);
+                return;
+            }
+            const realName = req.body.realName;
+            const isAdmin = req.body.isAdmin;
+            const username = utils.randomUsername();
+            const password = utils.randomPassword();
+            const salt = bcrypt.genSaltSync(10);
+            const hashed_pass = bcrypt.hashSync(password, salt);
 
-        connection.end();
+            const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
+            const queryArray = [realName, username, hashed_pass, salt, isAdmin];
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {});
 
-        res.sendStatus(200);
+            res.sendStatus(200);
+        });
     } catch (err) {
         res.sendStatus(500);
     }

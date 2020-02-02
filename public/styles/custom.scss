@@ -1,0 +1,16 @@
+/* import only the necessary Bootstrap files */
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+
+$theme-colors: (
+  "primary":    #253d98,
+  "secondary":  #ef539e,
+  "success":    #983794,
+  "info":       #663695,
+  "warning":    #ffffff,
+  "danger":     #ffffff,
+  "light":      #808285,
+  "dark":       #58595b
+);
+
+@import "../../node_modules/bootstrap/scss/bootstrap";

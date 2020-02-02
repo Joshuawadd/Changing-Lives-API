@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const tv = require('../tokenVerify');
 const utils = require('../../../utils');
 
 /*returns a list of all sections ordered by the position variable*/
@@ -38,7 +37,7 @@ router.get('/', (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(tv.tokenVerify(req.query.token));
+                resolve(utils.tokenVerify(req.query.token));
             });
         }
         verify().then((userId) => {
@@ -46,10 +45,10 @@ router.get('/', (req, res) => {
                 res.sendStatus(403);
                 return;
             }
-            let sectionId = parseInt(req.query.sectionId, 10)
-            if ( (typeof(sectionId) === "undefined") || (isNaN(sectionId)) ) {
-                sectionId = "All"
-            };
+            let sectionId = parseInt(req.query.sectionId, 10);
+            if ( (typeof(sectionId) === 'undefined') || (isNaN(sectionId)) ) {
+                sectionId = 'All';
+            }
 
             var whereString = '';
             if (sectionId !== 'All') {
@@ -57,7 +56,7 @@ router.get('/', (req, res) => {
             }
 
             const queryString = `SELECT sections.section_id, sections.article_text, sections.section_name, sections.position, files.file_id, files.file_name, files.file_link FROM sections
-            LEFT JOIN files ON sections.section_id = files.section_id ${whereString}`
+            LEFT JOIN files ON sections.section_id = files.section_id ${whereString}`;
             
             utils.mysql_query(res, queryString, [], (results, res) => {
                 let contentData = results;
@@ -91,12 +90,12 @@ router.get('/', (req, res) => {
                 sects.sort(compare);
 
                 res.status(200).send(sects);
-                utils.log(userId, "list", "sections")
+                utils.log(userId, 'list', 'sections');
 
             });
-        })
+        });
     } catch (err) {
-        console.log(err)
+        console.log(err);
         res.sendStatus(500);
     }
 

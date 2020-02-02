@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const Joi = require('joi');
-const tv = require('../tokenVerify');
 const utils = require('../../../utils');
 
 function validate(req) {
@@ -18,7 +17,7 @@ router.post('/', (req, res) => {
 
     const {error} = validate(req.body);    
     if (error) {
-        const errorMessage = error.details[0].message
+        const errorMessage = error.details[0].message;
         res.status(400).send(errorMessage);
         return;
     }
@@ -26,8 +25,8 @@ router.post('/', (req, res) => {
     const userName = req.body.userName;
     const password = req.body.userPassword;
 
-    const queryString = 'SELECT password, password_salt, user_id FROM users WHERE username = ?'
-    const queryArray = [userName]
+    const queryString = 'SELECT password, password_salt, user_id FROM users WHERE username = ?';
+    const queryArray = [userName];
     
     utils.mysql_query(res, queryString, queryArray, (rows, res) => {
         const passwordMatch = new Promise((resolve) => {
@@ -40,7 +39,7 @@ router.post('/', (req, res) => {
                 if (temp_hash === password_hashed) {
                     resolve(userId);
                 } else {
-                    resolve(undefined)
+                    resolve(undefined);
                 }
             } else {
                 resolve(undefined);
@@ -51,19 +50,19 @@ router.post('/', (req, res) => {
             if (typeof(userId) !== 'undefined') {
                 const token = jwt.sign({userId: userId}, process.env.USER_KEY, {expiresIn: 1200});
                 res.status(200).send(token);
-                utils.log(userId, "login", "users")
+                utils.log(userId, 'login', 'users');
             } else {
-                res.status(401).send("Incorrect username and/or password");
+                res.status(401).send('Incorrect username and/or password');
             }
-        })
-    })
+        });
+    });
 });
 
 //silently logs in if page is refreshed and token is still in date
 router.get('/silent', (req, res) => {
     function verify() {
         return new Promise((resolve) => {
-            resolve(tv.tokenVerify(req.query.token));
+            resolve(utils.tokenVerify(req.query.token));
         });
     }
     verify().then((result) => {

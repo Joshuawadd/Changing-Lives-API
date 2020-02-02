@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
-const tv = require('../tokenVerify');
 const multer = require('multer');
+const utils = require('../../../utils');
 
 const upload = multer();
 
@@ -11,7 +10,7 @@ router.post('/', upload.none(), (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(tv.tokenVerify(req.header('Authorization')));
+                resolve(utils.tokenVerify(req.header('Authorization')));
             });
         }
         verify().then((result) => {
@@ -25,21 +24,9 @@ router.post('/', upload.none(), (req, res) => {
             const userPassword = req.body.userPassword;
             const userId = req.body.userId;
 
-            const connection = mysql.createConnection({
-                host: process.env.MYSQL_HOST,
-                user: process.env.MYSQL_USER,
-                password: process.env.MYSQL_PASSWORD,
-                database: process.env.MYSQL_DATABASE
-            });
-
-            connection.connect((err) => {
-                if (err) throw err;
-            });
-            connection.query('UPDATE users SET real_name = ?, username = ?, password = ? WHERE user_id = ?', [realName, userName, userPassword, userId], (err) => {
-                if (err) throw res.sendStatus(400);
-            });
-
-            connection.end();
+            const queryString = 'UPDATE users SET real_name = ?, username = ?, password = ? WHERE user_id = ?';
+            const queryArray = [realName, userName, userPassword, userId];
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {});
 
             res.sendStatus(200);
         });
