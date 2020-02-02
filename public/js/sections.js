@@ -184,7 +184,7 @@ async function rmSection(event, sec_id, sec_name) {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'Authorization': getCookie('authToken'),
                     },
-                    body: 'section_id=' + sec_id
+                    body: 'sectionId=' + sec_id
                 });
             if (response.ok) {
                 alert('Section removed successfully!');
