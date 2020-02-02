@@ -11,6 +11,7 @@ const utils = require('../../../utils');
 
 router.post('/', (req, res) => {
 
+
     const {error} = validate(req.body);
     
     if (error) {
@@ -25,13 +26,79 @@ router.post('/', (req, res) => {
     const connection = utils.connection;
     
 
+    const queryString = 'SELECT password, password_salt, user_id FROM users WHERE username = ?'
+    const queryArray = [username]
+    
+    
+    utils.mysql_query(res, queryString, queryArray, function(rows, res) {
+        const passwordMatch = new Promise((resolve) => {
+            if (rows.length > 0) {
+                const password_salt = rows[0]['password_salt'];
+                const password_hashed = rows[0]['password'];
+                const userId = rows[0]['user_id'];
+                
+                const temp_hash = bcrypt.hashSync(password, password_salt);
+                if (temp_hash === password_hashed) {
+                    resolve(userId);
+                } else {
+                    resolve(undefined)
+                }
+            } else {
+                resolve(undefined);
+            }
+        });
+        
+        passwordMatch.then((userId) => {
+            if (typeof(userId) !== 'undefined') {
+                const token = jwt.sign({userId: userId}, process.env.USER_KEY, {expiresIn: 1200});
+                res.status(200).send(token);
+                utils.log(userId, "login", "users")
+            } else {
+                res.status(401).send("Incorrect username and/or password");
+            }
+        })
+    })
+
+                        /*if (rows.length > 0) {
+                            const password_salt = rows[0]['password_salt'];
+                            const password_hashed = rows[0]['password'];
+                            const userId = rows[0]['user_id'];
+            
+                            const temp_hash = bcrypt.hashSync(password, password_salt);
+                            if (temp_hash === password_hashed) {
+                                resolve(userId);
+                            } else {
+                                resolve(undefined)
+                            }
+                        } else {
+                            resolve(undefined);
+                        }
+                    });
+                });
+        
+                passwordMatch.then((userId) => {
+                    if (typeof(userId) !== 'undefined') {
+                        const token = jwt.sign({userId: userId}, process.env.USER_KEY, {expiresIn: 1200});
+                        res.status(200).send(token);
+                        utils.log(userId, "login", "users")
+                    } else {
+                        res.status(401).send("Incorrect username and/or password");
+                    }*//*
+                }).finally(() => {
+                    connection.end();
+                });
+            }
+        });
+    }*/
+
+    /*
     connection.connect((err) => {
         if (err) {
             console.log(`${err}`);
             res.sendStatus(500)
         } else {
             const passwordMatch = new Promise((resolve) => {
-                connection.query('SELOCT password, password_salt, user_id FROM users WHERE username = ?', [username], (err, rows) => {
+                connection.query('SELECT password, password_salt, user_id FROM users WHERE username = ?', [username], (err, rows) => {
                     if (err) {
                         console.log(`${err}`);
                         res.sendStatus(500)
@@ -66,7 +133,7 @@ router.post('/', (req, res) => {
                 connection.end();
             });
         }
-    });
+    });*/
 });
 
 //silently logs in if page is refreshed and token is still in date

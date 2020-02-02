@@ -53,12 +53,6 @@ function randomPassword(length = 10) {
     return password.join('');
 }
 
-const connection = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE
-});
 
 function log(userId, action, entity, newData=null, oldData=null) {
     const connection = mysql.createConnection({
@@ -81,4 +75,33 @@ function log(userId, action, entity, newData=null, oldData=null) {
         connection.end();
 }
 
-module.exports = {randomPassword, randomUsername, log, connection};
+function mysql_query(res, queryString, queryArray, callback) {
+    //TODO: consider https://stackoverflow.com/a/16365821
+    const connection = mysql.createConnection({
+        host: process.env.MYSQL_HOST,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE
+    });
+    connection.connect((err) => {
+        if (err) {
+            console.log(err)
+            //console.log(`${err}`);
+            res.sendStatus(500)
+        } else {
+            connection.query(queryString, queryArray, (err, rows) => {
+                if (err) {
+                    console.log(err)
+                    //console.log(`${err}`);
+                    res.sendStatus(500)
+                    return
+                } else {
+                    callback(rows, res)
+                }
+            })
+            connection.end()
+        }
+    })
+}
+
+module.exports = {randomPassword, randomUsername, log, mysql_query};
