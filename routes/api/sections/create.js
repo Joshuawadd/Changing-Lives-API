@@ -51,7 +51,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
                 const queryString3 = 'INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)';
                 let queryArray3 = [];
                 for (let j = 0; j < fileTitles.length; j++) {
-                    queryArray3 = [fileTitles[j], sectionFiles[j], result, 0];
+                    queryArray3 = [fileTitles[j], sectionFiles[j], sectionId, 0];
                     utils.mysql_query(res, queryString3, queryArray3, (results, res) => {});
                 }
                 res.sendStatus(200);
