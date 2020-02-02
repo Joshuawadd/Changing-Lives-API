@@ -41,8 +41,8 @@ router.get('/', (req, res) => {
                 resolve(tv.tokenVerify(req.query.token));
             });
         }
-        verify().then((result) => {
-            if (!result) {
+        verify().then((userId) => {
+            if (!userId) {
                 res.sendStatus(403);
                 return;
             }
@@ -91,6 +91,7 @@ router.get('/', (req, res) => {
                 sects.sort(compare);
 
                 res.status(200).send(sects);
+                utils.log(userId, "list", "sections")
 
             });
         })
