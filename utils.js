@@ -1,3 +1,5 @@
+const mysql = require('mysql');
+
 // random generate a user name like cis -abcd12
 function randomUsername() {
     var arr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
@@ -51,4 +53,25 @@ function randomPassword(length = 10) {
     return password.join('');
 }
 
-module.exports = {randomPassword, randomUsername};
+function log(userId, action, entity, newData=null, oldData=null) {
+    const connection = mysql.createConnection({
+        host: process.env.MYSQL_HOST,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE
+    });
+
+    connection.connect((err) => {
+        if (err) throw err;
+    });
+
+    const dateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    connection.query('INSERT INTO logs (userId, dateTime, action, entity, newData, oldData) VALUES (?,?,?,?,?,?)',
+            [userId, dateTime, action, entity, newData, oldData], (err) => {
+                if (err) throw err;
+            });
+
+        connection.end();
+}
+
+module.exports = {randomPassword, randomUsername, log};

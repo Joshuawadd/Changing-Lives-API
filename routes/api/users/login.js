@@ -5,6 +5,7 @@ const router = express.Router();
 const mysql = require('mysql');
 const Joi = require('joi');
 const tv = require('../tokenVerify');
+const utils = require('../../../utils');
 
 
 router.post('/', (req, res) => {
@@ -53,10 +54,11 @@ router.post('/', (req, res) => {
         });
     }
 
-    passwordMatch().then((result) => {
-        if (typeof(result) !== 'undefined') {
-            const token = jwt.sign({userId: result}, process.env.USER_KEY, {expiresIn: 1200});
+    passwordMatch().then((userId) => {
+        if (typeof(userId) !== 'undefined') {
+            const token = jwt.sign({userId: userId}, process.env.USER_KEY, {expiresIn: 1200});
             res.status(200).send(token);
+            utils.log(userId, "login", "users")
         } else {
             res.status(401).send("Incorrect username and/or password");
         }
