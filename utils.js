@@ -89,14 +89,14 @@ function mysql_query(res, queryString, queryArray, callback) {
             //console.log(`${err}`);
             res.sendStatus(500)
         } else {
-            connection.query(queryString, queryArray, (err, rows) => {
+            connection.query(queryString, queryArray, (err, results) => {
                 if (err) {
                     console.log(err)
                     //console.log(`${err}`);
                     res.sendStatus(500)
                     return
                 } else {
-                    callback(rows, res)
+                    callback(results, res)
                 }
             })
             connection.end()

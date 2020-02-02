@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const tv = require('../tokenVerify');
+const utils = require('../../../utils');
 
 /*returns a list of all sections ordered by the position variable*/
 
@@ -47,37 +47,20 @@ router.get('/', (req, res) => {
                 return;
             }
             let sectionId = parseInt(req.query.sectionId, 10)
-            if (typeof(sectionId) === "undefined") {
+            if ( (typeof(sectionId) === "undefined") || (isNaN(sectionId)) ) {
                 sectionId = "All"
             };
-            const connection = mysql.createConnection({
-                host: process.env.MYSQL_HOST,
-                user: process.env.MYSQL_USER,
-                password: process.env.MYSQL_PASSWORD,
-                database: process.env.MYSQL_DATABASE
-            });
 
-            connection.connect((err) => {
-                if (err) throw err;
-            });
             var whereString = '';
             if (sectionId !== 'All') {
                 whereString = `WHERE sections.section_id = ${sectionId}`;
             }
 
-            function getList() {
-                return new Promise((resolve, reject) => {
-                    connection.query(`SELECT sections.section_id, sections.article_text, sections.section_name, sections.position, files.file_id, files.file_name, files.file_link FROM sections
-                                            LEFT JOIN files ON sections.section_id = files.section_id ${whereString}
-                                            `, [], (err, results) => {
-                        if (err) throw res.sendStatus(400);
-                        resolve(results);
-                    });
-                });
-            }
-
-            getList().then(result => {
-                let contentData = result;
+            const queryString = `SELECT sections.section_id, sections.article_text, sections.section_name, sections.position, files.file_id, files.file_name, files.file_link FROM sections
+            LEFT JOIN files ON sections.section_id = files.section_id ${whereString}`
+            
+            utils.mysql_query(res, queryString, [], (results, res) => {
+                let contentData = results;
                 let sects = [];
 
                 for (let i = 0; i < contentData.length; i++) {
@@ -109,13 +92,8 @@ router.get('/', (req, res) => {
 
                 res.status(200).send(sects);
 
-            }).finally(() => {
-                connection.end();
             });
-
-
-        });
-        
+        })
     } catch (err) {
         console.log(err)
         res.sendStatus(500);
