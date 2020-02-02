@@ -2,61 +2,61 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const mysql = require('mysql');
 const Joi = require('joi');
 const tv = require('../tokenVerify');
+const utils = require('../../../utils');
 
+function validate(req) {
+    const schema = {
+        userName: Joi.string().min(1).max(16).required(),
+        userPassword: Joi.string().min(1).max(16).required()
+    };
+    return Joi.validate(req, schema);
+}
 
 router.post('/', (req, res) => {
 
-    const {error} = validate(req.body);
-
+    const {error} = validate(req.body);    
     if (error) {
-        res.sendStatus(500);
+        const errorMessage = error.details[0].message
+        res.status(400).send(errorMessage);
+        return;
     }
 
-    const username = req.body.userName;
+    const userName = req.body.userName;
     const password = req.body.userPassword;
 
-    const token = jwt.sign({uname: username}, process.env.TOKEN_USER, {expiresIn: 1200});
-
-    const connection = mysql.createConnection({
-        host: process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
-    });
-
-    connection.connect((err) => {
-        if (err) throw err;
-    });
-
-    function passwordMatch() {
-        return new Promise((resolve) => {
-            connection.query('SELECT password, password_salt FROM users WHERE username = ?', [username], (err, rows) => {
-                if (rows.length > 0) {
-                    const password_salt = rows[0]['password_salt'];
-                    const password_hashed = rows[0]['password'];
-
-                    const temp_hash = bcrypt.hashSync(password, password_salt);
-                    resolve(temp_hash === password_hashed);
+    const queryString = 'SELECT password, password_salt, user_id FROM users WHERE username = ?'
+    const queryArray = [userName]
+    
+    utils.mysql_query(res, queryString, queryArray, (rows, res) => {
+        const passwordMatch = new Promise((resolve) => {
+            if (rows.length > 0) {
+                const password_salt = rows[0]['password_salt'];
+                const password_hashed = rows[0]['password'];
+                const userId = rows[0]['user_id'];
+                
+                const temp_hash = bcrypt.hashSync(password, password_salt);
+                if (temp_hash === password_hashed) {
+                    resolve(userId);
                 } else {
-                    resolve(false);
+                    resolve(undefined)
                 }
-            });
+            } else {
+                resolve(undefined);
+            }
         });
-    }
-
-    passwordMatch().then((result) => {
-        if (result) {
-            res.status(200).send(token);
-        } else {
-            res.sendStatus(403);
-        }
-    }).finally(() => {
-        connection.end();
-    });
-
+        
+        passwordMatch.then((userId) => {
+            if (typeof(userId) !== 'undefined') {
+                const token = jwt.sign({userId: userId}, process.env.USER_KEY, {expiresIn: 1200});
+                res.status(200).send(token);
+                utils.log(userId, "login", "users")
+            } else {
+                res.status(401).send("Incorrect username and/or password");
+            }
+        })
+    })
 });
 
 //silently logs in if page is refreshed and token is still in date
@@ -75,14 +75,5 @@ router.get('/silent', (req, res) => {
     });
 });
 
-
-function validate(req) {
-    const schema = {
-        username: Joi.string().min(1).max(16).required(),
-        password: Joi.string().min(1).max(16).required()
-    };
-
-    return Joi.validate(req, schema);
-}
 
 module.exports = router;
