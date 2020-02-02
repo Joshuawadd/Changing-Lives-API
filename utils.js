@@ -53,6 +53,13 @@ function randomPassword(length = 10) {
     return password.join('');
 }
 
+const connection = mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE
+});
+
 function log(userId, action, entity, newData=null, oldData=null) {
     const connection = mysql.createConnection({
         host: process.env.MYSQL_HOST,
@@ -74,4 +81,4 @@ function log(userId, action, entity, newData=null, oldData=null) {
         connection.end();
 }
 
-module.exports = {randomPassword, randomUsername, log};
+module.exports = {randomPassword, randomUsername, log, connection};
