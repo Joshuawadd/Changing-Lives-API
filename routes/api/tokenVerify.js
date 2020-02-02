@@ -1,26 +1,31 @@
 const jwt = require('jsonwebtoken');
 
+function checkUser(token) { //this will accept user or staff tokens
+    jwt.verify(token, process.env.USER_KEY, (err, decoded) => {
+        if (err) {
+            return checkStaff(token); //user check failed, so check for staff token
+        } else {
+            return decoded.userId; //user token valid
+        }
+    })
+}
+
+function checkStaff (token) {
+    jwt.verify(token, process.env.STAFF_KEY, (err, decoded) => {
+        if (err) {
+            return undefined; //staff check failed
+        } else {
+            return decoded.userId; //staff token valid
+        }
+    })
+}
+
 function tokenVerify(token, isAdmin = false) {
-    var val = false;
-    if (!isAdmin) { //this will accept user or staff tokens
-        jwt.verify(token, process.env.TOKEN_USER, (err) => {
-            if (err) {
-                isAdmin = true; //now check for staff token
-            } else {
-                val = true; //user token valid
-            }
-        });
+    if (!isAdmin) { 
+        return checkUser(token);
+    } else {
+        return checkStaff(token);
     }
-    if (isAdmin) { //this accepts only staff tokenss
-        jwt.verify(token, process.env.TOKEN_STAFF, (err) => {
-            if (err) {
-                val = false; //neither token is valid
-            } else {
-                val = true; //staff token valied
-            }
-        });
-    }
-    return val;
 }
 
 module.exports = {tokenVerify};
