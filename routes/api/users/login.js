@@ -2,30 +2,32 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const mysql = require('mysql');
 const Joi = require('joi');
 const tv = require('../tokenVerify');
 const utils = require('../../../utils');
 
-
+function validate(req) {
+    const schema = {
+        userName: Joi.string().min(1).max(16).required(),
+        userPassword: Joi.string().min(1).max(16).required()
+    };
+    return Joi.validate(req, schema);
+}
 
 router.post('/', (req, res) => {
 
-
-    const {error} = validate(req.body);
-    
+    const {error} = validate(req.body);    
     if (error) {
         const errorMessage = error.details[0].message
         res.status(400).send(errorMessage);
         return;
     }
 
-
-    const username = req.body.userName;
+    const userName = req.body.userName;
     const password = req.body.userPassword;
 
     const queryString = 'SELECT password, password_salt, user_id FROM users WHERE username = ?'
-    const queryArray = [username]
+    const queryArray = [userName]
     
     utils.mysql_query(res, queryString, queryArray, (rows, res) => {
         const passwordMatch = new Promise((resolve) => {
@@ -55,8 +57,6 @@ router.post('/', (req, res) => {
             }
         })
     })
-
-
 });
 
 //silently logs in if page is refreshed and token is still in date
@@ -75,14 +75,5 @@ router.get('/silent', (req, res) => {
     });
 });
 
-
-function validate(req) {
-    const schema = {
-        userName: Joi.string().min(1).max(16).required(),
-        userPassword: Joi.string().min(1).max(16).required()
-    };
-
-    return Joi.validate(req, schema);
-}
 
 module.exports = router;

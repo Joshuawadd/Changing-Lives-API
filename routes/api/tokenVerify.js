@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 function checkUser(token) { //this will accept user or staff tokens
-    jwt.verify(token, process.env.USER_KEY, (err, decoded) => {
+    return jwt.verify(token, process.env.USER_KEY, (err, decoded) => {
         if (err) {
             return checkStaff(token); //user check failed, so check for staff token
         } else {
@@ -11,7 +11,7 @@ function checkUser(token) { //this will accept user or staff tokens
 }
 
 function checkStaff (token) {
-    jwt.verify(token, process.env.STAFF_KEY, (err, decoded) => {
+    return jwt.verify(token, process.env.STAFF_KEY, (err, decoded) => {
         if (err) {
             return undefined; //staff check failed
         } else {

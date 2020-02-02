@@ -46,7 +46,10 @@ router.get('/', (req, res) => {
                 res.sendStatus(403);
                 return;
             }
-            let sectionId = parseInt(req.query.sectionId, 10) || 'All';
+            let sectionId = parseInt(req.query.sectionId, 10)
+            if (typeof(sectionId) === "undefined") {
+                sectionId = "All"
+            };
             const connection = mysql.createConnection({
                 host: process.env.MYSQL_HOST,
                 user: process.env.MYSQL_USER,
