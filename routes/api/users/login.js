@@ -10,10 +10,13 @@ const tv = require('../tokenVerify');
 router.post('/', (req, res) => {
 
     const {error} = validate(req.body);
-
+    
     if (error) {
-        res.sendStatus(500);
+        const errorMessage = error.details[0].message
+        res.status(400).send(errorMessage);
+        return;
     }
+
 
     const username = req.body.userName;
     const password = req.body.userPassword;
@@ -51,7 +54,7 @@ router.post('/', (req, res) => {
         if (result) {
             res.status(200).send(token);
         } else {
-            res.sendStatus(403);
+            res.status(401).send("Incorrect username and/or password");
         }
     }).finally(() => {
         connection.end();
@@ -78,8 +81,8 @@ router.get('/silent', (req, res) => {
 
 function validate(req) {
     const schema = {
-        username: Joi.string().min(1).max(16).required(),
-        password: Joi.string().min(1).max(16).required()
+        userName: Joi.string().min(1).max(16).required(),
+        userPassword: Joi.string().min(1).max(16).required()
     };
 
     return Joi.validate(req, schema);
