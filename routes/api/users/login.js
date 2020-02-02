@@ -21,8 +21,6 @@ router.post('/', (req, res) => {
     const username = req.body.userName;
     const password = req.body.userPassword;
 
-    const token = jwt.sign({uname: username}, process.env.TOKEN_USER, {expiresIn: 1200});
-
     const connection = mysql.createConnection({
         host: process.env.MYSQL_HOST,
         user: process.env.MYSQL_USER,
@@ -36,22 +34,28 @@ router.post('/', (req, res) => {
 
     function passwordMatch() {
         return new Promise((resolve) => {
-            connection.query('SELECT password, password_salt FROM users WHERE username = ?', [username], (err, rows) => {
+            connection.query('SELECT password, password_salt, user_id FROM users WHERE username = ?', [username], (err, rows) => {
                 if (rows.length > 0) {
                     const password_salt = rows[0]['password_salt'];
                     const password_hashed = rows[0]['password'];
+                    const userId = rows[0]['user_id'];
 
                     const temp_hash = bcrypt.hashSync(password, password_salt);
-                    resolve(temp_hash === password_hashed);
+                    if (temp_hash === password_hashed) {
+                        resolve(userId);
+                    } else {
+                        resolve(undefined)
+                    }
                 } else {
-                    resolve(false);
+                    resolve(undefined);
                 }
             });
         });
     }
 
     passwordMatch().then((result) => {
-        if (result) {
+        if (typeof(result) !== 'undefined') {
+            const token = jwt.sign({userId: result}, process.env.USER_KEY, {expiresIn: 1200});
             res.status(200).send(token);
         } else {
             res.status(401).send("Incorrect username and/or password");
