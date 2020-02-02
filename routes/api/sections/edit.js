@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
-const tv = require('../tokenVerify');
 const multer  = require('multer');
 const utils = require('../../../utils');
 const storage = multer.diskStorage({
@@ -19,7 +17,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(tv.tokenVerify(req.header('Authorization')));
+                resolve(utils.tokenVerify(req.header('Authorization')));
             });
         }
         verify().then((result) => {
@@ -61,7 +59,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
             for (let k = 0; k < fileRemove.length; k++) { //files that have now been removed
                 utils.mysql_query(res, 'DELETE FROM files WHERE file_id = ?', [fileRemove[k]], (results, res) => {});
             }
-            
+
             res.sendStatus(200);
         });
 

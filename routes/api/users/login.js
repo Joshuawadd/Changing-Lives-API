@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const Joi = require('joi');
-const tv = require('../tokenVerify');
 const utils = require('../../../utils');
 
 function validate(req) {
@@ -63,7 +62,7 @@ router.post('/', (req, res) => {
 router.get('/silent', (req, res) => {
     function verify() {
         return new Promise((resolve) => {
-            resolve(tv.tokenVerify(req.query.token));
+            resolve(utils.tokenVerify(req.query.token));
         });
     }
     verify().then((result) => {

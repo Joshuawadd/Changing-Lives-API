@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const tv = require('../tokenVerify');
 const multer = require('multer');
 const utils = require('../../../utils');

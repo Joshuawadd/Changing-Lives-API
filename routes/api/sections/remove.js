@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
-const tv = require('../tokenVerify');
 const utils = require('../../../utils');
 
 //Postman can be used to test post request {"sectionId": 1} or {"user_id": 1}
@@ -9,7 +7,7 @@ router.post('/', (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(tv.tokenVerify(req.header('Authorization')));
+                resolve(utils.tokenVerify(req.header('Authorization')));
             });
         }
         verify().then((result) => {

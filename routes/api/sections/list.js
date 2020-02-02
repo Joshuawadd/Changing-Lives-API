@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const tv = require('../tokenVerify');
 const utils = require('../../../utils');
 
 /*returns a list of all sections ordered by the position variable*/
@@ -38,7 +37,7 @@ router.get('/', (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(tv.tokenVerify(req.query.token));
+                resolve(utils.tokenVerify(req.query.token));
             });
         }
         verify().then((userId) => {
