@@ -90,6 +90,7 @@ function mysql_query(res, queryString, queryArray, callback) {
             res.sendStatus(500)
         } else {
             connection.query(queryString, queryArray, (err, results) => {
+                connection.end()
                 if (err) {
                     console.log(err)
                     //console.log(`${err}`);
@@ -99,7 +100,7 @@ function mysql_query(res, queryString, queryArray, callback) {
                     callback(results, res)
                 }
             })
-            connection.end()
+            
         }
     })
 }
