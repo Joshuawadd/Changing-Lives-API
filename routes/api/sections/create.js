@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const tv = require('../tokenVerify');
 const multer = require('multer');
 const utils = require('../../../utils');
 
@@ -19,7 +18,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(tv.tokenVerify(req.header('Authorization')));
+                resolve(utils.tokenVerify(req.header('Authorization')));
             });
         }
         verify().then((result) => {

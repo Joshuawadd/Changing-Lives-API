@@ -17,13 +17,14 @@ router.post('/', (req, res) => {
                 return;
             }
             const realName = req.body.realName;
+            const isAdmin = req.body.isAdmin;
             const username = utils.randomUsername();
             const password = utils.randomPassword();
             const salt = bcrypt.genSaltSync(10);
             const hashed_pass = bcrypt.hashSync(password, salt);
 
             const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
-            const queryArray = [realName, username, hashed_pass, salt, 0];
+            const queryArray = [realName, username, hashed_pass, salt, isAdmin];
             utils.mysql_query(res, queryString, queryArray, (results, res) => {});
 
             res.sendStatus(200);

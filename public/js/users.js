@@ -33,7 +33,7 @@ async function rmUser(event, u_id, username) {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'Authorization': getCookie('authToken'),
                     },
-                    body: 'user_id=' + u_id
+                    body: 'userId=' + u_id
                 });
             if (response.ok) {
                 alert('User deleted successfully!');
@@ -85,9 +85,9 @@ async function updateUser(event) {
         let userUname = document.getElementById('user_username').value;
         let userPass = document.getElementById('user_password').value;
         let data = new FormData();
-        data.append('userName', userName);
-        data.append('userUname', userUname);
-        data.append('userPass', userPass);
+        data.append('realName', userName);
+        data.append('userName', userUname);
+        data.append('userPassword', userPass);
         data.append('userId', currentUser);
         let response = await fetch('/api/users/edit',
             {
@@ -128,7 +128,7 @@ async function addUser(event) {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Authorization': authToken,
                 },
-                body: 'real_name=' + userName + '&is_admin=0'
+                body: 'realName=' + userName + '&isAdmin=0'
             });
         if (response.ok) {
             alert('User created successfully!');
