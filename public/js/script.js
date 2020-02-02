@@ -53,7 +53,7 @@ async function logIn(event) { //sends a login request and sets the authToken coo
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: 'username=' + uname + '&password=' + pass
+                body: 'userName=' + uname + '&userPassword=' + pass
             });
         if (response.ok) {
             $('#login_box').modal('hide');
