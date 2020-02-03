@@ -46,8 +46,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
 
             const queryString = 'UPDATE sections SET section_name = ?, article_text = ? WHERE section_id = ?';
             const queryArray = [sectionName, sectionText, sectionId];
-            utils.mysql_query(res, queryString, queryArray, (results, res) => {});
-
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {res.sendStatus(200);});
             for (let j = 0; j < files.length; j++) {
                 //file existed before
                 if (newFilePaths[j] === '') {
@@ -59,8 +58,6 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
             for (let k = 0; k < fileRemove.length; k++) { //files that have now been removed
                 utils.mysql_query(res, 'DELETE FROM files WHERE file_id = ?', [fileRemove[k]], (results, res) => {});
             }
-
-            res.sendStatus(200);
         });
 
     } catch(err) {

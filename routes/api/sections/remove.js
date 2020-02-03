@@ -24,18 +24,17 @@ router.post('/', (req, res) => {
                 });
                 const queryString = 'DELETE FROM sections WHERE section_id = ?';
                 const queryString2 = 'DELETE FROM files WHERE section_id = ?';
-                utils.mysql_query(res, queryString, [sectionId], (results, res) => {});
+                utils.mysql_query(res, queryString, [sectionId], (results, res) => {res.sendStatus(200);});
                 utils.mysql_query(res, queryString2, [sectionId], (results, res) => {});
             } else if (!isNaN(userId)) {
                 //this doesn't seem necessary and will cause issues with positioning so don't use at the moment
                 const queryString = 'DELETE FROM sections WHERE user_id = ?';
                 const queryString2 = 'DELETE FROM files WHERE user_id = ?';
-                utils.mysql_query(res, queryString, [userId], (results, res) => {});
+                utils.mysql_query(res, queryString, [userId], (results, res) => {res.sendStatus(200);});
                 utils.mysql_query(res, queryString2, [userId], (results, res) => {});
             } else { //no user or section was provided so the request makes no sense
                 return res.sendStatus(400);
             }
-            res.sendStatus(200);
         });
 
     } catch (err) {

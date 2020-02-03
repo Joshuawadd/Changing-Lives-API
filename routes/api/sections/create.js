@@ -47,7 +47,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
                     let newPos = oldPos[0]['MAX(position)']+1;
                     const queryString2 = 'UPDATE sections SET position = ? WHERE section_id = ?';
                     const queryArray2 = [newPos, sectionId];
-                    utils.mysql_query(res, queryString2, queryArray2, (results, res) => {} );
+                    utils.mysql_query(res, queryString2, queryArray2, (results, res) => {res.sendStatus(200);} );
                 });
                 const queryString3 = 'INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)';
                 let queryArray3 = [];
@@ -55,7 +55,6 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
                     queryArray3 = [fileTitles[j], sectionFiles[j], sectionId, 0];
                     utils.mysql_query(res, queryString3, queryArray3, (results, res) => {});
                 }
-                res.sendStatus(200);
             });
         });
     } catch (err) {
