@@ -16,13 +16,21 @@ router.post('/', (req, res) => {
                 return;
             }
             const sectionId = req.body.sectionId;
-            const moveUp = req.body.moveUp;
+            const moveUp = (req.body.moveUp == 'true');
             if (!isNaN(sectionId)) {
                 if (moveUp) {
                     //get position of one above (lower position) and add 1
                     utils.mysql_query(res, 'SELECT position FROM sections WHERE section_id = ?', [sectionId], (results, res) => {
                         utils.mysql_query(res, 'UPDATE sections SET position = position + 1 WHERE position = ?', [results[0]['position']-1], (results, res) => {
                             const queryString = 'UPDATE sections SET position = position - 1 where section_id = ?';
+                            utils.mysql_query(res, queryString, [sectionId], (results, res) => {res.sendStatus(200);});
+                        });
+                    });
+                } else {
+                    //get position of one above (lower position) and add 1
+                    utils.mysql_query(res, 'SELECT position FROM sections WHERE section_id = ?', [sectionId], (results, res) => {
+                        utils.mysql_query(res, 'UPDATE sections SET position = position - 1 WHERE position = ?', [results[0]['position']+1], (results, res) => {
+                            const queryString = 'UPDATE sections SET position = position + 1 where section_id = ?';
                             utils.mysql_query(res, queryString, [sectionId], (results, res) => {res.sendStatus(200);});
                         });
                     });
