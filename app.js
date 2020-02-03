@@ -13,7 +13,6 @@ const indexRouter = require('./routes/index');
 function userIsAllowed(req, callback) {
     const token = req.query.token;
     jwt.verify(token, process.env.USER_KEY, function(err, decoded){
-        console.log(err)
         if(!err){
             callback(true);
         } else {
