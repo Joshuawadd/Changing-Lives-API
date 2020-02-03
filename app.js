@@ -12,7 +12,7 @@ const indexRouter = require('./routes/index');
 //file protecting adapted from https://stackoverflow.com/questions/11910956/how-to-protect-a-public-dynamic-folder-in-nodejs
 function userIsAllowed(req, callback) {
     const token = req.query.token;
-    jwt.verify(token, process.env.TOKEN_USER, function(err, decoded){
+    jwt.verify(token, process.env.USER_KEY, function(err, decoded){
         if(!err){
             callback(true);
         } else {

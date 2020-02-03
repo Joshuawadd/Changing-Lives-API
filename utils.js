@@ -134,6 +134,5 @@ function tokenVerify(token, isAdmin = false) {
     }
 }
 
-module.exports = {tokenVerify};
 
 module.exports = {randomPassword, randomUsername, log, mysql_query, tokenVerify};
