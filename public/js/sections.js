@@ -26,8 +26,8 @@ class Section { //this is the class for an app section or page
     listHTML() {
         return `<li class="list-group-item"><h4>${this.name}</h4>
                     <span class="badge badge-dark"><a href="#" id="edit_btn_${this.id}" onclick="editSection(event,${this.id});">Edit</a></span>
-                    <span class="badge badge-dark"><a href="#" id="mvup_btn_${this.id}">Move Up</a></span>
-                    <span class="badge badge-dark"><a href="#" id="mvdn_btn_${this.id}">Move Down</a></span>
+                    <span class="badge badge-dark"><a href="#" id="mvup_btn_${this.id}" onclick="moveSection(event,${this.id},true)">Move Up</a></span>
+                    <span class="badge badge-dark"><a href="#" id="mvdn_btn_${this.id}" onclick="moveSection(event,${this.id},false)">Move Down</a></span>
                     <span class="badge badge-dark"><a href="#" id="rmve_btn_${this.id}" onclick="rmSection(event,${this.id},'${this.name}');">Remove</a></span>
                 </li>`;
     }
@@ -195,6 +195,32 @@ async function rmSection(event, sec_id, sec_name) {
             } else {
                 throw new Error(response.status+' '+response.statusText);
             }
+        }
+    } catch(error) {
+        alert(error);
+        return false;
+    }
+}
+
+async function moveSection(event, secId, moveUp) {
+    try {
+        event.preventDefault();
+        let response = await fetch('/api/sections/move',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': getCookie('authToken'),
+                },
+                body: 'sectionId=' + secId + '&moveUp=' + moveUp
+            });
+        if (response.ok) {
+            document.getElementById('content').click();
+        } else if (response.status === 403){
+            alert('Your session may have expired - please log in.');
+            loginPrompt();
+        } else {
+            throw new Error(response.status+' '+response.statusText);
         }
     } catch(error) {
         alert(error);
