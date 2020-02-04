@@ -131,7 +131,8 @@ async function addUser(event) {
                 body: 'realName=' + userName + '&isAdmin=0'
             });
         if (response.ok) {
-            alert('User created successfully!');
+            let pw = await response.text();
+            alert('User created successfully! Temporary password: '+ pw + '. This will not be visible again.');
             $('#user_modal').modal('hide');
             document.getElementById('users').click();
             return true;
@@ -168,25 +169,19 @@ function newUser() { //this loads up the box for creating a new user
     document.getElementById('user_edit_title').innerText = 'New User';
     currentUser = -1;
     document.getElementById('user_name').value = '';
-    document.getElementById('user_username').value = '';
-    document.getElementById('user_password').value = '';
-    document.getElementById('user_username').required = false;
-    document.getElementById('user_password').required = false;
+    document.getElementById('user_edit_help_text').innerHTML = '<p> When you create a user, a username and temporary password will be generated. These details should be passed to the user so they can sign in. </p> <br>';
     document.getElementById('user_edit_forms').style.display = 'none';
     $('#user_modal').modal('show');
 }
 
 function editUser(event,userId) { //this loads up the box for editing a user's details
     event.preventDefault();
+    document.getElementById('user_edit_help_text').innerHTML = '';
     document.getElementById('user_edit_forms').style.display = 'block';
-    document.getElementById('user_username').required = true;
-    document.getElementById('user_password').required = true;
     document.getElementById('user_edit_title').innerText = 'Edit user details';
     for (var i = 0; i < users.length; i++) {
         if (users[i].id == userId) {
             document.getElementById('user_name').value = users[i].name;
-            document.getElementById('user_username').value = users[i].username;
-            document.getElementById('user_password').value = users[i].password;
         }
     }
     currentUser = userId;

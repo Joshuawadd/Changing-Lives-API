@@ -25,7 +25,7 @@ router.post('/', (req, res) => {
 
             const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
             const queryArray = [realName, username, hashed_pass, salt, isAdmin];
-            utils.mysql_query(res, queryString, queryArray, (results, res) => {res.sendStatus(200);});
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {res.status(200).send(password);});
         });
     } catch (err) {
         res.sendStatus(500);
