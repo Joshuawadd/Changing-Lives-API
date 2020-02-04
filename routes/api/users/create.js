@@ -17,7 +17,7 @@ router.post('/', (req, res) => {
                 return;
             }
             const realName = req.body.realName;
-            const isAdmin = req.body.isAdmin;
+            const isAdmin = parseInt(req.body.isAdmin);
             const username = utils.randomUsername();
             const password = utils.randomPassword();
             const salt = bcrypt.genSaltSync(10);
@@ -25,9 +25,7 @@ router.post('/', (req, res) => {
 
             const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
             const queryArray = [realName, username, hashed_pass, salt, isAdmin];
-            utils.mysql_query(res, queryString, queryArray, (results, res) => {});
-
-            res.sendStatus(200);
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {res.sendStatus(200);});
         });
     } catch (err) {
         res.sendStatus(500);

@@ -43,43 +43,19 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
 
             utils.mysql_query(res, queryString, queryArray, (results, res) => {
                 const sectionId = results.insertId;
-                const queryString2 = 'UPDATE sections SET position = ? WHERE section_id = ?';
-                const queryArray2 = [sectionId, sectionId];
-                utils.mysql_query(res, queryString2, queryArray2, (results, res) => {} );
+                utils.mysql_query(res, 'SELECT MAX(position) FROM sections', [], (oldPos, res) => {
+                    let newPos = oldPos[0]['MAX(position)']+1;
+                    const queryString2 = 'UPDATE sections SET position = ? WHERE section_id = ?';
+                    const queryArray2 = [newPos, sectionId];
+                    utils.mysql_query(res, queryString2, queryArray2, (results, res) => {res.sendStatus(200);} );
+                });
                 const queryString3 = 'INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)';
                 let queryArray3 = [];
                 for (let j = 0; j < fileTitles.length; j++) {
                     queryArray3 = [fileTitles[j], sectionFiles[j], sectionId, 0];
                     utils.mysql_query(res, queryString3, queryArray3, (results, res) => {});
                 }
-                res.sendStatus(200);
             });
-
-
-/*
-            function addSection() {
-                return new Promise((resolve) => {
-                    connection.query('INSERT INTO sections (user_id,section_name,article_text, position) VALUES (?,?,?,?)', [0, section_name, article_text, -1], (err, results) => {
-                        if (err) throw res.sendStatus(400);
-                        resolve(results.insertId);
-                    });
-                });
-            }
-
-            addSection().then((result) => {
-                connection.query('UPDATE sections SET position = ? WHERE section_id = ?', [result, result], (err, results) => {
-                    if (err) throw res.sendStatus(400);
-                });
-                for (let j = 0; j < fileTitles.length; j++) {
-                    connection.query('INSERT INTO files (file_name, file_link, section_id, user_id) VALUES (?,?,?,?)', [fileTitles[j], sectionFiles[j], result, 0], (err) => {
-                        if (err) throw res.sendStatus(400);
-                    });
-                }
-                res.sendStatus(200);
-
-            }).finally(() => {
-                connection.end();
-            });*/
         });
     } catch (err) {
         res.sendStatus(500);

@@ -20,9 +20,8 @@ router.post('/', (req, res) => {
             if (!isNaN(userId)) {
                 const queryString = 'DELETE FROM users WHERE user_id = ?';
                 const queryArray = [userId];
-                utils.mysql_query(res, queryString, queryArray, (results, res) => {});
+                utils.mysql_query(res, queryString, queryArray, (results, res) => {res.sendStatus(200);});
             }
-            res.sendStatus(200);
         });
     } catch (err) {
         res.sendStatus(500);

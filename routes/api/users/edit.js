@@ -26,9 +26,8 @@ router.post('/', upload.none(), (req, res) => {
 
             const queryString = 'UPDATE users SET real_name = ?, username = ?, password = ? WHERE user_id = ?';
             const queryArray = [realName, userName, userPassword, userId];
-            utils.mysql_query(res, queryString, queryArray, (results, res) => {});
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {res.sendStatus(200);});
 
-            res.sendStatus(200);
         });
     } catch (err) {
         res.sendStatus(500);
