@@ -27,9 +27,11 @@ function getCookie(cname) { //adapted from https://www.w3schools.com/js/js_cooki
 
 async function loginPrompt() {
     try {
+        document.getElementById('logged_in').innerHTML = 'Not logged in';
         let authToken = getCookie('authToken');
         let response = await fetch('/api/users/login/silent?token='+authToken);
         if (response.ok) {
+            document.getElementById('logged_in').innerHTML = 'Logged in as: ' + getCookie('userName');
             return true;
         } else {
             $('.modal').modal('hide');
@@ -44,6 +46,7 @@ async function loginPrompt() {
 
 async function logIn(event) { //sends a login request and sets the authToken cookie if successful
     try {
+        document.getElementById('logged_in').innerHTML = 'Not logged in';
         event.preventDefault();
         let uname = document.getElementById('username').value;
         let pass = document.getElementById('password').value;
@@ -58,6 +61,8 @@ async function logIn(event) { //sends a login request and sets the authToken coo
         if (response.ok) {
             $('#login_box').modal('hide');
             let authToken = await response.text();
+            document.getElementById('logged_in').innerHTML = 'Logged in as: ' + uname;
+            document.cookie = 'userName=' + uname;
             document.cookie = 'authToken=' + authToken;
         }
         else {

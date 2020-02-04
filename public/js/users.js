@@ -60,7 +60,7 @@ async function getUsers() {
             let userData = JSON.parse(body);
             let usrs = [];
             for (var i = 0; i < userData.length; i++) {
-                let usr = new User(userData[i].id,userData[i].name,userData[i].username,userData[i].password);
+                let usr = new User(userData[i].id,userData[i].name,userData[i].username,'');
                 usrs.push(usr);
             }
             return usrs;
