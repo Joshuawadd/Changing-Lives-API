@@ -82,19 +82,4 @@ $(window).on('load',function(){
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('login_form').addEventListener('submit', logIn );
-    document.getElementById('edit_user').addEventListener('submit', function(event) {
-        if (currentUser >= 0) {
-            updateUser(event);
-        } else if (currentUser == -1) {
-            addUser(event);
-        }
-    });
-    document.getElementById('users').addEventListener('click', userClick );
-    document.getElementById('file_adder').addEventListener('change', function() {
-        let txt = ' file chosen';
-        if (this.files.length != 1) {
-            txt = ' files chosen';
-        }
-        document.getElementById('file_adder_label').innerText = this.files.length + txt;
-    });
 });

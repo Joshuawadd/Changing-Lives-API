@@ -192,3 +192,14 @@ function editUser(event,userId) { //this loads up the box for editing a user's d
     currentUser = userId;
     $('#user_modal').modal('show');
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('edit_user').addEventListener('submit', function(event) {
+        if (currentUser >= 0) {
+            updateUser(event);
+        } else if (currentUser == -1) {
+            addUser(event);
+        }
+    });
+    document.getElementById('users').addEventListener('click', userClick );
+});
