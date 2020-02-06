@@ -155,11 +155,30 @@ async function userClick(event) { //this is the event that triggers when the use
     event.preventDefault();
     users = await getUsers();
     if (users) {
-        let usersHTML = '<h3>User List</h3> <button type="button" class="btn btn-outline-dark btn-sm" onclick="newUser()">New User</button><br><div class="list-group">';
+        let usersHTML = `<h3>User List</h3>
+                        <div class="form-inline" action="">
+                            <button type="button" class="btn btn-outline-dark btn-sm mr-5" onclick="newUser()">New User</button>
+                            <span class="input-group-text"><i class="fa fa-search"></i></span>
+                            <input type="search" class="form-control mr-4" placeholder="Search" id="log_search">
+                            <div class="ml-2 mr-5">
+                                <div class="row">
+                                    <div class="form-check ml-2">
+                                        <label for="usr_names" class="form-check-label">Titles:</label>
+                                        <input type="checkbox" class="form-check ml-2" id="usr_names" checked>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-check ml-2 mr-5">
+                                        <label for="usr_tags" class="form-check-label">Text:</label>
+                                        <input type="checkbox" class="form-check ml-2" id="usr_tags">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
         for (var i = 0; i < users.length; i++) {
             usersHTML += users[i].listHTML();
         }
-        usersHTML += '</div>';
+        usersHTML += '</div><br><div class="list-group">';
         document.getElementById('main_content').innerHTML = usersHTML;
     }
 }

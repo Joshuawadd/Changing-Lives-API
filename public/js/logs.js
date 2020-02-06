@@ -22,6 +22,7 @@ class Log {
 }
 
 const formHTML = `<form class="form-inline" action="">
+                    <span class="input-group-text"><i class="fa fa-search"></i></span>
                     <input type="search" class="form-control mr-4" placeholder="Search" id="log_search">
                     <div class="ml-2 mr-5">
                         <div class="row">
