@@ -54,7 +54,15 @@ async function rmUser(event, u_id, username) {
 async function getUsers() {
     try {
         let authToken = getCookie('authToken');
-        let response = await fetch('/api/users/list?token='+authToken);
+        let srch = '';
+        let rname = '';
+        let uname = '';
+        if (document.getElementById('usr_search') != null) {
+            srch = document.getElementById('usr_search').value;
+            rname = document.getElementById('usr_names').checked;
+            uname = document.getElementById('usr_tags').checked;
+        }
+        let response = await fetch('/api/users/list?token='+authToken+'&search='+srch+'&rname='+rname+'&uname='+uname);
         if (response.ok) {
             let body = await response.text();
             let userData = JSON.parse(body);
@@ -151,15 +159,16 @@ async function addUser(event) {
 
 //OTHER FUNCTIONS
 
-async function userClick(event) { //this is the event that triggers when the users tab is clicked on
+async function userClick(event, topRefresh) { //this is the event that triggers when the users tab is clicked on
+    //topRefresh is a bool as to whether to rebuild the top bar or not
     event.preventDefault();
     users = await getUsers();
     if (users) {
-        let usersHTML = `<h3>User List</h3>
+        let topHTML = `<h3>User List</h3>
                         <div class="form-inline" action="">
                             <button type="button" class="btn btn-outline-dark btn-sm mr-5" onclick="newUser()">New User</button>
                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                            <input type="search" class="form-control mr-4" placeholder="Search" id="log_search">
+                            <input type="search" class="form-control mr-4" placeholder="Search" id="usr_search">
                             <div class="ml-2 mr-5">
                                 <div class="row">
                                     <div class="form-check ml-2">
@@ -174,11 +183,18 @@ async function userClick(event) { //this is the event that triggers when the use
                                     </div>
                                 </div>
                             </div>
-                        </div>`;
+                        </div><br><div class="list-group">`;
+        let usersHTML = '';
         for (var i = 0; i < users.length; i++) {
             usersHTML += users[i].listHTML();
         }
-        usersHTML += '</div><br><div class="list-group">';
+        usersHTML += '</div>';
+        if (topRefresh) {
+            document.getElementById('top_content').innerHTML = topHTML;
+            document.getElementById('usr_search').addEventListener('input', function(event) {
+                userClick(event,false); 
+            });
+        }
         document.getElementById('main_content').innerHTML = usersHTML;
     }
 }
@@ -220,5 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
             addUser(event);
         }
     });
-    document.getElementById('users').addEventListener('click', userClick );
+    document.getElementById('users').addEventListener('click', function(event) {
+        userClick(event,true); 
+    });
 });
