@@ -90,6 +90,7 @@ async function addSection(event) {
                 body: data
             });
         if (response.ok) {
+            document.getElementById('submit_section').style.cursor = '';
             alert('Section added successfully!');
             $('#section_modal').modal('hide');
             fileLimbo = [];
@@ -152,6 +153,7 @@ async function updateSection(event) {
                 body: data
             });
         if (response.ok) {
+            document.getElementById('submit_section').style.cursor = '';
             alert('Section edited successfully!');
             $('#section_modal').modal('hide');
             document.getElementById('content').click();
@@ -276,6 +278,7 @@ function editSection(event,sectionId) { //this loads up the box for editing a se
     $('#section_modal').modal('show');
 }
 
+
 function refreshFileList() { //this function keeps the file list up to date
     let display = '';
     let fileList = [];
@@ -355,12 +358,17 @@ function addFile() { //this adds a file to the list, but does nothing on the ser
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('edit_section').addEventListener('submit', function(event) {
-        if (currentSection == -1) {
-            addSection(event);
-        } else if (currentSection >= 0) {
-            updateSection(event);
+        let sec = document.getElementById('submit_section');
+        if (sec.style.cursor == '') {
+            sec.style.cursor = 'wait';
+            if (currentSection == -1) {
+                addSection(event);
+            } else if (currentSection >= 0) {
+                updateSection(event);
+            }
+        } else {
+            event.preventDefault();
         }
-        
     });
     document.getElementById('content').addEventListener('click', contentClick );
     document.getElementById('file_add').addEventListener('click', addFile );
@@ -371,4 +379,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         document.getElementById('file_adder_label').innerText = this.files.length + txt;
     });
+    document.getElementById('file_adder').style.cursor = 'pointer';
 });

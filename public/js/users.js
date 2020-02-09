@@ -163,13 +163,13 @@ async function userClick(event) { //this is the event that triggers when the use
                             <div class="ml-2 mr-5">
                                 <div class="row">
                                     <div class="form-check ml-2">
-                                        <label for="usr_names" class="form-check-label">Titles:</label>
+                                        <label for="usr_names" class="form-check-label">Nicknames:</label>
                                         <input type="checkbox" class="form-check ml-2" id="usr_names" checked>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-check ml-2 mr-5">
-                                        <label for="usr_tags" class="form-check-label">Text:</label>
+                                        <label for="usr_tags" class="form-check-label">Usernames:</label>
                                         <input type="checkbox" class="form-check ml-2" id="usr_tags">
                                     </div>
                                 </div>
