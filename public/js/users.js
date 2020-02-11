@@ -150,6 +150,40 @@ async function addUser(event) {
     }
 }
 
+async function resetUser(event, userId) {
+    event.preventDefault();
+    try {
+        let authToken = getCookie('authToken');
+        let userId = currentUser;
+        let response = await fetch('/api/users/reset',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': authToken,
+                },
+                body: 'userId=' + userId
+            });
+        if (response.ok) {
+            let pw = await response.text();
+            alert('Password reset successfully! New temporary password: '+ pw + '. This will not be visible again.');
+            $('#user_modal').modal('hide');
+            document.getElementById('users').click();
+            return true;
+        } else if (response.status === 403){
+            alert('Your session may have expired - please log in.');
+            await loginPrompt();
+            $('.modal').modal('hide');
+            $('#user_modal').modal('show');
+        } else {
+            throw new Error(response.status+' '+response.statusText);
+        }
+    } catch(error) {
+        alert(error);
+        return false;
+    }
+}
+
 //OTHER FUNCTIONS
 
 async function userClick(event) { //this is the event that triggers when the users tab is clicked on
@@ -186,4 +220,5 @@ function editUser(event,userId) { //this loads up the box for editing a user's d
     }
     currentUser = userId;
     $('#user_modal').modal('show');
+    document.getElementById('user_reset').addEventListener('click', resetUser);
 }
