@@ -238,14 +238,16 @@ async function contentClick(event) { //triggers when the content tab is clicked 
     sections = await getSections();
     if (sections) {
         //build the section HTML (my intent is for the position class variable to be position in the list as well to make this easier)
-        let sectionsHTML = `<div class="form-inline" action="">
+        let topHTML = `<div class="form-inline" action="">
                                 <button type="button" class="btn btn-outline-dark btn-sm form-control mr-5" onclick="newSection()">New Section</button>
-                            </div><br><div class="list-group">`;
+                            </div><br>`;
+        let sectionsHTML = '<div class="list-group" style="height: 350px; overflow-y: scroll;">';
         for (var i = 0; i < sections.length; i++) {
             sectionsHTML += sections[i].listHTML();
         }
         sectionsHTML += '</div>';
         //set it to display
+        document.getElementById('top_content').innerHTML = topHTML;
         document.getElementById('main_content').innerHTML = sectionsHTML;
     }
 }

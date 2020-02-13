@@ -164,8 +164,7 @@ async function userClick(event, topRefresh) { //this is the event that triggers 
     event.preventDefault();
     users = await getUsers();
     if (users) {
-        let topHTML = `<h3>User List</h3>
-                        <div class="form-inline" action="">
+        let topHTML = `<div class="form-inline" action="">
                             <button type="button" class="btn btn-outline-dark btn-sm mr-5" onclick="newUser()">New User</button>
                             <span class="input-group-text"><i class="fa fa-search"></i></span>
                             <input type="search" class="form-control mr-4" placeholder="Search" id="usr_search">
@@ -183,8 +182,8 @@ async function userClick(event, topRefresh) { //this is the event that triggers 
                                     </div>
                                 </div>
                             </div>
-                        </div><br><div class="list-group">`;
-        let usersHTML = '';
+                        </div><br>`;
+        let usersHTML = '<div class="list-group" style="height: 350px; overflow-y: scroll;">';
         for (var i = 0; i < users.length; i++) {
             usersHTML += users[i].listHTML();
         }
