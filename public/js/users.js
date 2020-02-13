@@ -168,7 +168,7 @@ async function userClick(event, topRefresh) { //this is the event that triggers 
     if (users) {
         let topHTML = `<div class="form-inline" action="">
                             <button type="button" class="btn btn-outline-dark btn-sm mr-4 ml-3" onclick="newUser()">New User</button>
-                            <span class="input-group-text"><i class="fa fa-search"></i></span>
+                            <span class="input-group-text" style="height: 38px;"><i class="fa fa-search"></i></span>
                             <input type="search" class="form-control mr-4" placeholder="Search" id="usr_search">
                             <div class="ml-2 mr-5">
                                 <div class="row">
