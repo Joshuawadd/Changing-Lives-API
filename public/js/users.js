@@ -106,6 +106,7 @@ async function updateUser(event) {
                 body: data
             });
         if (response.ok) {
+            document.getElementById('submit_section').style.cursor = '';
             alert('User details edited successfully!');
             $('#user_modal').modal('hide');
             document.getElementById('users').click();
@@ -139,6 +140,7 @@ async function addUser(event) {
                 body: 'realName=' + userName + '&isAdmin=0'
             });
         if (response.ok) {
+            document.getElementById('submit_section').style.cursor = '';
             alert('User created successfully!');
             $('#user_modal').modal('hide');
             document.getElementById('users').click();
@@ -165,7 +167,7 @@ async function userClick(event, topRefresh) { //this is the event that triggers 
     users = await getUsers();
     if (users) {
         let topHTML = `<div class="form-inline" action="">
-                            <button type="button" class="btn btn-outline-dark btn-sm mr-5" onclick="newUser()">New User</button>
+                            <button type="button" class="btn btn-outline-dark btn-sm mr-4 ml-3" onclick="newUser()">New User</button>
                             <span class="input-group-text"><i class="fa fa-search"></i></span>
                             <input type="search" class="form-control mr-4" placeholder="Search" id="usr_search">
                             <div class="ml-2 mr-5">
@@ -229,10 +231,16 @@ function editUser(event,userId) { //this loads up the box for editing a user's d
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('edit_user').addEventListener('submit', function(event) {
-        if (currentUser >= 0) {
-            updateUser(event);
-        } else if (currentUser == -1) {
-            addUser(event);
+        let sec = document.getElementById('submit_section');
+        if (sec.style.cursor == '') {
+            sec.style.cursor = 'wait';
+            if (currentUser >= 0) {
+                updateUser(event);
+            } else if (currentUser == -1) {
+                addUser(event);
+            }
+        } else {
+            event.preventDefault();
         }
     });
     document.getElementById('users').addEventListener('click', function(event) {

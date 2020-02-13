@@ -22,7 +22,7 @@ class Log {
 }
 
 const formHTML = `<form class="form-inline" action="">
-                    <span class="input-group-text"><i class="fa fa-search"></i></span>
+                    <span class="input-group-text ml-3"><i class="fa fa-search"></i></span>
                     <input type="search" class="form-control mr-4" placeholder="Search" id="log_search">
                     <div class="ml-2 mr-5">
                         <div class="row">
@@ -44,13 +44,14 @@ const formHTML = `<form class="form-inline" action="">
                         <span></span> 
                         <i class="fa fa-caret-down"></i>
                     </div>
-                </form>`;
+                </form><br>`;
 
 async function logsClick(event) { //this is the event that triggers when the users tab is clicked on
     event.preventDefault();
     let logs = [new Log(0,12,'abcd12','2020-20-02','12:46:08','list','sections'),new Log(0,17,'quds38','2020-22-02','19:46:08','login','users')];//await getLogs(100);
     if (logs) {
-        let logsHTML = formHTML + `<table class="table">
+        let topHTML = formHTML;
+        let logsHTML =  `<table class="table">
                             <thead>
                             <tr>
                                 <th scope="col">Date</th>
@@ -59,11 +60,12 @@ async function logsClick(event) { //this is the event that triggers when the use
                                 <th scope="col">Action</th>
                             </tr>
                             </thead>
-                            <tbody id="log_body">'`;
+                            <tbody id="log_body">`;
         for (var i = 0; i < logs.length; i++) {
             logsHTML += logs[i].listHTML();
         }
         logsHTML += '</tbody> </table>';
+        document.getElementById('top_content').innerHTML = topHTML;
         document.getElementById('main_content').innerHTML = logsHTML;
         bindDater();
     }
