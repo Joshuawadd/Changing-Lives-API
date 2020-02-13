@@ -73,6 +73,12 @@ async function logIn(event) { //sends a login request and sets the authToken coo
     }
 }
 
+function logOut(event) {
+    event.preventDefault();
+    document.cookie = 'authToken=' + '';
+    loginPrompt();
+}
+
 //load the bootstrap login box when the site loads
 $(window).on('load',function(){
     loginPrompt();
@@ -82,4 +88,5 @@ $(window).on('load',function(){
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('login_form').addEventListener('submit', logIn );
+    document.getElementById('log_out').addEventListener('click', logOut);
 });
