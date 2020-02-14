@@ -23,9 +23,28 @@ router.get('/', (req, res) => {
                 res.sendStatus(403);
                 return;
             }
-            
-            const queryString = 'SELECT user_id, real_name, username, password FROM users';
-            utils.mysql_query(res, queryString, [], (results, res) => {
+            const search = req.query.search;
+            const userName = req.query.uname;
+            const userRealName = req.query.rname;
+            let uSrch = '%';
+            let rnSrch = '%';
+            let andOr = '-';
+            if (userName === 'true') {
+                uSrch = '%' + search + '%';
+                andOr = '*';
+            }
+            if (userRealName === 'true') {
+                rnSrch = '%' + search + '%';
+                if (andOr === '*') {
+                    andOr = 'OR';
+                }
+            }
+            if (andOr != 'OR') {
+                andOr = 'AND';
+            }
+            const queryString = `SELECT user_id, real_name, username, password FROM users WHERE real_name LIKE ? ${andOr} username LIKE ?`;
+            const queryArray = [rnSrch, uSrch];
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {
                 let userData = results;
                 let users = [];
                 for (let i = 0; i < userData.length; i++) {

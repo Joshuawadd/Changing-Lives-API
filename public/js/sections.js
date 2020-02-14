@@ -90,6 +90,7 @@ async function addSection(event) {
                 body: data
             });
         if (response.ok) {
+            document.getElementById('submit_section').style.cursor = '';
             alert('Section added successfully!');
             $('#section_modal').modal('hide');
             fileLimbo = [];
@@ -152,6 +153,7 @@ async function updateSection(event) {
                 body: data
             });
         if (response.ok) {
+            document.getElementById('submit_section').style.cursor = '';
             alert('Section edited successfully!');
             $('#section_modal').modal('hide');
             document.getElementById('content').click();
@@ -236,12 +238,16 @@ async function contentClick(event) { //triggers when the content tab is clicked 
     sections = await getSections();
     if (sections) {
         //build the section HTML (my intent is for the position class variable to be position in the list as well to make this easier)
-        let sectionsHTML = '<h3>Content Editor</h3> <button type="button" class="btn btn-outline-dark btn-sm" onclick="newSection()">New Section</button><br><div class="list-group">';
+        let topHTML = `<div class="form-inline" action="">
+                            <button type="button" class="btn btn-outline-dark btn-sm form-control mr-5 ml-3" onclick="newSection()">New Section</button>
+                        </div><br>`;
+        let sectionsHTML = '<div class="list-group" style="height: 350px; overflow-y: scroll;">';
         for (var i = 0; i < sections.length; i++) {
             sectionsHTML += sections[i].listHTML();
         }
         sectionsHTML += '</div>';
         //set it to display
+        document.getElementById('top_content').innerHTML = topHTML;
         document.getElementById('main_content').innerHTML = sectionsHTML;
     }
 }
@@ -273,6 +279,7 @@ function editSection(event,sectionId) { //this loads up the box for editing a se
     refreshFileList();
     $('#section_modal').modal('show');
 }
+
 
 function refreshFileList() { //this function keeps the file list up to date
     let display = '';
@@ -353,12 +360,17 @@ function addFile() { //this adds a file to the list, but does nothing on the ser
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('edit_section').addEventListener('submit', function(event) {
-        if (currentSection == -1) {
-            addSection(event);
-        } else if (currentSection >= 0) {
-            updateSection(event);
+        let sec = document.getElementById('submit_section');
+        if (sec.style.cursor == '') {
+            sec.style.cursor = 'wait';
+            if (currentSection == -1) {
+                addSection(event);
+            } else if (currentSection >= 0) {
+                updateSection(event);
+            }
+        } else {
+            event.preventDefault();
         }
-        
     });
     document.getElementById('content').addEventListener('click', contentClick );
     document.getElementById('file_add').addEventListener('click', addFile );
@@ -369,4 +381,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         document.getElementById('file_adder_label').innerText = this.files.length + txt;
     });
+    document.getElementById('file_adder').style.cursor = 'pointer';
 });

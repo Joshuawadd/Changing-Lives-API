@@ -10,10 +10,16 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="styles/theme.css">
+    <!--Date picker scripts-->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <!-- Links to local files-->
     <link rel = "stylesheet" href="styles/style.css">
     <script src="js/sections.js" ></script>
     <script src="js/users.js" ></script>
+    <script src="js/logs.js" ></script>
     <script src="js/script.js" ></script>
     <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
@@ -27,6 +33,10 @@
             <img src="https://www.changing-lives.org.uk/wp-content/uploads/2018/04/logo.png" alt="changing lives charity north east homelessness employment women children addiction drug alcohol" />
             </a>
         </div>
+        <div class="float-right">
+            <div id="logged_in">Not logged in</div>
+            <button class="btn btn-dark btn-sm float-right mt-2" id="log_out">Log out</button>
+        </div>
     </div> <!-- This is all for the navigation banner, only a link to CL home is incldued for now, but it does work with all of them or none-->
     <div class="nav-container">
         <nav class="navigation">                     
@@ -34,6 +44,7 @@
             <ul id="menu-menu" class="menu">
                 <li id="menu-item-10761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-10761"><a href="#" id="users">Users</a></li>
                 <li id="menu-item-10761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-10761"><a href="#" id="content">Content</a></li>
+                <li id="menu-item-10761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-10761"><a href="#" id="logs">Logs</a></li>
             </ul>
     </div>
     </header>
@@ -70,8 +81,11 @@
             </div>
         </div>
     </div>
-    <h1>Welcome to the <span class="highlight">Changing Lives</span> App Manager Site!</h1>
-    <p>From here you can create and manage users and edit the app content</p>
+    <div class="ml-2">
+        <h1>Welcome to the <span class="highlight">Changing Lives</span> App Manager Site!</h1>
+        <p>From here you can create and manage users and edit the app content</p>
+        <br>
+    </div>
     <!-- NEW/EDIT SECTION MODAL-->
     <div class="modal fade" id="section_modal">
         <div class="modal-dialog modal-dialog-centered">
@@ -149,6 +163,10 @@
                 </div>
             </div>
         </div>
+    </div>
+    <!-- div search bars, create buttons etc.-->
+    <div id="top_content">
+        
     </div>
     <!-- div for main page display-->
     <div id="main_content">

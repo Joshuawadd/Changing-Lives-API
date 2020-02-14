@@ -54,13 +54,21 @@ async function rmUser(event, u_id, username) {
 async function getUsers() {
     try {
         let authToken = getCookie('authToken');
-        let response = await fetch('/api/users/list?token='+authToken);
+        let srch = '';
+        let rname = '';
+        let uname = '';
+        if (document.getElementById('usr_search') != null) {
+            srch = document.getElementById('usr_search').value;
+            rname = document.getElementById('usr_names').checked;
+            uname = document.getElementById('usr_tags').checked;
+        }
+        let response = await fetch('/api/users/list?token='+authToken+'&search='+srch+'&rname='+rname+'&uname='+uname);
         if (response.ok) {
             let body = await response.text();
             let userData = JSON.parse(body);
             let usrs = [];
             for (var i = 0; i < userData.length; i++) {
-                let usr = new User(userData[i].id,userData[i].name,userData[i].username,userData[i].password);
+                let usr = new User(userData[i].id,userData[i].name,userData[i].username,'');
                 usrs.push(usr);
             }
             return usrs;
@@ -98,6 +106,7 @@ async function updateUser(event) {
                 body: data
             });
         if (response.ok) {
+            document.getElementById('submit_section').style.cursor = '';
             alert('User details edited successfully!');
             $('#user_modal').modal('hide');
             document.getElementById('users').click();
@@ -131,6 +140,7 @@ async function addUser(event) {
                 body: 'realName=' + userName + '&isAdmin=0'
             });
         if (response.ok) {
+            document.getElementById('submit_section').style.cursor = '';
             alert('User created successfully!');
             $('#user_modal').modal('hide');
             document.getElementById('users').click();
@@ -151,15 +161,41 @@ async function addUser(event) {
 
 //OTHER FUNCTIONS
 
-async function userClick(event) { //this is the event that triggers when the users tab is clicked on
+async function userClick(event, topRefresh) { //this is the event that triggers when the users tab is clicked on
+    //topRefresh is a bool as to whether to rebuild the top bar or not
     event.preventDefault();
     users = await getUsers();
     if (users) {
-        let usersHTML = '<h3>User List</h3> <button type="button" class="btn btn-outline-dark btn-sm" onclick="newUser()">New User</button><br><div class="list-group">';
+        let topHTML = `<div class="form-inline" action="">
+                            <button type="button" class="btn btn-outline-dark btn-sm mr-4 ml-3" onclick="newUser()">New User</button>
+                            <span class="input-group-text" style="height: 38px;"><i class="fa fa-search"></i></span>
+                            <input type="search" class="form-control mr-4" placeholder="Search" id="usr_search">
+                            <div class="ml-2 mr-5">
+                                <div class="row">
+                                    <div class="form-check ml-2">
+                                        <label for="usr_names" class="form-check-label">Nicknames:</label>
+                                        <input type="checkbox" class="form-check ml-2" id="usr_names" checked>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-check ml-2 mr-5">
+                                        <label for="usr_tags" class="form-check-label">Usernames:</label>
+                                        <input type="checkbox" class="form-check ml-2" id="usr_tags">
+                                    </div>
+                                </div>
+                            </div>
+                        </div><br>`;
+        let usersHTML = '<div class="list-group" style="height: 350px; overflow-y: scroll;">';
         for (var i = 0; i < users.length; i++) {
             usersHTML += users[i].listHTML();
         }
         usersHTML += '</div>';
+        if (topRefresh) {
+            document.getElementById('top_content').innerHTML = topHTML;
+            document.getElementById('usr_search').addEventListener('input', function(event) {
+                userClick(event,false); 
+            });
+        }
         document.getElementById('main_content').innerHTML = usersHTML;
     }
 }
@@ -192,3 +228,22 @@ function editUser(event,userId) { //this loads up the box for editing a user's d
     currentUser = userId;
     $('#user_modal').modal('show');
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('edit_user').addEventListener('submit', function(event) {
+        let sec = document.getElementById('submit_section');
+        if (sec.style.cursor == '') {
+            sec.style.cursor = 'wait';
+            if (currentUser >= 0) {
+                updateUser(event);
+            } else if (currentUser == -1) {
+                addUser(event);
+            }
+        } else {
+            event.preventDefault();
+        }
+    });
+    document.getElementById('users').addEventListener('click', function(event) {
+        userClick(event,true); 
+    });
+});
