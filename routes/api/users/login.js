@@ -25,7 +25,7 @@ router.post('/', (req, res) => {
     const userName = req.body.userName;
     const password = req.body.userPassword;
 
-    const queryString = 'SELECT password, password_salt, user_id FROM users WHERE username = ?';
+    const queryString = 'SELECT password, password_salt, user_id, is_admin FROM users WHERE username = ?';
     const queryArray = [userName];
     
     utils.mysql_query(res, queryString, queryArray, (rows, res) => {
@@ -34,10 +34,11 @@ router.post('/', (req, res) => {
                 const password_salt = rows[0]['password_salt'];
                 const password_hashed = rows[0]['password'];
                 const userId = rows[0]['user_id'];
-                
+                const isAdmin = (rows[0]['is_admin']).readUInt8();
                 const temp_hash = bcrypt.hashSync(password, password_salt);
+                console.log(temp_hash, password_hashed);
                 if (temp_hash === password_hashed) {
-                    resolve(userId);
+                    resolve([userId, isAdmin]);
                 } else {
                     resolve(undefined);
                 }
@@ -46,9 +47,17 @@ router.post('/', (req, res) => {
             }
         });
         
-        passwordMatch.then((userId) => {
-            if (typeof(userId) !== 'undefined') {
-                const token = jwt.sign({userId: userId}, process.env.USER_KEY, {expiresIn: 1200});
+        passwordMatch.then((arr) => {
+            console.log(arr);
+            if (typeof(arr) !== 'undefined') {
+                var userId = arr[0];
+                var isAdmin = arr[1];
+                var token;
+                if (isAdmin) {
+                    token = jwt.sign({userId: userId}, process.env.STAFF_KEY, {expiresIn: 1200});
+                } else {
+                    token = jwt.sign({userId: userId}, process.env.USER_KEY, {expiresIn: 1200});
+                }
                 res.status(200).send(token);
                 utils.log(userId, 'login', 'users');
             } else {

@@ -10,7 +10,7 @@ router.post('/', upload.none(), (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(utils.tokenVerify(req.header('Authorization')));
+                resolve(utils.tokenVerify(req.header('Authorization')), true);
             });
         }
         verify().then((result) => {

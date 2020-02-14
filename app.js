@@ -55,6 +55,7 @@ const userEditRouter = require('./routes/api/users/edit');
 const userRemoveRouter = require('./routes/api/users/remove');
 const userListRouter = require('./routes/api/users/list');
 const userLoginRouter = require('./routes/api/users/login');
+const userResetRouter = require('./routes/api/users/reset');
 
 const fileListRouter = require('./routes/api/files/list');
 
@@ -93,6 +94,7 @@ app.use('/api/users/edit', userEditRouter);
 app.use('/api/users/remove', userRemoveRouter);
 app.use('/api/users/list', userListRouter);
 app.use('/api/users/login', userLoginRouter);
+app.use('/api/users/reset', userResetRouter);
 
 app.use('/api/files/list', fileListRouter);
 

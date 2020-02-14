@@ -8,7 +8,7 @@ router.post('/', (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(utils.tokenVerify(req.header('Authorization')));
+                resolve(utils.tokenVerify(req.header('Authorization')), true);
             });
         }
         verify().then((result) => {
@@ -18,14 +18,26 @@ router.post('/', (req, res) => {
             }
             const realName = req.body.realName;
             const isAdmin = parseInt(req.body.isAdmin);
-            const username = utils.randomUsername();
             const password = utils.randomPassword();
             const salt = bcrypt.genSaltSync(10);
             const hashed_pass = bcrypt.hashSync(password, salt);
-
-            const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
-            const queryArray = [realName, username, hashed_pass, salt, isAdmin];
-            utils.mysql_query(res, queryString, queryArray, (results, res) => {res.sendStatus(200);});
+            //make sure to generate a unique username
+            utils.mysql_query(res, 'SELECT username FROM users', [], (results, res) => {
+                var names = [];
+                for (let i = 0; i < results.length; i++) {
+                    names.push(results[i].username);
+                }
+                var unique = false;
+                while(!unique) {
+                    var username = utils.randomUsername();
+                    if (names.indexOf(username) == -1) { //the username is unique
+                        unique = true;
+                        const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
+                        const queryArray = [realName, username, hashed_pass, salt, isAdmin];
+                        utils.mysql_query(res, queryString, queryArray, (results, res) => {res.status(200).send(password);});
+                    } 
+                }
+            });
         });
     } catch (err) {
         res.sendStatus(500);
