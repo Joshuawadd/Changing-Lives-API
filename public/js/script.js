@@ -27,9 +27,11 @@ function getCookie(cname) { //adapted from https://www.w3schools.com/js/js_cooki
 
 async function loginPrompt() {
     try {
+        document.getElementById('logged_in').innerHTML = 'Not logged in';
         let authToken = getCookie('authToken');
         let response = await fetch('/api/users/login/silent?token='+authToken);
         if (response.ok) {
+            document.getElementById('logged_in').innerHTML = 'Logged in as: ' + getCookie('userName');
             return true;
         } else {
             $('.modal').modal('hide');
@@ -44,6 +46,7 @@ async function loginPrompt() {
 
 async function logIn(event) { //sends a login request and sets the authToken cookie if successful
     try {
+        document.getElementById('logged_in').innerHTML = 'Not logged in';
         event.preventDefault();
         let uname = document.getElementById('username').value;
         let pass = document.getElementById('password').value;
@@ -58,6 +61,8 @@ async function logIn(event) { //sends a login request and sets the authToken coo
         if (response.ok) {
             $('#login_box').modal('hide');
             let authToken = await response.text();
+            document.getElementById('logged_in').innerHTML = 'Logged in as: ' + uname;
+            document.cookie = 'userName=' + uname;
             document.cookie = 'authToken=' + authToken;
         }
         else {
@@ -66,6 +71,12 @@ async function logIn(event) { //sends a login request and sets the authToken coo
     } catch(error) {
         alert('Incorrect Username and/or Password');
     }
+}
+
+function logOut(event) {
+    event.preventDefault();
+    document.cookie = 'authToken=' + '';
+    loginPrompt();
 }
 
 //load the bootstrap login box when the site loads
@@ -77,19 +88,5 @@ $(window).on('load',function(){
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('login_form').addEventListener('submit', logIn );
-    document.getElementById('edit_user').addEventListener('submit', function(event) {
-        if (currentUser >= 0) {
-            updateUser(event);
-        } else if (currentUser == -1) {
-            addUser(event);
-        }
-    });
-    document.getElementById('users').addEventListener('click', userClick );
-    document.getElementById('file_adder').addEventListener('change', function() {
-        let txt = ' file chosen';
-        if (this.files.length != 1) {
-            txt = ' files chosen';
-        }
-        document.getElementById('file_adder_label').innerText = this.files.length + txt;
-    });
+    document.getElementById('log_out').addEventListener('click', logOut);
 });
