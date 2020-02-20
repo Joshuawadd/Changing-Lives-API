@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
-
+const utils = require('../../../../utils');
 //Postman can be used to test post request {"userId": 1, "parentTitle":"Test title number 1", "parentComment":"This is a comment"}
 router.post('/', (req, res) => {
 
