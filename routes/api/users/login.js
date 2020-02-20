@@ -28,6 +28,7 @@ router.post('/', (req, res) => {
     const queryString = 'SELECT password, password_salt, user_id, is_admin FROM users WHERE username = ?';
     const queryArray = [userName];
     
+    
     utils.mysql_query(res, queryString, queryArray, (rows, res) => {
         const passwordMatch = new Promise((resolve) => {
             if (rows.length > 0) {
