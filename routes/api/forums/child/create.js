@@ -13,8 +13,7 @@ router.post('/', (req, res) => {
     }
     verify().then((userId) => { // should get the userId from token
         if (!userId) { 
-            // res.sendStatus(403);
-            userId = 1;
+            res.sendStatus(403);
             return;
         }})
     const parent_id = req.body.parent_id;
