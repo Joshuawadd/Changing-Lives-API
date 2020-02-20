@@ -5,7 +5,17 @@ const mysql = require('mysql');
 //Postman can be used to test post request {"userId": 1, "parentTitle":"Test title number 1", "parentComment":"This is a comment"}
 router.post('/', (req, res) => {
 
-    const userId = req.body.userId;
+    function verify() {
+        return new Promise((resolve) => {
+            resolve(utils.tokenVerify(req.query.token), true); // cant test with postman because the req.query.token is automatically created
+        });
+    }
+    verify().then((userId) => { // should get the userId from token
+        if (!userId) { 
+            res.sendStatus(403);
+            return;
+        }})
+
     const parentTitle = req.body.parentTitle;
     const parentComment = req.body.parentComment;
 
@@ -25,7 +35,7 @@ router.post('/', (req, res) => {
     });
 
     connection.end();
-
+    utils.log(userId, 'create', 'parent');
     res.sendStatus(200);
 });
 
