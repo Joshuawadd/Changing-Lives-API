@@ -31,9 +31,19 @@ router.get('/', (req, res) => {
 
             function getList(){
                 return new Promise((resolve, reject) => {
-                    connection.query(`SELECT c.child_id, c.child_comment, u.username FROM child_comments c INNER JOIN users u ON c.user_id = u.user_id WHERE c.parent_id = ${parentId}`, [], (err, results) => {
+                    connection.query(`SELECT IF(is_admin = 1, true, false) AS is_admin FROM users WHERE user_id = ${userId}`, [], (err, admin) => {
                         if (err) throw res.sendStatus(400);
-                        resolve(results);
+                        if(admin[0].is_admin) {
+                            connection.query(`SELECT c.child_id, c.child_comment, u.username FROM child_comments c INNER JOIN users u ON c.user_id = u.user_id WHERE c.parent_id = ${parentId}`, [], (err, results) => {
+                                if (err) throw res.sendStatus(400);
+                                resolve(results);
+                            });
+                        } else {
+                            connection.query(`SELECT child_id, child_comment FROM child_comments WHERE parent_id = ${parentId}`, [], (err, results) => {
+                                if (err) throw res.sendStatus(400);
+                                resolve(results);
+                            });
+                        }
                     });
                 });
             }
