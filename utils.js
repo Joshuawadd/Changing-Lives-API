@@ -66,9 +66,9 @@ function log(userId, action, entity, newData=null, oldData=null) {
     connection.connect((err) => {
         if (err) throw err;
     });
-
     const dateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    connection.query('INSERT INTO logs (userId, dateTime, action, entity, newData, oldData) VALUES (?,?,?,?,?,?)',
+    let queryString = `INSERT INTO logs (userId, dateTime, action, entity, newData, oldData) VALUES (?,?,?,?,?,?)`;
+    connection.query(queryString,
         [userId, dateTime, action, entity, newData, oldData], (err) => {
             if (err) throw err;
         });

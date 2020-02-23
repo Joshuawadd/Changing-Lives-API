@@ -21,7 +21,7 @@ class Log {
                     <td scope="row">${this.date}</td>
                     <td>${this.time}</td>
                     <td>${this.userName}</td>
-                    <td>${this.action +' '+ this.entity}</td>
+                    <td>${this.action +' '+ this.entity}(${this.data.name})</td>
                 </tr>`;
     }
 }
@@ -68,7 +68,7 @@ async function getLogs() {
             let logData = JSON.parse(body);
             let logs = [];
             for (var i = 0; i < logData.length; i++) {
-                let lg = new Log(logData[i].id,logData[i].userId,logData[i].userName,logData[i].date,logData[i].time,logData[i].action,logData[i].entity,logData[i].data);
+                let lg = new Log(logData[i].id,logData[i].userId,logData[i].userName,logData[i].date,logData[i].time,logData[i].action,logData[i].entity,JSON.parse(logData[i].data));
                 logs.push(lg);
             }
             return logs;
