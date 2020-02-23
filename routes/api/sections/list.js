@@ -90,7 +90,6 @@ router.get('/', (req, res) => {
                 sects.sort(compare);
 
                 res.status(200).send(sects);
-                utils.log(userId, 'list', 'sections');
 
             });
         });

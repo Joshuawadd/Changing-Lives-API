@@ -59,6 +59,8 @@ const userResetRouter = require('./routes/api/users/reset');
 
 const fileListRouter = require('./routes/api/files/list');
 
+const logListRouter = require('./routes/api/logs/list');
+
 
 const app = express();
 const PORT = 3000;
@@ -97,5 +99,7 @@ app.use('/api/users/login', userLoginRouter);
 app.use('/api/users/reset', userResetRouter);
 
 app.use('/api/files/list', fileListRouter);
+
+app.use('/api/logs/list', logListRouter);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}...`));

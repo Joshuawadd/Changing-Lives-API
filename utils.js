@@ -134,5 +134,19 @@ function tokenVerify(token, isAdmin = false) {
     }
 }
 
+const actions = {
+    LIST: 'LIST',
+    CREATE: 'CREATE',
+    EDIT: 'EDIT',
+    REMOVE: 'REMOVE',
+};
 
-module.exports = {randomPassword, randomUsername, log, mysql_query, tokenVerify};
+const entities = {
+    SECTION: 'SECTION',
+    USER: 'USER',
+    CHILD_POST: 'CHILD_POST',
+    PARENT_POST: 'PARENT_POST',
+};
+
+
+module.exports = {randomPassword, randomUsername, log, mysql_query, tokenVerify, actions, entities};

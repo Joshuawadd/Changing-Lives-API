@@ -1,7 +1,11 @@
 var moment;
+var getCookie;
+var loginPrompt;
+
+var logsList;
 
 class Log {
-    constructor(id=0,userId=0,userName='', date='', time = '', action='',entity='') {
+    constructor(id=0,userId=0,userName='', date='', time = '', action='',entity='', data={}) {
         this.id = id;
         this.userId = userId;
         this.date = date;
@@ -9,6 +13,7 @@ class Log {
         this.action = action;
         this.entity = entity;
         this.userName = userName;
+        this.data = data;
     }
 
     listHTML() {
@@ -46,10 +51,45 @@ const formHTML = `<form class="form-inline" action="">
                     </div>
                 </form><br>`;
 
+async function getLogs() {
+    try {
+        let authToken = getCookie('authToken');
+        /*let srch = '';
+        let rname = '';
+        let uname = '';
+        if (document.getElementById('usr_search') != null) {
+            srch = document.getElementById('usr_search').value;
+            rname = document.getElementById('usr_names').checked;
+            uname = document.getElementById('usr_tags').checked;
+        }*/
+        let response = await fetch('/api/logs/list?token='+authToken);//+'&search='+srch+'&rname='+rname+'&uname='+uname);
+        if (response.ok) {
+            let body = await response.text();
+            let logData = JSON.parse(body);
+            let logs = [];
+            for (var i = 0; i < logData.length; i++) {
+                let lg = new Log(logData[i].id,logData[i].userId,logData[i].userName,logData[i].date,logData[i].time,logData[i].action,logData[i].entity,logData[i].data);
+                logs.push(lg);
+            }
+            return logs;
+        } else if (response.status === 403) {
+            alert('Your session may have expired - please log in.');
+            loginPrompt();
+            return false;
+        } else {
+            throw new Error(response.status+' '+response.statusText);
+        }
+    } catch(error) {
+        alert(error);
+        return false;
+    }
+}
+
 async function logsClick(event) { //this is the event that triggers when the users tab is clicked on
     event.preventDefault();
-    let logs = [new Log(0,12,'abcd12','2020-20-02','12:46:08','list','sections'),new Log(0,17,'quds38','2020-22-02','19:46:08','login','users')];//await getLogs(100);
-    if (logs) {
+    //let logs = [new Log(0,12,'abcd12','2020-20-02','12:46:08','list','sections'),new Log(0,17,'quds38','2020-22-02','19:46:08','login','users')];//await getLogs(100);
+    logsList = await getLogs();
+    if (logsList) {
         let topHTML = formHTML;
         let logsHTML =  `<table class="table">
                             <thead>
@@ -61,8 +101,8 @@ async function logsClick(event) { //this is the event that triggers when the use
                             </tr>
                             </thead>
                             <tbody id="log_body">`;
-        for (var i = 0; i < logs.length; i++) {
-            logsHTML += logs[i].listHTML();
+        for (var i = 0; i < logsList.length; i++) {
+            logsHTML += logsList[i].listHTML();
         }
         logsHTML += '</tbody> </table>';
         document.getElementById('top_content').innerHTML = topHTML;

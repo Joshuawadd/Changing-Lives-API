@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const utils = require('../../../utils');
 
-//Postman can be used to test post request {"sectionId": 1} or {"user_id": 1} Removing by user id will not work properly now
+//Postman can be used to test post request {"sectionId": 1}
 router.post('/', (req, res) => {
     try {
         function verify() {
@@ -10,13 +10,12 @@ router.post('/', (req, res) => {
                 resolve(utils.tokenVerify(req.header('Authorization')), true);
             });
         }
-        verify().then((result) => {
-            if (!result) {
+        verify().then((userId) => {
+            if (!userId) {
                 res.sendStatus(403);
                 return;
             }
             const sectionId = req.body.sectionId;
-            const userId = req.body.userId;
             if (!isNaN(sectionId)) {
                 //update later positions to keep them all 1 apart
                 utils.mysql_query(res, 'SELECT position FROM sections WHERE section_id = ?', [sectionId], (results, res) => {
@@ -24,15 +23,9 @@ router.post('/', (req, res) => {
                 });
                 const queryString = 'DELETE FROM sections WHERE section_id = ?';
                 const queryString2 = 'DELETE FROM files WHERE section_id = ?';
-                utils.mysql_query(res, queryString, [sectionId], (results, res) => {res.sendStatus(200);});
+                utils.mysql_query(res, queryString, [sectionId], (results, res) => {utils.log(userId, utils.actions.REMOVE, utils.entities.SECTION); res.sendStatus(200);});
                 utils.mysql_query(res, queryString2, [sectionId], (results, res) => {});
-            } else if (!isNaN(userId)) {
-                //this doesn't seem necessary and will cause issues with positioning so don't use at the moment
-                const queryString = 'DELETE FROM sections WHERE user_id = ?';
-                const queryString2 = 'DELETE FROM files WHERE user_id = ?';
-                utils.mysql_query(res, queryString, [userId], (results, res) => {res.sendStatus(200);});
-                utils.mysql_query(res, queryString2, [userId], (results, res) => {});
-            } else { //no user or section was provided so the request makes no sense
+            } else { //no section was provided so the request makes no sense
                 return res.sendStatus(400);
             }
         });
