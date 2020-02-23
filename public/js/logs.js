@@ -91,7 +91,7 @@ async function logsClick(event) { //this is the event that triggers when the use
     logsList = await getLogs();
     if (logsList) {
         let topHTML = formHTML;
-        let logsHTML =  `<table class="table">
+        let logsHTML =  `<table class="table" id="log_table">
                             <thead>
                             <tr>
                                 <th scope="col">Date</th>
@@ -108,6 +108,9 @@ async function logsClick(event) { //this is the event that triggers when the use
         document.getElementById('top_content').innerHTML = topHTML;
         document.getElementById('main_content').innerHTML = logsHTML;
         bindDater();
+        $('#log_table').on('click', 'tr', function(e) {
+            rowClick(e,$(e.currentTarget).index());
+        });
     }
 }
 
@@ -136,6 +139,34 @@ function bindDater() {
     }, cb);
 
     cb(start, end);
+}
+
+function rowClick(event, row) {
+    event.preventDefault();
+    let lg = logsList[row];
+    let dt = `<p>${lg.entity[0] + lg.entity.toLowerCase().slice(1,lg.entity.length)}: ${lg.data.name}</p>`;
+    if (lg.action === 'REMOVE' || lg.action === 'EDIT') {
+        /*if (lg.entity == 'SECTION') {
+            dt = 'Previous' + lg.entity.toLowerCase() + ':';
+            
+        }*/
+        dt = '<h4>Previous ' + lg.entity.toLowerCase() + ':</h4>';
+        Object.keys(lg.data).forEach(e => {if(e!=='id' &&e!='password'&&e!='passwordSalt'&&e!=='position'){
+            if (typeof(lg.data[e]) !== 'object') {
+                dt += `${e[0].toUpperCase() + e.slice(1,e.length)}: ${lg.data[e]}<br>`;
+            } else {
+                dt += `${e[0].toUpperCase() + e.slice(1,e.length)}:<br>`;
+                for (var i = 0; i < lg.data[e].length; i++) {
+                    dt += `&nbsp&nbsp&nbsp${lg.data[e][i].title}<br>`;
+                }
+            }
+        }
+        });
+    }
+    document.getElementById('log_details').innerHTML = `<p> Date: ${lg.date} ${lg.time} </p><p>User: ${lg.userName} </p>
+    <p>Action: ${lg.action} ${lg.entity} </p> ${dt} <br>`;
+    $('#log_modal').modal('show');
+
 }
 
 document.addEventListener('DOMContentLoaded', function() {
