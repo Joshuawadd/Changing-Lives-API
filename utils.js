@@ -139,6 +139,8 @@ const actions = {
     CREATE: 'CREATE',
     EDIT: 'EDIT',
     REMOVE: 'REMOVE',
+    LOGIN: 'LOGIN',
+    RESET: 'RESET',
 };
 
 const entities = {

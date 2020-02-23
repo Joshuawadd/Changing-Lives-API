@@ -11,8 +11,8 @@ router.post('/', (req, res) => {
                 resolve(utils.tokenVerify(req.header('Authorization'), true));
             });
         }
-        verify().then((result) => {
-            if (!result) {
+        verify().then((editor) => {
+            if (!editor) {
                 res.sendStatus(403);
                 return;
             }
@@ -22,7 +22,7 @@ router.post('/', (req, res) => {
             const hashed_pass = bcrypt.hashSync(password, salt);
             const queryString = 'UPDATE users SET password = ?, password_salt = ? WHERE user_id = ?';
             const queryArray = [hashed_pass, salt, userId];
-            utils.mysql_query(res, queryString, queryArray, (results, res) => {res.status(200).send(password);});
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {utils.log(editor, utils.actions.RESET, utils.entities.USER, null, JSON.stringify({"name": userId})); res.status(200).send(password);});
         });
     } catch (err) {
         res.sendStatus(500);

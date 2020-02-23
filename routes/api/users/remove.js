@@ -10,8 +10,8 @@ router.post('/', (req, res) => {
                 resolve(utils.tokenVerify(req.header('Authorization')), true);
             });
         }
-        verify().then((result) => {
-            if (!result) {
+        verify().then((editor) => {
+            if (!editor) {
                 res.sendStatus(403);
                 return;
             }
@@ -20,7 +20,7 @@ router.post('/', (req, res) => {
             if (!isNaN(userId)) {
                 const queryString = 'DELETE FROM users WHERE user_id = ?';
                 const queryArray = [userId];
-                utils.mysql_query(res, queryString, queryArray, (results, res) => {res.sendStatus(200);});
+                utils.mysql_query(res, queryString, queryArray, (results, res) => {utils.log(editor, utils.actions.REMOVE, utils.entities.USER, null, JSON.stringify({"name": userId}));res.sendStatus(200);});
             }
         });
     } catch (err) {

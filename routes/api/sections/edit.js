@@ -20,8 +20,8 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
                 resolve(utils.tokenVerify(req.header('Authorization')), true);
             });
         }
-        verify().then((result) => {
-            if (!result) {
+        verify().then((userId) => {
+            if (!userId) {
                 res.sendStatus(403);
                 return;
             }
@@ -46,7 +46,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
 
             const queryString = 'UPDATE sections SET section_name = ?, article_text = ? WHERE section_id = ?';
             const queryArray = [sectionName, sectionText, sectionId];
-            utils.mysql_query(res, queryString, queryArray, (results, res) => {res.sendStatus(200);});
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {utils.log(userId, utils.actions.EDIT, utils.entities.SECTION, null, JSON.stringify({"name": sectionName})); res.sendStatus(200);});
             for (let j = 0; j < files.length; j++) {
                 //file existed before
                 if (newFilePaths[j] === '') {
