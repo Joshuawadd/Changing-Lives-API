@@ -113,7 +113,7 @@ function checkUser(token) { //this will accept user or staff tokens
         } else {
             return decoded.userId; //user token valid
         }
-    })
+    });
 }
 
 function checkStaff (token) {
@@ -123,7 +123,7 @@ function checkStaff (token) {
         } else {
             return decoded.userId; //staff token valid
         }
-    })
+    });
 }
 
 function tokenVerify(token, isAdmin = false) {

@@ -100,6 +100,10 @@ async function restore() {
                     body: 'realName=' + lg.data.realName + '&username=' + lg.data.name + '&password=' + lg.data.password + '&salt=' + lg.data.password_salt + '&isAdmin=' + lg.data.isAdmin
                 });
         } else if (lg.entity == 'SECTION') { //restore a deleted section
+            let files = [];
+            for (var i = 0; i < lg.data.files.length; i++) { //add all the files back
+                files.push(lg.data.files[i]);
+            }
             response = await fetch('/api/sections/restore',
                 {
                     method: 'POST',
@@ -107,7 +111,7 @@ async function restore() {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'Authorization': getCookie('authToken'),
                     },
-                    body: 'realName=' + lg.data.realName + '&username=' + lg.data.username + '&password=' + lg.data.password + '&salt=' + lg.data.password_salt + '&isAdmin=' + lg.data.isAdmin
+                    body: 'sectionName=' + lg.data.name + '&sectionText=' + lg.data.text + '&sectionFiles=' + JSON.stringify(files)
                 });
         }
         if (response.ok) {
@@ -193,10 +197,6 @@ function rowClick(event, row) {
     let dt = `<p>${lg.entity[0] + lg.entity.toLowerCase().slice(1,lg.entity.length)}: ${lg.data.name}</p>`;
     document.getElementById('restore_button').disabled = true;
     if (lg.action === 'REMOVE' || lg.action === 'EDIT') {
-        /*if (lg.entity == 'SECTION') {
-            dt = 'Previous' + lg.entity.toLowerCase() + ':';
-            
-        }*/
         document.getElementById('restore_button').disabled = false;
         dt = '<h4>Previous ' + lg.entity.toLowerCase() + ':</h4>';
         Object.keys(lg.data).forEach(e => {if(e!=='id' &&e!='password'&&e!='passwordSalt'&&e!=='position'){
