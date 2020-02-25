@@ -13,7 +13,7 @@ class Log {
         this.action = action;
         this.entity = entity;
         this.userName = userName;
-        this.data = data;
+        this.data = data||{'name': 'NULL'};
     }
 
     listHTML() {
@@ -85,6 +85,48 @@ async function getLogs() {
     }
 }
 
+async function restore() {
+    try {
+        let lg = logsList[currentLog];
+        var response = null;
+        if (lg.entity == 'USER') { //restore a deleted user
+            response = await fetch('/api/users/restore',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': getCookie('authToken'),
+                    },
+                    body: 'realName=' + lg.data.realName + '&username=' + lg.data.name + '&password=' + lg.data.password + '&salt=' + lg.data.password_salt + '&isAdmin=' + lg.data.isAdmin
+                });
+        } else if (lg.entity == 'SECTION') { //restore a deleted section
+            response = await fetch('/api/sections/restore',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': getCookie('authToken'),
+                    },
+                    body: 'realName=' + lg.data.realName + '&username=' + lg.data.username + '&password=' + lg.data.password + '&salt=' + lg.data.password_salt + '&isAdmin=' + lg.data.isAdmin
+                });
+        }
+        if (response.ok) {
+            alert('Restored successfully!');
+            document.getElementById('logs').click();
+            $('#log_modal').modal('hide');
+        } else if (response.status === 403) {
+            alert('Your session may have expired - please log in.');
+            loginPrompt();
+        } else {
+            let text = await response.text();
+            throw new Error(response.status+' '+text);
+        }
+    } catch(error) {
+        alert(error);
+        return false;
+    }
+}
+
 async function logsClick(event) { //this is the event that triggers when the users tab is clicked on
     event.preventDefault();
     //let logs = [new Log(0,12,'abcd12','2020-20-02','12:46:08','list','sections'),new Log(0,17,'quds38','2020-22-02','19:46:08','login','users')];//await getLogs(100);
@@ -140,16 +182,19 @@ function bindDater() {
 
     cb(start, end);
 }
-
+var currentLog = -1;
 function rowClick(event, row) {
     event.preventDefault();
+    currentLog = row;
     let lg = logsList[row];
     let dt = `<p>${lg.entity[0] + lg.entity.toLowerCase().slice(1,lg.entity.length)}: ${lg.data.name}</p>`;
+    document.getElementById('restore_button').disabled = true;
     if (lg.action === 'REMOVE' || lg.action === 'EDIT') {
         /*if (lg.entity == 'SECTION') {
             dt = 'Previous' + lg.entity.toLowerCase() + ':';
             
         }*/
+        document.getElementById('restore_button').disabled = false;
         dt = '<h4>Previous ' + lg.entity.toLowerCase() + ':</h4>';
         Object.keys(lg.data).forEach(e => {if(e!=='id' &&e!='password'&&e!='passwordSalt'&&e!=='position'){
             if (typeof(lg.data[e]) !== 'object') {
@@ -171,4 +216,5 @@ function rowClick(event, row) {
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('logs').addEventListener('click', logsClick );
+    document.getElementById('restore_button').addEventListener('click', restore );
 });

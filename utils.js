@@ -141,6 +141,7 @@ const actions = {
     REMOVE: 'REMOVE',
     LOGIN: 'LOGIN',
     RESET: 'RESET',
+    RESTORE: 'RESTORE',
 };
 
 const entities = {

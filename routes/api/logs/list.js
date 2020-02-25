@@ -17,6 +17,16 @@ class Log { //the class for a log object
     }
 }
 
+function compare(a, b) { //sort by date
+    if (a.date+a.time > b.date+b.time) {
+        return -1;
+    }
+    if (a.date+a.time < b.date+b.time) {
+        return 1;
+    }
+    return 0;
+}
+
 router.get('/', (req, res) => {
     try {
         function verify() {
@@ -51,6 +61,7 @@ router.get('/', (req, res) => {
                     let time = dt.slice(11,19);
                     logs.push(new Log(logData[i].logId, logData[i].userId,logData[i].username, date, time, logData[i].action, logData[i].entity, logData[i].oldData));
                 }
+                logs.sort(compare);
                 res.status(200).send(logs);
             });
         });
