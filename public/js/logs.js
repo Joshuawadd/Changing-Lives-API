@@ -111,13 +111,16 @@ async function restore() {
                 });
         }
         if (response.ok) {
+            document.getElementById('restore_button').style.cursor = '';
             alert('Restored successfully!');
             document.getElementById('logs').click();
             $('#log_modal').modal('hide');
         } else if (response.status === 403) {
+            document.getElementById('restore_button').style.cursor = '';
             alert('Your session may have expired - please log in.');
             loginPrompt();
         } else {
+            document.getElementById('restore_button').style.cursor = '';
             let text = await response.text();
             throw new Error(response.status+' '+text);
         }
@@ -216,5 +219,11 @@ function rowClick(event, row) {
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('logs').addEventListener('click', logsClick );
-    document.getElementById('restore_button').addEventListener('click', restore );
+    document.getElementById('restore_button').addEventListener('click', (e) => {
+        let sec = document.getElementById('restore_button');
+        if (sec.style.cursor == '') {
+            sec.style.cursor = 'wait';
+            restore();
+        }
+    });
 });
