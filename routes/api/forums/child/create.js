@@ -8,35 +8,29 @@ router.post('/', (req, res) => {
 
     function verify() {
         return new Promise((resolve) => {
-            resolve(utils.tokenVerify(req.query.token), true); // cant test with postman because the req.query.token is automatically created
+            resolve(utils.tokenVerify(req.body.token), false); // cant test with postman because the req.query.token is automatically created
         });
     }
     verify().then((userId) => { // should get the userId from token
         if (!userId) { 
+            console.log("can't verify with the userld");
             res.sendStatus(403);
             return;
-        }})
+        }
+    console.log(userId);
     const parent_id = req.body.parent_id;
     const child_comment = req.body.child_comment;
 
-    const connection = mysql.createConnection({
-        host: process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
-    });
+    const queryString = `INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (${userId}, ${parent_id}, ${child_comment})`;
+    
+    utils.mysql_query(res, queryString, [], (results, res) =>{
+        res.sendStatus(200);
+        utils.log(userId, 'create', 'child');
+    })
 
-    connection.connect((err) => {
-        if (err) throw err;
-    });
-
-    connection.query('INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)', [userId, parent_id, child_comment], (err) => {
-        if (err) throw res.sendStatus(400);
-    });
-
-    connection.end();
-    utils.log(userId, 'create', 'child');
-    res.sendStatus(200);
-});
+    // utils.log(userId, 'create', 'child');
+    // res.sendStatus(200);
+}
+)});
 
 module.exports = router;
