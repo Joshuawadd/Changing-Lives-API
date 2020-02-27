@@ -24,15 +24,15 @@ router.post('/', (req, res) => {
     const queryString = `INSERT INTO parent_comments (user_id,parent_title,parent_comment) VALUES (?, ?, ?)`;
 
     utils.mysql_query(res, queryString, [userId, parentTitle, parentComment], (results, res) =>{
-        const new_data = {parentId: results.insertId, parentTitle: parentTitle, parentComment: parentComment};
-        const new_data_log = JSON.stringify(new_data)
-        utils.log(userId, 'create', 'parent', new_data_log);
+        const newData = {parentId: results.insertId, parentTitle: parentTitle, parentComment: parentComment};
+        const newDataLog = JSON.stringify(newData)
+        utils.log(userId, 'create', 'parent', newDataLog);
         res.status(201).send(JSON.stringify(results.insertId))
     })
 
 }
 )} catch (err){
-    console.log('here');
+    console.log(err);
     res.sendStatus(500)
 }
 });

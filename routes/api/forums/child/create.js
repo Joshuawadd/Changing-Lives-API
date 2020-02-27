@@ -18,28 +18,23 @@ router.post('/', (req, res) => {
             return;
         }
     console.log(userId);
-    const parent_id = req.body.parent_id;
-    const child_comment = req.body.child_comment;
+    const parentId = req.body.parentId;
+    const childComment = req.body.childComment;
 
     const queryString = `INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)`;
 
     
-    const new_data = {"child_comment": child_comment};
-    const new_data_log = JSON.stringify(new_data)
-    utils.mysql_query(res, queryString, [userId, parent_id, child_comment], (results, res) =>{
-        utils.log(userId, 'create', 'child', new_data_log);
+    
+    utils.mysql_query(res, queryString, [userId, parentId, childComment], (results, res) =>{
+        const newData = {childId: results.insertId, childComment: childComment};
+        const newDataLog = JSON.stringify(newData)
+        utils.log(userId, 'create', 'child', newDataLog);
+        res.status(201).send(JSON.stringify(results.insertId))
     })
-
-    const queryString1 = `SELECT child_id FROM child_comments WHERE child_comment = ?`
-    utils.mysql_query(res, queryString1, [child_comment], (results, res) =>{
-
-        const childid = results[0]['child_id']
-        res.send(JSON.stringify(childid));
-    })
-
 
 }
 )} catch (err){
+    console.log(err);
     res.sendStatus(500)
 }
 });
