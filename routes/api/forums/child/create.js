@@ -1,32 +1,47 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
+const utils = require('../../../../utils');
 
-//Postman can be used to test post request {"userId": 1, "parent_id": 1, "child_comment":"This is a comment"}
 router.post('/', (req, res) => {
+    try{
 
-    const userId = req.body.userId;
+    function verify() {
+        return new Promise((resolve) => {
+            resolve(utils.tokenVerify(req.body.token), false); 
+        });
+    }
+    verify().then((userId) => { // should get the userId from token
+        if (!userId) { 
+            console.log("can't verify with the userld");
+            res.sendStatus(403);
+            return;
+        }
+    console.log(userId);
     const parent_id = req.body.parent_id;
     const child_comment = req.body.child_comment;
 
-    const connection = mysql.createConnection({
-        host: process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
-    });
+    const queryString = `INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)`;
 
-    connection.connect((err) => {
-        if (err) throw err;
-    });
+    
+    const new_data = {"child_comment": child_comment};
+    const new_data_log = JSON.stringify(new_data)
+    utils.mysql_query(res, queryString, [userId, parent_id, child_comment], (results, res) =>{
+        utils.log(userId, 'create', 'child', new_data_log);
+    })
 
-    connection.query('INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)', [userId, parent_id, child_comment], (err) => {
-        if (err) throw res.sendStatus(400);
-    });
+    const queryString1 = `SELECT child_id FROM child_comments WHERE child_comment = ?`
+    utils.mysql_query(res, queryString1, [child_comment], (results, res) =>{
 
-    connection.end();
+        const childid = results[0]['child_id']
+        res.send(JSON.stringify(childid));
+    })
 
-    res.sendStatus(200);
+
+}
+)} catch (err){
+    res.sendStatus(500)
+}
 });
 
 module.exports = router;
