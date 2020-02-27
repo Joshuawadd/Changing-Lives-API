@@ -17,26 +17,18 @@ router.post('/', (req, res) => {
             res.sendStatus(403);
             return;
         }
-    console.log(userId);
+    //console.log(userId);
     const parentTitle = req.body.parentTitle;
     const parentComment = req.body.parentComment;
 
     const queryString = `INSERT INTO parent_comments (user_id,parent_title,parent_comment) VALUES (?, ?, ?)`;
 
-    
-    const new_data = {"parentTitle": parentTitle, "parentComment": parentComment};
-    const new_data_log = JSON.stringify(new_data)
     utils.mysql_query(res, queryString, [userId, parentTitle, parentComment], (results, res) =>{
+        const new_data = {parentId: results.insertId, parentTitle: parentTitle, parentComment: parentComment};
+        const new_data_log = JSON.stringify(new_data)
         utils.log(userId, 'create', 'parent', new_data_log);
+        res.status(201).send(JSON.stringify(results.insertId))
     })
-    // some problem with the query below, sometimes you cant get a parent id
-    const queryString1 = `SELECT parent_id FROM parent_comments WHERE parent_comment = ? AND parent_title = ?`
-    utils.mysql_query(res, queryString1, [parentComment, parentTitle], (results, res) =>{
-        console.log(results);
-        const parentid = results[0]['parent_id']
-        res.send(JSON.stringify(parentid));
-    })
-
 
 }
 )} catch (err){
