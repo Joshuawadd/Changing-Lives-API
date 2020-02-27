@@ -101,7 +101,6 @@ function mysql_query(res, queryString, queryArray, callback) {
                     callback(results, res);
                 }
             });
-            
         }
     });
 }
@@ -134,5 +133,10 @@ function tokenVerify(token, isAdmin = false) {
     }
 }
 
+function verify(token) {
+    return new Promise((resolve) => {
+        resolve(tokenVerify(token), true);
+    });
+}
 
-module.exports = {randomPassword, randomUsername, log, mysql_query, tokenVerify};
+module.exports = {randomPassword, randomUsername, log, mysql_query, tokenVerify, verify};

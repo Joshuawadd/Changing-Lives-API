@@ -1,34 +1,62 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
+const utils = require('../../../../utils');
+
+function getChildRole(results){
+    for (var child of results) {
+        if (child.is_admin == 1 && child.is_creator == 1) {
+            child.childRole = 'staffcreator';
+        } else if (child.is_admin == 1) {
+            child.childRole = 'staff';
+        } else if (child.is_creator == 1) {
+            child.childRole = 'creator';
+        } else {
+            child.childRole = 'user';
+        }
+        delete child.is_admin;
+        delete child.is_creator;
+    }
+}
 
 router.get('/', (req, res) => {
+    try {
+        utils.verify(req.query.token).then((userId) => {
+            if (!userId) {
+                res.sendStatus(403);
+                return;
+            }
 
-    const connection = mysql.createConnection({
-        host: process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
-    });
+            const parentId = req.query.parentId;
 
-    connection.connect((err) => {
-        if (err) throw err;
-    });
+            if (typeof(parentId) === 'undefined') {
+                res.status(400).send("Bad request: missing parentId")
+                return;
+            }
 
-    function getList(){
-        return new Promise((resolve, reject) => {
-            connection.query('SELECT * FROM child_comments', [], (err, results) => {
-                if (err) throw res.sendStatus(400);
-                resolve(results);
-            });
+            const queryString = `SELECT IF(is_admin = 1, true, false) AS is_admin FROM users WHERE user_id = ?`
+            const queryArray = [userId]
+
+            utils.mysql_query(res, queryString, queryArray, (rows, res) => {
+                isAdmin = rows[0].is_admin
+                const nestedQueryArray = [parentId]
+                var nestedQueryString
+                if (isAdmin) {
+                    nestedQueryString = `SELECT c.child_id, c.child_comment, u.username, IF(u.is_admin = 1, true, false) AS is_admin, IF(p.user_id = c.user_id, true, false) AS is_creator FROM child_comments c INNER JOIN users u ON c.user_id = u.user_id INNER JOIN parent_comments p ON c.parent_id = p.parent_id  WHERE c.parent_id = ?`
+                } else {
+                    nestedQueryString = `SELECT c.child_id, c.child_comment, IF(u.is_admin = 1, true, false) AS is_admin, IF(p.user_id = c.user_id, true, false) AS is_creator FROM child_comments c INNER JOIN users u ON c.user_id = u.user_id INNER JOIN parent_comments p ON c.parent_id = p.parent_id  WHERE c.parent_id = ?`
+                }
+                utils.mysql_query(res, nestedQueryString, nestedQueryArray, (rows, res) => {
+                    getChildRole(rows)
+                    res.status(200).send(rows);
+                })
+            })
+
         });
+    } catch (err) {
+        console.log(err)
+        res.sendStatus(500);
     }
-
-    getList().then(result => {
-        res.send(result);
-    }).finally(() => {
-        connection.end();
-    });
 });
 
 module.exports = router;
