@@ -5,57 +5,40 @@ const utils = require('../../../../utils');
 
 router.get('/', (req, res) => {
     try {
-        function verify() {
-            return new Promise((resolve) => {
-                resolve(utils.tokenVerify(req.query.token), true);
-            });
-        }
-        verify().then((userId) => {
+        utils.verify(req.query.token).then((userId) => {
+
             if (!userId) {
                 res.sendStatus(403);
                 return;
             }
 
-            const search = req.query.search;
+            // if no search query, set to empty string
+            const search = typeof(req.query.search) !== "undefined" ? req.query.search : '';
 
-            const connection = mysql.createConnection({
-                host: process.env.MYSQL_HOST,
-                user: process.env.MYSQL_USER,
-                password: process.env.MYSQL_PASSWORD,
-                database: process.env.MYSQL_DATABASE
-            });
+            const queryString = `SELECT IF(is_admin = 1, true, false) AS is_admin FROM users WHERE user_id = ?`;
+            const queryArray = [userId];
 
-            connection.connect((err) => {
-                if (err) throw err;
-            });
+            var isAdmin
+            utils.mysql_query(res, queryString, queryArray, (rows, res) => {
+                isAdmin = rows[0].is_admin
+                const nestedQueryArray = [`%${search}%`];
+                var nestedQueryString
+                if (isAdmin) {
+                    nestedQueryString = `SELECT p.parent_id, p.parent_title, p.parent_comment, u.username FROM parent_comments p INNER JOIN users u ON p.user_id = u.user_id WHERE p.parent_title LIKE ?`;
+                } else {
+                    nestedQueryString = `SELECT parent_id, parent_title, parent_comment FROM parent_comments WHERE parent_title LIKE ?`
+                }
+                //console.log(nestedQueryString)
+                utils.mysql_query(res, nestedQueryString, nestedQueryArray, (rows, res) => {
+                    res.status(200).send(rows);
+                })
 
-            function getList(){
-                return new Promise((resolve, reject) => {
-                    connection.query(`SELECT IF(is_admin = 1, true, false) AS is_admin FROM users WHERE user_id = ${userId}`, [], (err, admin) => {
-                        if (err) throw res.sendStatus(400);
-                        if(admin[0].is_admin) {
-                            connection.query(`SELECT p.parent_id, p.parent_title, p.parent_comment, u.username FROM parent_comments p INNER JOIN users u ON p.user_id = u.user_id WHERE p.parent_title LIKE '%${search}%'`, [], (err, results) => {
-                                if (err) throw res.sendStatus(400);
-                                resolve(results);
-                            });
-                        } else {
-                            connection.query(`SELECT parent_id, parent_title, parent_comment FROM parent_comments WHERE parent_title LIKE '%${search}%'`, [], (err, results) => {
-                                if (err) throw res.sendStatus(400);
-                                resolve(results);
-                            });
-                        }
-                    });
-                });
-            }
-
-            getList().then(result => {
-                res.status(200).send(result);
-                utils.log(userId, 'list', 'parent');
-            }).finally(() => {
-                connection.end();
-            });
+                
+            })
+            
         });
     } catch (err) {
+        console.log(err)
         res.sendStatus(500);
     }
 });
