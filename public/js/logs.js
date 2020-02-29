@@ -38,7 +38,7 @@ const formHTML = `<form class="form-inline" action="">
                         </div>
                         <div class="row">
                             <div class="form-check ml-2 mr-5">
-                                <label for="log_action" class="form-check-label">Actions:</label>
+                                <label for="log_action" class="form-check-label">Data:</label>
                                 <input type="checkbox" class="form-check ml-2" id="log_action">
                             </div>
                         </div>
@@ -54,15 +54,16 @@ const formHTML = `<form class="form-inline" action="">
 async function getLogs() {
     try {
         let authToken = getCookie('authToken');
-        /*let srch = '';
-        let rname = '';
+        let srch = '';
         let uname = '';
-        if (document.getElementById('usr_search') != null) {
-            srch = document.getElementById('usr_search').value;
-            rname = document.getElementById('usr_names').checked;
-            uname = document.getElementById('usr_tags').checked;
-        }*/
-        let response = await fetch('/api/logs/list?token='+authToken);//+'&search='+srch+'&rname='+rname+'&uname='+uname);
+        let ename = '';
+        if (document.getElementById('log_search') != null) {
+            srch = document.getElementById('log_search').value;
+            uname = document.getElementById('log_username').checked;
+            ename = document.getElementById('log_action').checked;
+        }
+        console.log(srch,uname,ename)
+        let response = await fetch('/api/logs/list?token='+authToken+'&search='+srch+'&uname='+uname+'&ename='+ename);
         if (response.ok) {
             let body = await response.text();
             let logData = JSON.parse(body);
@@ -134,7 +135,7 @@ async function restore() {
     }
 }
 
-async function logsClick(event) { //this is the event that triggers when the users tab is clicked on
+async function logsClick(event, topRefresh) { //this is the event that triggers when the users tab is clicked on
     event.preventDefault();
     //let logs = [new Log(0,12,'abcd12','2020-20-02','12:46:08','list','sections'),new Log(0,17,'quds38','2020-22-02','19:46:08','login','users')];//await getLogs(100);
     logsList = await getLogs();
@@ -154,7 +155,12 @@ async function logsClick(event) { //this is the event that triggers when the use
             logsHTML += logsList[i].listHTML();
         }
         logsHTML += '</tbody> </table>';
-        document.getElementById('top_content').innerHTML = topHTML;
+        if (topRefresh) {
+            document.getElementById('top_content').innerHTML = topHTML;
+            document.getElementById('log_search').addEventListener('input', function(event) {
+                logsClick(event,false); 
+            });
+        }
         document.getElementById('main_content').innerHTML = logsHTML;
         bindDater();
         $('#log_table').on('click', 'tr', function(e) {
@@ -218,7 +224,9 @@ function rowClick(event, row) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('logs').addEventListener('click', logsClick );
+    document.getElementById('logs').addEventListener('click', (event) => {
+        logsClick(event, true);
+    });
     document.getElementById('restore_button').addEventListener('click', (e) => {
         let sec = document.getElementById('restore_button');
         if (sec.style.cursor == '') {

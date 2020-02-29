@@ -39,20 +39,31 @@ router.get('/', (req, res) => {
                 res.sendStatus(403);
                 return;
             }
-            /*
-            let sectionId = parseInt(req.query.sectionId, 10);
-            if ( (typeof(sectionId) === 'undefined') || (isNaN(sectionId)) ) {
-                sectionId = 'All';
+            const search = req.query.search;
+            const userName = req.query.uname;
+            const entityName = req.query.ename;
+            const action = req.query.action;
+            console.log('g',search,userName,entityName);
+            let uSrch = '%';
+            let enSrch = '%';
+            let andOr = '-';
+            if (userName === 'true') {
+                uSrch = '%' + search + '%';
+                andOr = '*';
             }
-
-            var whereString = '';
-            if (sectionId !== 'All') {
-                whereString = `WHERE sections.section_id = ${sectionId}`;
-            }*/
+            if (entityName === 'true') {
+                enSrch = '%' + search + '%';
+                if (andOr === '*') {
+                    andOr = 'OR';
+                }
+            }
+            if (andOr != 'OR') {
+                andOr = 'AND';
+            }
             const queryString = `SELECT logs.logId, logs.userId, logs.dateTime, logs.action, logs.entity, logs.oldData, users.username 
-            FROM logs LEFT JOIN users ON logs.userId = users.user_id`;
+            FROM logs LEFT JOIN users ON logs.userId = users.user_id WHERE users.username LIKE ? ${andOr} oldData->"$.name[*]" in (?)`;
             
-            utils.mysql_query(res, queryString, [], (results, res) => {
+            utils.mysql_query(res, queryString, [uSrch,enSrch], (results, res) => {
                 let logData = results;
                 let logs = [];
                 for (let i = 0; i < logData.length; i++) {
