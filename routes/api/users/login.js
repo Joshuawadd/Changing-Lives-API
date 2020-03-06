@@ -36,7 +36,6 @@ router.post('/', (req, res) => {
                 const userId = rows[0]['user_id'];
                 const isAdmin = (rows[0]['is_admin']).readUInt8();
                 const temp_hash = bcrypt.hashSync(password, password_salt);
-                console.log(temp_hash, password_hashed);
                 if (temp_hash === password_hashed) {
                     resolve([userId, isAdmin]);
                 } else {
@@ -48,7 +47,6 @@ router.post('/', (req, res) => {
         });
         
         passwordMatch.then((arr) => {
-            console.log(arr);
             if (typeof(arr) !== 'undefined') {
                 var userId = arr[0];
                 var isAdmin = arr[1];
