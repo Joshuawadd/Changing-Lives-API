@@ -43,7 +43,8 @@ router.get('/', (req, res) => {
             const userName = req.query.uname;
             const entityName = req.query.ename;
             const action = req.query.action;
-            console.log('g',search,userName,entityName);
+            const startDate = req.query.sdate;
+            const endDate = req.query.edate;
             let uSrch = '%';
             let enSrch = '%';
             let andOr = '-';
@@ -61,7 +62,7 @@ router.get('/', (req, res) => {
                 andOr = 'AND';
             }
             const queryString = `SELECT logs.logId, logs.userId, logs.dateTime, logs.action, logs.entity, logs.oldData, users.username 
-            FROM logs LEFT JOIN users ON logs.userId = users.user_id WHERE users.username LIKE ? ${andOr} oldData->"$.name[*]" in (?)`;
+            FROM logs LEFT JOIN users ON logs.userId = users.user_id WHERE users.username LIKE BINARY ? ${andOr} JSON_EXTRACT(oldData, '$."name"') LIKE ?`;
             
             utils.mysql_query(res, queryString, [uSrch,enSrch], (results, res) => {
                 let logData = results;
@@ -70,7 +71,10 @@ router.get('/', (req, res) => {
                     let dt = logData[i].dateTime.toISOString();
                     let date = dt.slice(0,10);
                     let time = dt.slice(11,19);
-                    logs.push(new Log(logData[i].logId, logData[i].userId,logData[i].username, date, time, logData[i].action, logData[i].entity, logData[i].oldData));
+                    let ndt = date+' '+time;
+                    if (startDate === '' ||(ndt >= startDate && ndt <= endDate)) {
+                        logs.push(new Log(logData[i].logId, logData[i].userId,logData[i].username, date, time, logData[i].action, logData[i].entity, logData[i].oldData))
+                    }
                 }
                 logs.sort(compare);
                 res.status(200).send(logs);

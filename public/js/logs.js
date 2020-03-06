@@ -57,13 +57,16 @@ async function getLogs() {
         let srch = '';
         let uname = '';
         let ename = '';
+        let sdate = '';
+        let edate = '';
         if (document.getElementById('log_search') != null) {
             srch = document.getElementById('log_search').value;
             uname = document.getElementById('log_username').checked;
             ename = document.getElementById('log_action').checked;
+            sdate = $('#log_datetime').data('daterangepicker').startDate.format('YYYY-MM-DD HH:mm:ss');
+            edate = $('#log_datetime').data('daterangepicker').endDate.format('YYYY-MM-DD HH:mm:ss');
         }
-        console.log(srch,uname,ename)
-        let response = await fetch('/api/logs/list?token='+authToken+'&search='+srch+'&uname='+uname+'&ename='+ename);
+        let response = await fetch('/api/logs/list?token='+authToken+'&search='+srch+'&uname='+uname+'&ename='+ename+'&sdate='+sdate+'&edate='+edate);
         if (response.ok) {
             let body = await response.text();
             let logData = JSON.parse(body);
@@ -160,9 +163,12 @@ async function logsClick(event, topRefresh) { //this is the event that triggers 
             document.getElementById('log_search').addEventListener('input', function(event) {
                 logsClick(event,false); 
             });
+            bindDater();
+            $('#log_datetime').on('apply.daterangepicker', function(ev, picker) {
+                logsClick(ev, false);
+            });
         }
         document.getElementById('main_content').innerHTML = logsHTML;
-        bindDater();
         $('#log_table').on('click', 'tr', function(e) {
             rowClick(e,$(e.currentTarget).index());
         });
@@ -184,8 +190,8 @@ function bindDater() {
         startDate: start,
         endDate: end,
         ranges: {
-            'Today': [moment(), moment()],
-            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Today': [moment().startOf('day'), moment()],
+            'Yesterday': [moment().startOf('day').subtract(1, 'days'), moment().startOf('day')],
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
             'Last 30 Days': [moment().subtract(29, 'days'), moment()],
             'This Month': [moment().startOf('month'), moment().endOf('month')],
