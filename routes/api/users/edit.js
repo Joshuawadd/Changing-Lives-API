@@ -13,8 +13,8 @@ router.post('/', upload.none(), (req, res) => {
                 resolve(utils.tokenVerify(req.header('Authorization'), true));
             });
         }
-        verify().then((result) => {
-            if (!result) {
+        verify().then((editor) => {
+            if (!editor) {
                 res.sendStatus(403);
                 return;
             }
@@ -26,7 +26,7 @@ router.post('/', upload.none(), (req, res) => {
 
             const queryString = 'UPDATE users SET real_name = ?, username = ?, password = ? WHERE user_id = ?';
             const queryArray = [realName, userName, userPassword, userId];
-            utils.mysql_query(res, queryString, queryArray, (results, res) => {res.sendStatus(200);});
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {utils.log(editor, utils.actions.EDIT, utils.entities.USER, null, JSON.stringify({"name": userName})); res.sendStatus(200);});
 
         });
     } catch (err) {

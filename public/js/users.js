@@ -106,17 +106,19 @@ async function updateUser(event) {
                 body: data
             });
         if (response.ok) {
-            document.getElementById('submit_section').style.cursor = '';
+            document.getElementById('submit_user').style.cursor = '';
             alert('User details edited successfully!');
             $('#user_modal').modal('hide');
             document.getElementById('users').click();
             return true;
         } else if (response.status === 403){
+            document.getElementById('submit_user').style.cursor = '';
             alert('Your session may have expired - please log in.');
             await loginPrompt();
             $('.modal').modal('hide');
             $('#user_modal').modal('show');
         } else {
+            document.getElementById('submit_user').style.cursor = '';
             throw new Error(response.status+' '+response.statusText);
         }
     } catch(error) {
@@ -140,18 +142,20 @@ async function addUser(event) {
                 body: 'realName=' + userName + '&isAdmin=0'
             });
         if (response.ok) {
-            document.getElementById('submit_section').style.cursor = '';
+            document.getElementById('submit_user').style.cursor = '';
             let pw = await response.text();
             alert('User created successfully! Temporary password: '+ pw + '. This will not be visible again.');
             $('#user_modal').modal('hide');
             document.getElementById('users').click();
             return true;
         } else if (response.status === 403){
+            document.getElementById('submit_user').style.cursor = '';
             alert('Your session may have expired - please log in.');
             await loginPrompt();
             $('.modal').modal('hide');
             $('#user_modal').modal('show');
         } else {
+            document.getElementById('submit_user').style.cursor = '';
             throw new Error(response.status+' '+response.statusText);
         }
     } catch(error) {
@@ -261,7 +265,7 @@ function editUser(event,userId) { //this loads up the box for editing a user's d
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('edit_user').addEventListener('submit', function(event) {
-        let sec = document.getElementById('submit_section');
+        let sec = document.getElementById('submit_user');
         if (sec.style.cursor == '') {
             sec.style.cursor = 'wait';
             if (currentUser >= 0) {

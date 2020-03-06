@@ -50,7 +50,7 @@ router.get('/', (req, res) => {
                 for (let i = 0; i < userData.length; i++) {
                     users.push(new User(userData[i].user_id, userData[i].real_name, userData[i].username, userData[i].password));
                 }
-                res.send(users);
+                res.status(200).send(users);
             });
         });
     } catch (err) {

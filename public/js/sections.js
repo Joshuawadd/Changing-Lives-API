@@ -99,11 +99,13 @@ async function addSection(event) {
             document.getElementById('content').click();
             return true;
         } else if (response.status === 403){
+            document.getElementById('submit_section').style.cursor = '';
             alert('Your session may have expired - please log in.');
             await loginPrompt();
             $('.modal').modal('hide');
             $('#section_modal').modal('show');
         } else {
+            document.getElementById('submit_section').style.cursor = '';
             throw new Error(response.status+' '+response.statusText);
         }
     } catch(error) {
@@ -162,11 +164,13 @@ async function updateSection(event) {
             document.getElementById('file_adder_label').innerText = 'Choose file(s)';
             return true;
         } else if (response.status === 403){
+            document.getElementById('submit_section').style.cursor = '';
             alert('Your session may have expired - please log in.');
             await loginPrompt();
             $('.modal').modal('hide');
             $('#section_modal').modal('show');
         } else {
+            document.getElementById('submit_section').style.cursor = '';
             throw new Error(response.status+' '+response.statusText);
         }
     } catch(error) {
