@@ -25,7 +25,7 @@ router.post('/', (req, res) => {
     const userName = req.body.userName;
     const password = req.body.userPassword;
 
-    const queryString = 'SELECT password, password_salt, user_id, is_admin FROM users WHERE username = ?';
+    const queryString = 'SELECT password, password_salt, user_id, is_admin FROM users WHERE username = BINARY ?';
     const queryArray = [userName];
        
     utils.mysql_query(res, queryString, queryArray, (rows, res) => {
@@ -36,7 +36,6 @@ router.post('/', (req, res) => {
                 const userId = rows[0]['user_id'];
                 const isAdmin = (rows[0]['is_admin']).readUInt8();
                 const temp_hash = bcrypt.hashSync(password, password_salt);
-                console.log(temp_hash, password_hashed);
                 if (temp_hash === password_hashed) {
                     resolve([userId, isAdmin]);
                 } else {
@@ -48,7 +47,6 @@ router.post('/', (req, res) => {
         });
         
         passwordMatch.then((arr) => {
-            console.log(arr);
             if (typeof(arr) !== 'undefined') {
                 var userId = arr[0];
                 var isAdmin = arr[1];
@@ -58,7 +56,7 @@ router.post('/', (req, res) => {
                 } else {
                     token = jwt.sign({userId: userId}, process.env.USER_KEY, {expiresIn: 1200});
                 }
-                res.status(200).send(token);
+                res.status(200).send({'token':token, 'id':userId});
                 utils.log(userId, utils.actions.LOGIN, utils.entities.USER, null, JSON.stringify({"name": userName}));
             } else {
                 res.status(401).send('Incorrect username and/or password');

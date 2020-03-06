@@ -26,14 +26,14 @@ function randomPassword(length = 10) {
     } else if (length > 16) {
         length = 16;
     }
-    let passwordArray = ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '1234567890', '!@#$%&*()'];
+    let passwordArray = ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '1234567890'];
     var password = [];
     let n = 0;
     for (let i = 0; i < length; i++) {
         // If password length less than 9, all value random
-        if (password.length < (length - 4)) {
+        if (password.length < (length - 3)) {
             // Get random passwordArray index
-            let arrayRandom = Math.floor(Math.random() * 4);
+            let arrayRandom = Math.floor(Math.random() * 3);
             // Get password array value
             let passwordItem = passwordArray[arrayRandom];
             // Get password array value random index
