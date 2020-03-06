@@ -61,9 +61,10 @@ async function logIn(event) { //sends a login request and sets the authToken coo
         if (response.ok) {
             $('#login_box').modal('hide');
             let authToken = await response.text();
+            let tk = JSON.parse(authToken).token;
             document.getElementById('logged_in').innerHTML = 'Logged in as: ' + uname;
             document.cookie = 'userName=' + uname;
-            document.cookie = 'authToken=' + authToken;
+            document.cookie = 'authToken=' + tk;
         }
         else {
             throw new Error(response.status);

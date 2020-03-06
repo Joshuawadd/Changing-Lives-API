@@ -56,7 +56,7 @@ router.post('/', (req, res) => {
                 } else {
                     token = jwt.sign({userId: userId}, process.env.USER_KEY, {expiresIn: 1200});
                 }
-                res.status(200).send(token);
+                res.status(200).send({'token':token, 'id':userId});
                 utils.log(userId, utils.actions.LOGIN, utils.entities.USER, null, JSON.stringify({"name": userName}));
             } else {
                 res.status(401).send('Incorrect username and/or password');
