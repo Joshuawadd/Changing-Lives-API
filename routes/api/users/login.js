@@ -25,7 +25,7 @@ router.post('/', (req, res) => {
     const userName = req.body.userName;
     const password = req.body.userPassword;
 
-    const queryString = 'SELECT password, password_salt, user_id, is_admin FROM users WHERE username = ?';
+    const queryString = 'SELECT password, password_salt, user_id, is_admin FROM users WHERE username = BINARY ?';
     const queryArray = [userName];
        
     utils.mysql_query(res, queryString, queryArray, (rows, res) => {
