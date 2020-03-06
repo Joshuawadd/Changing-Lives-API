@@ -17,11 +17,15 @@ class Log {
     }
 
     listHTML() {
+        let nm = this.data.name;
+        if (this.data.name.length >= 10) {
+            nm = this.data.name.slice(0,10) + '...';
+        }
         return `<tr>
                     <td scope="row">${this.date}</td>
                     <td>${this.time}</td>
                     <td>${this.userName}</td>
-                    <td>${this.action +' '+ this.entity}(${this.data.name})</td>
+                    <td>${this.action +' '+ this.entity}(${nm})</td>
                 </tr>`;
     }
 }
