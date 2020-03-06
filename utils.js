@@ -152,8 +152,8 @@ const actions = {
 const entities = {
     SECTION: 'SECTION',
     USER: 'USER',
-    CHILD_POST: 'CHILD_POST',
-    PARENT_POST: 'PARENT_POST',
+    CHILD: 'COMMENT',
+    PARENT: 'POST',
 };
 
 module.exports = {randomPassword, randomUsername, log, mysql_query, tokenVerify, actions, entities, verify};
