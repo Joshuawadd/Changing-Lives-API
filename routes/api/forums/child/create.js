@@ -1,32 +1,42 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
+const utils = require('../../../../utils');
 
-//Postman can be used to test post request {"userId": 1, "parent_id": 1, "child_comment":"This is a comment"}
 router.post('/', (req, res) => {
+    try{
 
-    const userId = req.body.userId;
-    const parent_id = req.body.parent_id;
-    const child_comment = req.body.child_comment;
+    function verify() {
+        return new Promise((resolve) => {
+            resolve(utils.tokenVerify(req.body.token), false); 
+        });
+    }
+    verify().then((userId) => { // should get the userId from token
+        if (!userId) { 
+            console.log("can't verify with the userld");
+            res.sendStatus(403);
+            return;
+        }
+    console.log(userId);
+    const parentId = req.body.parentId;
+    const childComment = req.body.childComment;
 
-    const connection = mysql.createConnection({
-        host: process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
-    });
+    const queryString = `INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)`;
 
-    connection.connect((err) => {
-        if (err) throw err;
-    });
+    
+    
+    utils.mysql_query(res, queryString, [userId, parentId, childComment], (results, res) =>{
+        const newData = {childId: results.insertId, childComment: childComment};
+        const newDataLog = JSON.stringify(newData)
+        utils.log(userId, 'create', 'child', newDataLog);
+        res.status(201).send(JSON.stringify(results.insertId))
+    })
 
-    connection.query('INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)', [userId, parent_id, child_comment], (err) => {
-        if (err) throw res.sendStatus(400);
-    });
-
-    connection.end();
-
-    res.sendStatus(200);
+}
+)} catch (err){
+    console.log(err);
+    res.sendStatus(500)
+}
 });
 
 module.exports = router;

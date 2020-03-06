@@ -245,7 +245,7 @@ async function contentClick(event) { //triggers when the content tab is clicked 
         let topHTML = `<div class="form-inline" action="">
                             <button type="button" class="btn btn-outline-dark btn-sm form-control mr-5 ml-3" onclick="newSection()">New Section</button>
                         </div><br>`;
-        let sectionsHTML = '<div class="list-group" style="height: 350px; overflow-y: scroll;">';
+        let sectionsHTML = '<div class="list-group">'; //style="height: 350px; overflow-y: scroll;">';
         for (var i = 0; i < sections.length; i++) {
             sectionsHTML += sections[i].listHTML();
         }

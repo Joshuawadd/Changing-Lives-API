@@ -37,7 +37,7 @@ router.get('/', (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(utils.tokenVerify(req.query.token), false);
+                resolve(utils.tokenVerify(req.query.token, false));
             });
         }
         verify().then((userId) => {

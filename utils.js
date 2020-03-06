@@ -101,7 +101,6 @@ function mysql_query(res, queryString, queryArray, callback) {
                     callback(results, res);
                 }
             });
-            
         }
     });
 }
@@ -134,6 +133,12 @@ function tokenVerify(token, isAdmin = false) {
     }
 }
 
+function verify(token) {
+    return new Promise((resolve) => {
+        resolve(tokenVerify(token), true);
+    });
+}
+
 const actions = {
     LIST: 'LIST',
     CREATE: 'CREATE',
@@ -151,5 +156,4 @@ const entities = {
     PARENT_POST: 'PARENT_POST',
 };
 
-
-module.exports = {randomPassword, randomUsername, log, mysql_query, tokenVerify, actions, entities};
+module.exports = {randomPassword, randomUsername, log, mysql_query, tokenVerify, actions, entities, verify};
