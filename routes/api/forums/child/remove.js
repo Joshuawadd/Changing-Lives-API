@@ -25,20 +25,24 @@ router.post('/', (req, res) => {
                         const queryString = 'DELETE FROM child_comments WHERE child_id = ?';
                         const queryArray = [childId];
                         utils.mysql_query(res,'SELECT * FROM child_comments WHERE child_id = ?',[childId], (results, res) => {
-                            if (results[0].user_id === removerUser) {
-                                utils.mysql_query(res,'SELECT username FROM users WHERE user_id = ?',[results[0].user_id], (userL, res) => {
-                                    let commentRemove = JSON.stringify({"id": results[0].child_id, "parentId": results[0].parent_id, "name": results[0].child_comment, "userId": results[0].user_id, "creator": userL[0].username});
-                                    utils.mysql_query(res, queryString, queryArray, (results, res) => {
-                                        if (results.length > 0) {
-                                            utils.log(removerUser, utils.actions.REMOVE, utils.entities.CHILD, null, commentRemove);
-                                        }
-                                        res.sendStatus(200);
-                                        return;
+                            if (results.length > 0) {
+                                if (results[0].user_id === removerUser) {
+                                    utils.mysql_query(res,'SELECT username FROM users WHERE user_id = ?',[results[0].user_id], (userL, res) => {
+                                        let commentRemove = JSON.stringify({"id": results[0].child_id, "parentId": results[0].parent_id, "name": results[0].child_comment, "userId": results[0].user_id, "creator": userL[0].username});
+                                        utils.mysql_query(res, queryString, queryArray, (results, res) => {
+                                            if (results.length > 0) {
+                                                utils.log(removerUser, utils.actions.REMOVE, utils.entities.CHILD, null, commentRemove);
+                                            }
+                                            res.sendStatus(200);
+                                            return;
+                                        });
                                     });
-                                });
+                                } else {
+                                    res.sendStatus(403);
+                                    return;
+                                }
                             } else {
-                                res.sendStatus(403);
-                                return;
+                                res.sendStatus(400);
                             }
                         });
                     } else {
@@ -51,13 +55,17 @@ router.post('/', (req, res) => {
                     const queryString = 'DELETE FROM child_comments WHERE child_id = ?';
                     const queryArray = [childId];
                     utils.mysql_query(res,'SELECT * FROM child_comments WHERE child_id = ?',[childId], (results, res) => {
-                        utils.mysql_query(res,'SELECT username FROM users WHERE user_id = ?',[results[0].user_id], (userL, res) => {
-                            let commentRemove = JSON.stringify({"id": results[0].child_id, "parentId": results[0].parent_id, "name": results[0].child_comment, "userId": results[0].user_id, "creator": userL[0].username});
-                            utils.mysql_query(res, queryString, queryArray, (results, res) => {
-                                utils.log(removerStaff, utils.actions.REMOVE, utils.entities.CHILD, null, commentRemove);
-                                res.sendStatus(200);
+                        if (results.length > 0) {
+                            utils.mysql_query(res,'SELECT username FROM users WHERE user_id = ?',[results[0].user_id], (userL, res) => {
+                                let commentRemove = JSON.stringify({"id": results[0].child_id, "parentId": results[0].parent_id, "name": results[0].child_comment, "userId": results[0].user_id, "creator": userL[0].username});
+                                utils.mysql_query(res, queryString, queryArray, (results, res) => {
+                                    utils.log(removerStaff, utils.actions.REMOVE, utils.entities.CHILD, null, commentRemove);
+                                    res.sendStatus(200);
+                                });
                             });
-                        });
+                        } else {
+                            res.sendStatus(400);
+                        }
                     });
                 } else {
                     res.sendStatus(400);
