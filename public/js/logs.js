@@ -215,7 +215,7 @@ function rowClick(event, row) {
     if (lg.action === 'REMOVE' || lg.action === 'EDIT') {
         document.getElementById('restore_button').disabled = false;
         dt = '<h4>Previous ' + lg.entity.toLowerCase() + ':</h4>';
-        Object.keys(lg.data).forEach(e => {if(e!=='id' &&e!='password'&&e!='passwordSalt'&&e!=='position'){
+        Object.keys(lg.data).forEach(e => {if(e!=='id' &&e!='password'&&e!='passwordSalt'&&e!=='position'&&isNaN(lg.data[e])){
             if (typeof(lg.data[e]) !== 'object') {
                 dt += `${e[0].toUpperCase() + e.slice(1,e.length)}: ${lg.data[e]}<br>`;
             } else {
