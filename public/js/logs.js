@@ -47,7 +47,25 @@ const formHTML = `<form class="form-inline" action="">
                             </div>
                         </div>
                     </div>
-                    <label for="log_datetime" class="form-label ml-5">Date Range:</label>
+                    <label for="action_list">Action:</label>
+                    <select class="form-control ml-2 mr-3" id="action_list">
+                        <option>All</option>
+                        <option>CREATE</option>
+                        <option>REMOVE</option>
+                        <option>RESTORE</option>
+                        <option>EDIT</option>
+                        <option>RESET</option>
+                        <option>LOGIN</option>
+                    </select>
+                    <label for="entity_list">Entity:</label>
+                    <select class="form-control ml-2 mr-3" id="entity_list">
+                        <option>All</option>
+                        <option>SECTION</option>
+                        <option>USER</option>
+                        <option>POST</option>
+                        <option>COMMENT</option>
+                    </select>
+                    <label for="log_datetime" class="form-label ml-2">Date Range:</label>
                     <div id="log_datetime" class = "ml-2" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc;">
                         <i class="fa fa-calendar"></i>
                         <span></span> 
@@ -63,14 +81,18 @@ async function getLogs() {
         let ename = '';
         let sdate = '';
         let edate = '';
+        let action = 'All';
+        let entity = 'All';
         if (document.getElementById('log_search') != null) {
             srch = document.getElementById('log_search').value;
             uname = document.getElementById('log_username').checked;
             ename = document.getElementById('log_action').checked;
             sdate = $('#log_datetime').data('daterangepicker').startDate.format('YYYY-MM-DD HH:mm:ss');
             edate = $('#log_datetime').data('daterangepicker').endDate.format('YYYY-MM-DD HH:mm:ss');
+            action = document.getElementById('action_list').value;
+            entity = document.getElementById('entity_list').value;
         }
-        let response = await fetch('/api/logs/list?token='+authToken+'&search='+srch+'&uname='+uname+'&ename='+ename+'&sdate='+sdate+'&edate='+edate);
+        let response = await fetch('/api/logs/list?token='+authToken+'&search='+srch+'&uname='+uname+'&ename='+ename+'&sdate='+sdate+'&edate='+edate+'&action='+action+'&entity=' + entity);
         if (response.ok) {
             let body = await response.text();
             let logData = JSON.parse(body);
@@ -190,6 +212,13 @@ async function logsClick(event, topRefresh) { //this is the event that triggers 
             $('#log_datetime').on('apply.daterangepicker', function(ev, picker) {
                 logsClick(ev, false);
             });
+            document.getElementById('action_list').addEventListener('input', function(event) {
+                logsClick(event,false); 
+            });
+            document.getElementById('entity_list').addEventListener('input', function(event) {
+                logsClick(event,false); 
+            });
+            
         }
         document.getElementById('main_content').innerHTML = logsHTML;
         $('#log_table').on('click', 'tr', function(e) {

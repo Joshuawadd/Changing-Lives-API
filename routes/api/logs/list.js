@@ -42,7 +42,8 @@ router.get('/', (req, res) => {
             const search = req.query.search;
             const userName = req.query.uname;
             const entityName = req.query.ename;
-            const action = req.query.action;
+            var action = req.query.action;
+            var entity = req.query.entity;
             const startDate = req.query.sdate;
             const endDate = req.query.edate;
             let uSrch = '%';
@@ -61,10 +62,18 @@ router.get('/', (req, res) => {
             if (andOr != 'OR') {
                 andOr = 'AND';
             }
+            if (action == 'All') {
+                action = '';
+            }
+            if (entity == 'All') {
+                entity = '';
+            }
+            action = '%'+action+'%';
+            entity = '%'+entity+'%';
             const queryString = `SELECT logs.logId, logs.userId, logs.dateTime, logs.action, logs.entity, logs.oldData, users.username 
-            FROM logs LEFT JOIN users ON logs.userId = users.user_id WHERE users.username LIKE BINARY ? ${andOr} JSON_EXTRACT(oldData, '$."name"') LIKE ?`;
+            FROM logs LEFT JOIN users ON logs.userId = users.user_id WHERE users.username LIKE BINARY ? ${andOr} JSON_EXTRACT(oldData, '$."name"') LIKE ? AND logs.action LIKE ? AND logs.entity LIKE ?`;
             
-            utils.mysql_query(res, queryString, [uSrch,enSrch], (results, res) => {
+            utils.mysql_query(res, queryString, [uSrch,enSrch, action, entity], (results, res) => {
                 let logData = results;
                 let logs = [];
                 for (let i = 0; i < logData.length; i++) {
