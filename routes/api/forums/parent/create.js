@@ -24,8 +24,6 @@ router.post('/', (req, res) => {
             const queryString = 'INSERT INTO parent_comments (user_id,parent_title,parent_comment) VALUES (?, ?, ?)';
 
             utils.mysql_query(res, queryString, [userId, parentTitle, parentComment], (results, res) =>{
-                //const newData = {parentId: results.insertId, parentTitle: parentTitle, parentComment: parentComment};
-                //const newDataLog = JSON.stringify(newData)
                 utils.log(userId, utils.actions.CREATE, utils.entities.PARENT, null, JSON.stringify({"name": parentTitle}));
                 res.status(201).send(JSON.stringify(results.insertId));
             });

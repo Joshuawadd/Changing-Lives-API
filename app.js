@@ -53,6 +53,7 @@ const protectPath = function(regex) {
 const forumParentCreateRouter = require('./routes/api/forums/parent/create');
 const forumParentRemoveRouter = require('./routes/api/forums/parent/remove');
 const forumParentListRouter = require('./routes/api/forums/parent/list');
+const forumParentRestoreRouter = require('./routes/api/forums/parent/restore');
 
 const forumChildCreateRouter = require('./routes/api/forums/child/create');
 const forumChildRemoveRouter = require('./routes/api/forums/child/remove');
@@ -97,6 +98,7 @@ app.use('/', indexRouter);
 app.use('/api/forums/parent/create', forumParentCreateRouter);
 app.use('/api/forums/parent/remove', forumParentRemoveRouter);
 app.use('/api/forums/parent/list', forumParentListRouter);
+app.use('/api/forums/parent/restore', forumParentRestoreRouter);
 
 app.use('/api/forums/child/create', forumChildCreateRouter);
 app.use('/api/forums/child/remove', forumChildRemoveRouter);
