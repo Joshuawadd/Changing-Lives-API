@@ -8,7 +8,7 @@ router.post('/', (req, res) => {
 
         function verify() {
             return new Promise((resolve) => {
-                resolve(utils.tokenVerify(req.header('Authorization')), false); 
+                resolve(utils.tokenVerify(req.header('Authorization')), true); 
             });
         }
         verify().then((userId) => { // should get the userId from token
@@ -17,24 +17,21 @@ router.post('/', (req, res) => {
                 res.sendStatus(403);
                 return;
             }
-            //console.log(userId);
-            const parentTitle = req.body.parentTitle;
-            const parentComment = req.body.parentComment;
+            const creatorId = req.body.creatorId;
+            const parentId = req.body.parentId;
+            const childComment = req.body.childComment;
 
-            const queryString = 'INSERT INTO parent_comments (user_id,parent_title,parent_comment) VALUES (?, ?, ?)';
+            const queryString = 'INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)';
 
-            utils.mysql_query(res, queryString, [userId, parentTitle, parentComment], (results, res) =>{
-                utils.log(userId, utils.actions.CREATE, utils.entities.PARENT, null, JSON.stringify({"name": parentTitle}));
+            utils.mysql_query(res, queryString, [creatorId, parentId, childComment], (results, res) =>{
+                utils.log(userId, utils.actions.RESTORE, utils.entities.CHILD, null, JSON.stringify({"name": childComment}));
                 res.status(201).send(JSON.stringify(results.insertId));
             });
-
         });
     } catch (err){
         console.log(err);
         res.sendStatus(500);
     }
 });
-
-
 
 module.exports = router;

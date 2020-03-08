@@ -53,10 +53,12 @@ const protectPath = function(regex) {
 const forumParentCreateRouter = require('./routes/api/forums/parent/create');
 const forumParentRemoveRouter = require('./routes/api/forums/parent/remove');
 const forumParentListRouter = require('./routes/api/forums/parent/list');
+const forumParentRestoreRouter = require('./routes/api/forums/parent/restore');
 
 const forumChildCreateRouter = require('./routes/api/forums/child/create');
 const forumChildRemoveRouter = require('./routes/api/forums/child/remove');
 const forumChildListRouter = require('./routes/api/forums/child/list');
+const forumChildRestoreRouter = require('./routes/api/forums/child/restore');
 
 const sectionCreateRouter = require('./routes/api/sections/create');
 const sectionEditRouter = require('./routes/api/sections/edit');
@@ -96,10 +98,12 @@ app.use('/', indexRouter);
 app.use('/api/forums/parent/create', forumParentCreateRouter);
 app.use('/api/forums/parent/remove', forumParentRemoveRouter);
 app.use('/api/forums/parent/list', forumParentListRouter);
+app.use('/api/forums/parent/restore', forumParentRestoreRouter);
 
 app.use('/api/forums/child/create', forumChildCreateRouter);
 app.use('/api/forums/child/remove', forumChildRemoveRouter);
 app.use('/api/forums/child/list', forumChildListRouter);
+app.use('/api/forums/child/restore', forumChildRestoreRouter);
 
 app.use('/api/sections/create', sectionCreateRouter);
 app.use('/api/sections/edit', sectionEditRouter);

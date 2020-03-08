@@ -17,11 +17,15 @@ class Log {
     }
 
     listHTML() {
+        let nm = this.data.name;
+        if (this.data.name.length >= 10) {
+            nm = this.data.name.slice(0,10) + '...';
+        }
         return `<tr>
                     <td scope="row">${this.date}</td>
                     <td>${this.time}</td>
                     <td>${this.userName}</td>
-                    <td>${this.action +' '+ this.entity}(${this.data.name})</td>
+                    <td>${this.action +' '+ this.entity}(${nm})</td>
                 </tr>`;
     }
 }
@@ -117,11 +121,31 @@ async function restore() {
                     },
                     body: 'sectionName=' + lg.data.name + '&sectionText=' + lg.data.text + '&sectionFiles=' + JSON.stringify(files)
                 });
+        } else if (lg.entity == 'COMMENT') {
+            response = await fetch('/api/forums/child/restore',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': getCookie('authToken'),
+                    },
+                    body: 'creatorId=' + lg.data.userId + '&parentId=' + lg.data.parentId + '&childComment=' + lg.data.name
+                });
+        } else if (lg.entity == 'POST') {
+            response = await fetch('/api/forums/parent/restore',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': getCookie('authToken'),
+                    },
+                    body: 'parentId=' + lg.data.id + '&creatorId=' + lg.data.userId + '&parentTitle=' + lg.data.name + '&parentComment=' + lg.data.comment
+                });
         }
         if (response.ok) {
             document.getElementById('restore_button').style.cursor = '';
-            alert('Restored successfully!');
             document.getElementById('logs').click();
+            alert('Restored successfully!');
             $('#log_modal').modal('hide');
         } else if (response.status === 403) {
             document.getElementById('restore_button').style.cursor = '';
@@ -140,7 +164,6 @@ async function restore() {
 
 async function logsClick(event, topRefresh) { //this is the event that triggers when the users tab is clicked on
     event.preventDefault();
-    //let logs = [new Log(0,12,'abcd12','2020-20-02','12:46:08','list','sections'),new Log(0,17,'quds38','2020-22-02','19:46:08','login','users')];//await getLogs(100);
     logsList = await getLogs();
     if (logsList) {
         let topHTML = formHTML;
@@ -211,7 +234,7 @@ function rowClick(event, row) {
     if (lg.action === 'REMOVE' || lg.action === 'EDIT') {
         document.getElementById('restore_button').disabled = false;
         dt = '<h4>Previous ' + lg.entity.toLowerCase() + ':</h4>';
-        Object.keys(lg.data).forEach(e => {if(e!=='id' &&e!='password'&&e!='passwordSalt'&&e!=='position'){
+        Object.keys(lg.data).forEach(e => {if(e!=='id' &&e!='password'&&e!='passwordSalt'&&e!=='position'&&isNaN(lg.data[e])){
             if (typeof(lg.data[e]) !== 'object') {
                 dt += `${e[0].toUpperCase() + e.slice(1,e.length)}: ${lg.data[e]}<br>`;
             } else {
