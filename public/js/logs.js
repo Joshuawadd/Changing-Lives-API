@@ -132,7 +132,6 @@ async function restore() {
                     body: 'creatorId=' + lg.data.userId + '&parentId=' + lg.data.parentId + '&childComment=' + lg.data.name
                 });
         } else if (lg.entity == 'POST') {
-            console.log(lg.data, lg.data.comment)
             response = await fetch('/api/forums/parent/restore',
                 {
                     method: 'POST',
@@ -145,8 +144,8 @@ async function restore() {
         }
         if (response.ok) {
             document.getElementById('restore_button').style.cursor = '';
-            alert('Restored successfully!');
             document.getElementById('logs').click();
+            alert('Restored successfully!');
             $('#log_modal').modal('hide');
         } else if (response.status === 403) {
             document.getElementById('restore_button').style.cursor = '';
@@ -164,9 +163,7 @@ async function restore() {
 }
 
 async function logsClick(event, topRefresh) { //this is the event that triggers when the users tab is clicked on
-    console.log('click')
     event.preventDefault();
-    //let logs = [new Log(0,12,'abcd12','2020-20-02','12:46:08','list','sections'),new Log(0,17,'quds38','2020-22-02','19:46:08','login','users')];//await getLogs(100);
     logsList = await getLogs();
     if (logsList) {
         let topHTML = formHTML;
