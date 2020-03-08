@@ -11,6 +11,7 @@ router.post('/', (req, res) => {
                 resolve(utils.tokenVerify(req.header('Authorization'), true));
             });
         }
+
         verify().then((userId) => {
             if (!userId) {
                 res.sendStatus(403);
@@ -22,21 +23,24 @@ router.post('/', (req, res) => {
 
             function get_hashed_password(plain_text_password) {
                 return new Promise((resolve) => {
-                    const generated_salt = bcrypt.genSalt(10);
-                    resolve([bcrypt.hash(plain_text_password, generated_salt), generated_salt]);
+                    bcrypt.genSalt(10).then((salt) => {
+                        bcrypt.hash(plain_text_password, salt).then((result) => {
+                            resolve([result, salt])
+                        });
+                    });
                 });
             }
 
             get_hashed_password(password).then((result) => {
 
                 // Both error handling has not been tested and was the result of a quick brainstorm of potential issues
-                if (password == null || password === ''){
+                if (password == null || password === '') {
                     res.sendStatus(500);
                     return;
                 }
 
                 //Check if the result produced is an array that holds the hashed password and the hash salt
-                if (!(Array.isArray(result) && result.length === 2)){
+                if (!(Array.isArray(result) && result.length === 2)) {
                     res.sendStatus(500);
                     return;
                 }
@@ -50,13 +54,16 @@ router.post('/', (req, res) => {
                         names.push(results[i].username);
                     }
                     var unique = false;
-                    while(!unique) {
+                    while (!unique) {
                         var username = utils.randomUsername();
                         if (names.indexOf(username) == -1) { //the username is unique
                             unique = true;
                             const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
                             const queryArray = [realName, username, hashed_password, salt, isAdmin];
-                            utils.mysql_query(res, queryString, queryArray, (results, res) => {utils.log(userId, utils.actions.CREATE, utils.entities.USER, null, JSON.stringify({"name": username}));res.status(200).send(password);});
+                            utils.mysql_query(res, queryString, queryArray, (results, res) => {
+                                utils.log(userId, utils.actions.CREATE, utils.entities.USER, null, JSON.stringify({"name": username}));
+                                res.status(200).send(password);
+                            });
                         }
                     }
                 });

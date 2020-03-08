@@ -8,7 +8,7 @@ router.post('/', (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(utils.tokenVerify(req.header('Authorization'), true));
+                resolve(utils.tokenVerify(req.header('Authorization'), false));
             });
         }
 
@@ -18,7 +18,7 @@ router.post('/', (req, res) => {
                 return;
             }
             const userId = req.body.userId;
-            const password = utils.randomPassword();
+            const password = req.body.password;
 
             function get_hashed_password(plain_text_password) {
                 return new Promise((resolve) => {

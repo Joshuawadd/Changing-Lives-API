@@ -17,7 +17,7 @@ function validate(req) {
 
 router.post('/', (req, res) => {
 
-    const {error} = validate(req.body);    
+    const {error} = validate(req.body);
     if (error) {
         const errorMessage = error.details[0].message;
         res.status(400).send(errorMessage);
@@ -29,37 +29,36 @@ router.post('/', (req, res) => {
 
     const queryString = 'SELECT password, password_salt, user_id, is_admin FROM users WHERE username = BINARY ?';
     const queryArray = [userName];
-       
+
     utils.mysql_query(res, queryString, queryArray, (rows, res) => {
         const passwordMatch = new Promise((resolve) => {
 
-            if(rows.length <= 0){
-                resolve(undefined)
-            }
+            if (rows.length > 0) {
+                const password_salt = rows[0]['password_salt'];
+                const password_hashed = rows[0]['password'];
+                const userId = rows[0]['user_id'];
+                const isAdmin = (rows[0]['is_admin']).readUInt8();
 
-            const password_salt = rows[0]['password_salt'];
-            const password_hashed = rows[0]['password'];
-            const userId = rows[0]['user_id'];
-            const isAdmin = (rows[0]['is_admin']).readUInt8();
+                function verify_password(hashed_password, plain_text_password, salt) {
+                    return new Promise((resolve) => {
+                        bcrypt.hash(plain_text_password, salt).then((result) => {
+                            resolve(result === hashed_password);
+                        });
+                    });
+                }
 
-            function verify_password(hashed_password, plain_text_password, salt) {
-                return new Promise((resolve) => {
-                    const temp_hash_password = bcrypt.hash(plain_text_password, salt);
-                    resolve(hashed_password === temp_hash_password);
+                verify_password(password_hashed, password, password_salt).then((result) => {
+                    if (result) {
+                        resolve([userId, isAdmin])
+                    } else {
+                        resolve(undefined)
+                    }
                 });
             }
-
-            verify_password(password_hashed, password, password_salt).then((result)=> {
-                if (result){
-                    resolve([userId, isAdmin])
-                }else{
-                    resolve(undefined)
-                }
-            });
         });
-        
+
         passwordMatch.then((arr) => {
-            if (typeof(arr) !== 'undefined') {
+            if (typeof (arr) !== 'undefined') {
                 var userId = arr[0];
                 var isAdmin = arr[1];
                 var token;
@@ -68,7 +67,7 @@ router.post('/', (req, res) => {
                 } else {
                     token = jwt.sign({userId: userId}, process.env.USER_KEY, {expiresIn: 1200});
                 }
-                res.status(200).send({'token':token, 'id':userId});
+                res.status(200).send({'token': token, 'id': userId});
                 utils.log(userId, utils.actions.LOGIN, utils.entities.USER, null, JSON.stringify({"name": userName}));
             } else {
                 res.status(401).send('Incorrect username and/or password');
@@ -84,6 +83,7 @@ router.get('/silent', (req, res) => {
             resolve(utils.tokenVerify(req.query.token));
         });
     }
+
     verify().then((result) => {
         if (!result) {
             res.sendStatus(403);
