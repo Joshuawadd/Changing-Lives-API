@@ -57,6 +57,7 @@ const forumParentListRouter = require('./routes/api/forums/parent/list');
 const forumChildCreateRouter = require('./routes/api/forums/child/create');
 const forumChildRemoveRouter = require('./routes/api/forums/child/remove');
 const forumChildListRouter = require('./routes/api/forums/child/list');
+const forumChildRestoreRouter = require('./routes/api/forums/child/restore');
 
 const sectionCreateRouter = require('./routes/api/sections/create');
 const sectionEditRouter = require('./routes/api/sections/edit');
@@ -100,6 +101,7 @@ app.use('/api/forums/parent/list', forumParentListRouter);
 app.use('/api/forums/child/create', forumChildCreateRouter);
 app.use('/api/forums/child/remove', forumChildRemoveRouter);
 app.use('/api/forums/child/list', forumChildListRouter);
+app.use('/api/forums/child/restore', forumChildRestoreRouter);
 
 app.use('/api/sections/create', sectionCreateRouter);
 app.use('/api/sections/edit', sectionEditRouter);

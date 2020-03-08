@@ -121,6 +121,16 @@ async function restore() {
                     },
                     body: 'sectionName=' + lg.data.name + '&sectionText=' + lg.data.text + '&sectionFiles=' + JSON.stringify(files)
                 });
+        } else if (lg.entity == 'COMMENT') {
+            response = await fetch('/api/forums/child/restore',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': getCookie('authToken'),
+                    },
+                    body: 'creatorId=' + lg.data.userId + '&parentId=' + lg.data.parentId + '&childComment=' + lg.data.name
+                });
         }
         if (response.ok) {
             document.getElementById('restore_button').style.cursor = '';
