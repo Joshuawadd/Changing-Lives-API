@@ -39,6 +39,8 @@ router.post('/', (req, res) => {
                                 return;
                             }
                         });
+                    } else {
+                        res.sendStatus(400);
                     }
                 });
             } else {
@@ -53,6 +55,8 @@ router.post('/', (req, res) => {
                             res.sendStatus(200);
                         });
                     });
+                } else {
+                    res.sendStatus(400);
                 }
             }
         

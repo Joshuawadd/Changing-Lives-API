@@ -8,7 +8,7 @@ router.post('/', (req, res) => {
 
         function verify() {
             return new Promise((resolve) => {
-                resolve(utils.tokenVerify(req.body.token), false); 
+                resolve(utils.tokenVerify(req.header('Authorization')), false); 
             });
         }
         verify().then((userId) => { // should get the userId from token
@@ -26,7 +26,7 @@ router.post('/', (req, res) => {
             utils.mysql_query(res, queryString, [userId, parentTitle, parentComment], (results, res) =>{
                 //const newData = {parentId: results.insertId, parentTitle: parentTitle, parentComment: parentComment};
                 //const newDataLog = JSON.stringify(newData)
-                utils.log(userId, utils.actions.CREATE, utils.entities.CHILD, null, JSON.stringify({"name": parentTitle}));
+                utils.log(userId, utils.actions.CREATE, utils.entities.PARENT, null, JSON.stringify({"name": parentTitle}));
                 res.status(201).send(JSON.stringify(results.insertId));
             });
 

@@ -8,7 +8,7 @@ router.post('/', (req, res) => {
 
         function verify() {
             return new Promise((resolve) => {
-                resolve(utils.tokenVerify(req.body.token), false); 
+                resolve(utils.tokenVerify(req.header('Authorization')), false); 
             });
         }
         verify().then((userId) => { // should get the userId from token

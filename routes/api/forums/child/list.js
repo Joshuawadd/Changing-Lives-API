@@ -21,8 +21,14 @@ function getChildRole(results){
 
 router.get('/', (req, res) => {
     try {
-        utils.verify(req.query.token).then((userId) => {
-            if (!userId) {
+        function verify() {
+            return new Promise((resolve) => {
+                resolve(utils.tokenVerify(req.query.token), false); 
+            });
+        }
+        verify().then((userId) => { // should get the userId from token
+            if (!userId) { 
+                console.log('can\'t verify with the userId');
                 res.sendStatus(403);
                 return;
             }
