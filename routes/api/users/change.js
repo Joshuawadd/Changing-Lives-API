@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const utils = require('../../../utils');
 
-//Postman can be used to test post request {"userId": 34}
+//Postman can be used to test post request {"userId": 34, "password": password}
 router.post('/', (req, res) => {
     try {
         function verify() {
@@ -51,11 +51,15 @@ router.post('/', (req, res) => {
                 const queryArray = [hashed_password, salt, userId];
                 utils.mysql_query(res, 'SELECT username FROM users WHERE user_id = ?', [userId], (results, res) => {
                     //Watch out for this line, it caused me an error that MAGICALLY dissapeared
-                    let username = results[0].username;
-                    utils.mysql_query(res, queryString, queryArray, (rt, res) => {
-                        utils.log(editor, utils.actions.RESET, utils.entities.USER, null, JSON.stringify({"name": username}));
-                        res.status(200).send(password);
-                    });
+					if (results.length > 0) {
+						let username = results[0].username;
+						utils.mysql_query(res, queryString, queryArray, (rt, res) => {
+							utils.log(editor, utils.actions.RESET, utils.entities.USER, null, JSON.stringify({"name": username}));
+							res.sendStatus(200);
+						});
+					} else {
+						res.sendStatus(400);
+					}
                 });
 
             });
