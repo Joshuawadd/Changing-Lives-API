@@ -19,24 +19,47 @@ router.post('/', (req, res) => {
             const realName = req.body.realName;
             const isAdmin = parseInt(req.body.isAdmin);
             const password = utils.randomPassword();
-            const salt = bcrypt.genSaltSync(10);
-            const hashed_pass = bcrypt.hashSync(password, salt);
-            //make sure to generate a unique username
-            utils.mysql_query(res, 'SELECT username FROM users', [], (results, res) => {
-                var names = [];
-                for (let i = 0; i < results.length; i++) {
-                    names.push(results[i].username);
+
+            function get_hashed_password(plain_text_password) {
+                return new Promise((resolve) => {
+                    const generated_salt = bcrypt.genSalt(10);
+                    resolve([bcrypt.hash(plain_text_password, generated_salt), generated_salt]);
+                });
+            }
+
+            get_hashed_password(password).then((result) => {
+
+                // Both error handling has not been tested and was the result of a quick brainstorm of potential issues
+                if (password == null || password === ''){
+                    res.sendStatus(500);
+                    return;
                 }
-                var unique = false;
-                while(!unique) {
-                    var username = utils.randomUsername();
-                    if (names.indexOf(username) == -1) { //the username is unique
-                        unique = true;
-                        const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
-                        const queryArray = [realName, username, hashed_pass, salt, isAdmin];
-                        utils.mysql_query(res, queryString, queryArray, (results, res) => {utils.log(userId, utils.actions.CREATE, utils.entities.USER, null, JSON.stringify({"name": username}));res.status(200).send(password);});
-                    } 
+
+                //Check if the result produced is an array that holds the hashed password and the hash salt
+                if (!(Array.isArray(result) && result.length === 2)){
+                    res.sendStatus(500);
+                    return;
                 }
+
+                const hashed_password = result[0];
+                const salt = result[1];
+
+                utils.mysql_query(res, 'SELECT username FROM users', [], (results, res) => {
+                    var names = [];
+                    for (let i = 0; i < results.length; i++) {
+                        names.push(results[i].username);
+                    }
+                    var unique = false;
+                    while(!unique) {
+                        var username = utils.randomUsername();
+                        if (names.indexOf(username) == -1) { //the username is unique
+                            unique = true;
+                            const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
+                            const queryArray = [realName, username, hashed_password, salt, isAdmin];
+                            utils.mysql_query(res, queryString, queryArray, (results, res) => {utils.log(userId, utils.actions.CREATE, utils.entities.USER, null, JSON.stringify({"name": username}));res.status(200).send(password);});
+                        }
+                    }
+                });
             });
         });
     } catch (err) {

@@ -5,6 +5,8 @@ const router = express.Router();
 const Joi = require('joi');
 const utils = require('../../../utils');
 
+
+//THIS NEEDS FIXING TO TAKE OUR ACTUAL REQUIREMENTS
 function validate(req) {
     const schema = {
         userName: Joi.string().min(1).max(16).required(),
@@ -30,20 +32,30 @@ router.post('/', (req, res) => {
        
     utils.mysql_query(res, queryString, queryArray, (rows, res) => {
         const passwordMatch = new Promise((resolve) => {
-            if (rows.length > 0) {
-                const password_salt = rows[0]['password_salt'];
-                const password_hashed = rows[0]['password'];
-                const userId = rows[0]['user_id'];
-                const isAdmin = (rows[0]['is_admin']).readUInt8();
-                const temp_hash = bcrypt.hashSync(password, password_salt);
-                if (temp_hash === password_hashed) {
-                    resolve([userId, isAdmin]);
-                } else {
-                    resolve(undefined);
-                }
-            } else {
-                resolve(undefined);
+
+            if(rows.length <= 0){
+                resolve(undefined)
             }
+
+            const password_salt = rows[0]['password_salt'];
+            const password_hashed = rows[0]['password'];
+            const userId = rows[0]['user_id'];
+            const isAdmin = (rows[0]['is_admin']).readUInt8();
+
+            function verify_password(hashed_password, plain_text_password, salt) {
+                return new Promise((resolve) => {
+                    const temp_hash_password = bcrypt.hash(plain_text_password, salt);
+                    resolve(hashed_password === temp_hash_password);
+                });
+            }
+
+            verify_password(password_hashed, password, password_salt).then((result)=> {
+                if (result){
+                    resolve([userId, isAdmin])
+                }else{
+                    resolve(undefined)
+                }
+            });
         });
         
         passwordMatch.then((arr) => {

@@ -11,6 +11,7 @@ router.post('/', (req, res) => {
                 resolve(utils.tokenVerify(req.header('Authorization'), true));
             });
         }
+
         verify().then((editor) => {
             if (!editor) {
                 res.sendStatus(403);
@@ -18,16 +19,41 @@ router.post('/', (req, res) => {
             }
             const userId = req.body.userId;
             const password = utils.randomPassword();
-            const salt = bcrypt.genSaltSync(10);
-            const hashed_pass = bcrypt.hashSync(password, salt);
-            const queryString = 'UPDATE users SET password = ?, password_salt = ? WHERE user_id = ?';
-            const queryArray = [hashed_pass, salt, userId];
-            utils.mysql_query(res,'SELECT username FROM users WHERE user_id = ?',[userId], (results, res) => {
-                let username = results[0].username;
-                utils.mysql_query(res, queryString, queryArray, (rt, res) => {
-                    utils.log(editor, utils.actions.RESET, utils.entities.USER, null, JSON.stringify({"name": username})); 
-                    res.status(200).send(password);
+
+            function get_hashed_password(plain_text_password) {
+                return new Promise((resolve) => {
+                    const generated_salt = bcrypt.genSalt(10);
+                    resolve([bcrypt.hash(plain_text_password, generated_salt), generated_salt]);
                 });
+            }
+
+            get_hashed_password(password).then((result) => {
+
+                // Both error handling has not been tested and was the result of a quick brainstorm of potential issues
+                if (password == null || password === '') {
+                    res.sendStatus(500);
+                    return;
+                }
+
+                //Check if the result produced is an array that holds the hashed password and the hash salt
+                if (!(Array.isArray(result) && result.length === 2)) {
+                    res.sendStatus(500);
+                    return;
+                }
+
+                const hashed_password = result[0];
+                const salt = result[1];
+
+                const queryString = 'UPDATE users SET password = ?, password_salt = ? WHERE user_id = ?';
+                const queryArray = [hashed_password, salt, userId];
+                utils.mysql_query(res, 'SELECT username FROM users WHERE user_id = ?', [userId], (results, res) => {
+                    let username = results[0].username;
+                    utils.mysql_query(res, queryString, queryArray, (rt, res) => {
+                        utils.log(editor, utils.actions.RESET, utils.entities.USER, null, JSON.stringify({"name": username}));
+                        res.status(200).send(password);
+                    });
+                });
+
             });
         });
     } catch (err) {
