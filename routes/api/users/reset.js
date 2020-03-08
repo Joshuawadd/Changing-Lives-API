@@ -47,8 +47,8 @@ router.post('/', (req, res) => {
                 const hashed_password = result[0];
                 const salt = result[1];
 
-                const queryString = 'UPDATE users SET password = ?, password_salt = ? WHERE user_id = ?';
-                const queryArray = [hashed_password, salt, userId];
+                const queryString = 'UPDATE users SET password = ?, password_salt = ?, force_reset = ? WHERE user_id = ?';
+                const queryArray = [hashed_password, salt, 1, userId];
                 utils.mysql_query(res, 'SELECT username FROM users WHERE user_id = ?', [userId], (results, res) => {
                     //Watch out for this line, it caused me an error that MAGICALLY dissapeared
                     let username = results[0].username;

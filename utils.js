@@ -147,6 +147,7 @@ const actions = {
     LOGIN: 'LOGIN',
     RESET: 'RESET',
     RESTORE: 'RESTORE',
+	CHANGE: 'CHANGE',
 };
 
 const entities = {
