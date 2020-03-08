@@ -213,6 +213,9 @@ async function logsClick(event, topRefresh) { //this is the event that triggers 
                 logsClick(ev, false);
             });
             document.getElementById('action_list').addEventListener('input', function(event) {
+                if (document.getElementById('action_list').value == ('LOGIN') || document.getElementById('action_list').value == ('RESET')) {
+                    document.getElementById('entity_list').value = 'USER';
+                }
                 logsClick(event,false); 
             });
             document.getElementById('entity_list').addEventListener('input', function(event) {
