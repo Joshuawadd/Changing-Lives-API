@@ -74,6 +74,7 @@ const userListRouter = require('./routes/api/users/list');
 const userLoginRouter = require('./routes/api/users/login');
 const userResetRouter = require('./routes/api/users/reset');
 const userRestoreRouter = require('./routes/api/users/restore');
+const userChangeRouter = require('./routes/api/users/change');
 
 const fileListRouter = require('./routes/api/files/list');
 
@@ -119,6 +120,7 @@ app.use('/api/users/list', userListRouter);
 app.use('/api/users/login', userLoginRouter);
 app.use('/api/users/reset', userResetRouter);
 app.use('/api/users/restore', userRestoreRouter);
+app.use('/api/users/change', userChangeRouter);
 
 app.use('/api/files/list', fileListRouter);
 
