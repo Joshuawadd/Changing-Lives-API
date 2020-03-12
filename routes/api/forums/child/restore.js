@@ -13,7 +13,6 @@ router.post('/', (req, res) => {
         }
         verify().then((userId) => { // should get the userId from token
             if (!userId) { 
-                console.log('can\'t verify with the userId');
                 res.sendStatus(403);
                 return;
             }

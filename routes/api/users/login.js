@@ -27,7 +27,7 @@ router.post('/', (req, res) => {
     const userName = req.body.userName;
     const password = req.body.userPassword;
 
-    const queryString = 'SELECT password, password_salt, user_id, is_admin FROM users WHERE username = BINARY ?';
+    const queryString = 'SELECT password, password_salt, user_id, is_admin, force_reset FROM users WHERE username = BINARY ?';
     const queryArray = [userName];
 
     utils.mysql_query(res, queryString, queryArray, (rows, res) => {
@@ -38,6 +38,7 @@ router.post('/', (req, res) => {
                 const password_hashed = rows[0]['password'];
                 const userId = rows[0]['user_id'];
                 const isAdmin = (rows[0]['is_admin']).readUInt8();
+                const forceReset = (rows[0]['force_reset']).readUInt8();
 
                 function verify_password(hashed_password, plain_text_password, salt) {
                     return new Promise((resolve) => {
@@ -49,7 +50,7 @@ router.post('/', (req, res) => {
 
                 verify_password(password_hashed, password, password_salt).then((result) => {
                     if (result) {
-                        resolve([userId, isAdmin])
+                        resolve([userId, isAdmin, forceReset])
                     } else {
                         resolve(undefined)
                     }
@@ -61,13 +62,14 @@ router.post('/', (req, res) => {
             if (typeof (arr) !== 'undefined') {
                 var userId = arr[0];
                 var isAdmin = arr[1];
+                var forceReset = arr[2];
                 var token;
                 if (isAdmin) {
                     token = jwt.sign({userId: userId}, process.env.STAFF_KEY, {expiresIn: 1200});
                 } else {
                     token = jwt.sign({userId: userId}, process.env.USER_KEY, {expiresIn: 1200});
                 }
-                res.status(200).send({'token': token, 'id': userId});
+                res.status(200).send({'token': token, 'id': userId, 'isAdmin': isAdmin, 'forceReset': forceReset});
                 utils.log(userId, utils.actions.LOGIN, utils.entities.USER, null, JSON.stringify({"name": userName}));
             } else {
                 res.status(401).send('Incorrect username and/or password');
