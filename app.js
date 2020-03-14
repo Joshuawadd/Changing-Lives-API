@@ -40,7 +40,6 @@ const protectPath = function(regex) {
 
         userIsAllowed(req, function(allowed) {
             if (allowed) {
-                console.log('ok');
                 next(); // send the request to the next handler, which is express.static
             } else {
                 res.end('You do not have permission to view this file!');
