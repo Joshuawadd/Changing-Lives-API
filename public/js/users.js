@@ -218,7 +218,7 @@ async function userClick(event, topRefresh) { //this is the event that triggers 
                                 </div>
                             </div>
                         </div><br>`;
-        let usersHTML = '<div class="list-group" style="height: 350px; overflow-y: scroll;">';
+        let usersHTML = '<div class="list-group">';
         for (var i = 0; i < users.length; i++) {
             usersHTML += users[i].listHTML();
         }
