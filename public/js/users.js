@@ -89,25 +89,19 @@ async function updateUser(event) {
     event.preventDefault();
     try {
         let authToken = getCookie('authToken');
-        let userName = document.getElementById('user_name').value;
-        let userUname = document.getElementById('user_username').value;
-        let userPass = document.getElementById('user_password').value;
-        let data = new FormData();
-        data.append('realName', userName);
-        data.append('userName', userUname);
-        data.append('userPassword', userPass);
-        data.append('userId', currentUser);
+        let nickname = document.getElementById('user_name').value;
         let response = await fetch('/api/users/edit',
             {
                 method: 'POST',
                 headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
                     'Authorization': authToken,
                 },
-                body: data
+                body: 'nickname=' + nickname + '&userId=' + currentUser
             });
         if (response.ok) {
             document.getElementById('submit_user').style.cursor = '';
-            alert('User details edited successfully!');
+            alert('User nickname changed successfully!');
             $('#user_modal').modal('hide');
             document.getElementById('users').click();
             return true;
