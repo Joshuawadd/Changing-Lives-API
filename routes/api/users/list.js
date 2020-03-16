@@ -3,11 +3,12 @@ const router = express.Router();
 const utils = require('../../../utils');
 
 class User {
-    constructor(id = 0, name = '', username = '', password = '') {
+    constructor(id = 0, name = '', username = '', password = '', isAdmin = 0) {
         this.id = id;
         this.name = name;
         this.username = username;
         this.password = password;
+        this.isAdmin = isAdmin;
     }
 }
 
@@ -57,13 +58,13 @@ router.get('/', (req, res) => {
                     });
                 });
             } else {
-                const queryString = `SELECT user_id, real_name, username, password FROM users WHERE real_name LIKE ? ${andOr} username LIKE ?`;
+                const queryString = `SELECT user_id, real_name, username, password, is_admin FROM users WHERE real_name LIKE ? ${andOr} username LIKE ?`;
                 const queryArray = [rnSrch, uSrch];
                 utils.mysql_query(res, queryString, queryArray, (results, res) => {
                     let userData = results;
                     let users = [];
                     for (let i = 0; i < userData.length; i++) {
-                        users.push(new User(userData[i].user_id, userData[i].real_name, userData[i].username, userData[i].password));
+                        users.push(new User(userData[i].user_id, userData[i].real_name, userData[i].username, userData[i].password, userData[i].is_admin.readUInt8()));
                     }
                     res.status(200).send(users);
                 });

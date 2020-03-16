@@ -5,15 +5,21 @@ var getCookie;
 var loginPrompt;
 
 class User {
-    constructor(id=0,name='',username='',password='') {
+    constructor(id=0,name='',username='',password='', isAdmin = 0) {
         this.id = id;
         this.name = name;
         this.username = username;
         this.password = password;
+        this.isAdmin = isAdmin;
     }
 
     listHTML() {
+        let adminText = '';
+        if (this.isAdmin) {
+            adminText = '<span class="text-info">(Admin) </span>';
+        }
         return `<li class="list-group-item"><h4 class="user-list-title">${this.name}</h4> : ${this.username}
+                    ${adminText}
                     <span class="badge badge-dark"><a href="#" id="edit_btn_${this.id}" onclick="editUser(event,${this.id});">Edit</a></span>
                     <span class="badge badge-dark"><a href="#" id="rmve_btn_${this.id}" onclick="rmUser(event,${this.id},'${this.name}');">Delete</a></span>
                 </li>`;
@@ -68,7 +74,7 @@ async function getUsers() {
             let userData = JSON.parse(body);
             let usrs = [];
             for (var i = 0; i < userData.length; i++) {
-                let usr = new User(userData[i].id,userData[i].name,userData[i].username,'');
+                let usr = new User(userData[i].id,userData[i].name,userData[i].username,'',userData[i].isAdmin);
                 usrs.push(usr);
             }
             return usrs;
@@ -137,8 +143,10 @@ async function addUser(event) {
             });
         if (response.ok) {
             document.getElementById('submit_user').style.cursor = '';
-            let pw = await response.text();
-            alert('User created successfully! Temporary password: '+ pw + '. This will not be visible again.');
+            let obj = await response.json();
+            let un = obj.username;
+            let pw = obj.password;
+            alert('User created successfully! Temporary details - \nUsername: '+un+'\nPassword: '+ pw + '\nThis will not be visible again.');
             $('#user_modal').modal('hide');
             document.getElementById('users').click();
             return true;

@@ -62,7 +62,7 @@ router.post('/', (req, res) => {
                             const queryArray = [realName, username, hashed_password, salt, isAdmin];
                             utils.mysql_query(res, queryString, queryArray, (results, res) => {
                                 utils.log(userId, utils.actions.CREATE, utils.entities.USER, null, JSON.stringify({"name": username}));
-                                res.status(200).send(password);
+                                res.status(200).send({'password':password, 'username':username});
                             });
                         }
                     }
