@@ -75,7 +75,6 @@ async function getUsers() {
             let usrs = [];
             for (var i = 0; i < userData.length; i++) {
                 let usr = new User(userData[i].id,userData[i].name,userData[i].username,'',userData[i].isAdmin);
-                console.log(usr)
                 usrs.push(usr);
             }
             return usrs;
@@ -144,8 +143,10 @@ async function addUser(event) {
             });
         if (response.ok) {
             document.getElementById('submit_user').style.cursor = '';
-            let pw = await response.text();
-            alert('User created successfully! Temporary password: '+ pw + '. This will not be visible again.');
+            let obj = await response.json();
+            let un = obj.username;
+            let pw = obj.password;
+            alert('User created successfully! Temporary details - \nUsername: '+un+'\nPassword: '+ pw + '\nThis will not be visible again.');
             $('#user_modal').modal('hide');
             document.getElementById('users').click();
             return true;

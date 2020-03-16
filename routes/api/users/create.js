@@ -34,7 +34,7 @@ router.post('/', (req, res) => {
                         unique = true;
                         const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
                         const queryArray = [realName, username, hashed_pass, salt, isAdmin];
-                        utils.mysql_query(res, queryString, queryArray, (results, res) => {utils.log(userId, utils.actions.CREATE, utils.entities.USER, null, JSON.stringify({"name": username}));res.status(200).send(password);});
+                        utils.mysql_query(res, queryString, queryArray, (results, res) => {utils.log(userId, utils.actions.CREATE, utils.entities.USER, null, JSON.stringify({"name": username}));res.status(200).send({'password':password, 'username':username});});
                     } 
                 }
             });
