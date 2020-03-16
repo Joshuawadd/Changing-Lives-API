@@ -50,9 +50,9 @@ router.post('/', (req, res) => {
 
                 verify_password(password_hashed, password, password_salt).then((result) => {
                     if (result) {
-                        resolve([userId, isAdmin, forceReset])
+                        resolve([userId, isAdmin, forceReset]);
                     } else {
-                        resolve(undefined)
+                        resolve(undefined);
                     }
                 });
             }
