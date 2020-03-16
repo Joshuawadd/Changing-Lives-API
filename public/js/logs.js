@@ -127,7 +127,7 @@ async function restore() {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'Authorization': getCookie('authToken'),
                     },
-                    body: 'realName=' + lg.data.realName + '&username=' + lg.data.name + '&password=' + lg.data.password + '&salt=' + lg.data.password_salt + '&isAdmin=' + lg.data.isAdmin
+                    body: 'realName=' + lg.data.nickname + '&username=' + lg.data.name + '&password=' + lg.data.password + '&salt=' + lg.data.passwordSalt + '&isAdmin=' + lg.data.isAdmin
                 });
         } else if (lg.entity == 'SECTION') { //restore a deleted section
             let files = [];

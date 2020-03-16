@@ -47,6 +47,8 @@ async function rmUser(event, u_id, username) {
             } else if (response.status === 403){
                 alert('Your session may have expired - please log in.');
                 loginPrompt();
+            } else if (response.status === 400){
+                alert('Cannot delete the last admin user!');
             } else {
                 throw new Error(response.status+' '+response.statusText);
             }
