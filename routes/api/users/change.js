@@ -3,24 +3,26 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const utils = require('../../../utils');
 
-//Postman can be used to test post request {"realName": "James"}
+//Postman can be used to test post request {"userId": 34, "password": password}
 router.post('/', (req, res) => {
     try {
         function verify() {
             return new Promise((resolve) => {
-                resolve(utils.tokenVerify(req.header('Authorization'), true));
+                resolve(utils.tokenVerify(req.header('Authorization'), false));
             });
         }
 
-        verify().then((userId) => {
-            if (!userId) {
+        verify().then((editor) => {
+            if (!editor) {
                 res.sendStatus(403);
                 return;
             }
-            const realName = req.body.realName;
-            const isAdmin = parseInt(req.body.isAdmin);
-            const password = utils.randomPassword();
-
+            const userId = req.body.userId;
+            const password = req.body.password;
+			if (parseInt(userId) !== parseInt(editor)) {
+				res.sendStatus(403);
+				return;
+			}
             function get_hashed_password(plain_text_password) {
                 return new Promise((resolve) => {
                     bcrypt.genSalt(10).then((salt) => {
@@ -48,25 +50,22 @@ router.post('/', (req, res) => {
                 const hashed_password = result[0];
                 const salt = result[1];
 
-                utils.mysql_query(res, 'SELECT username FROM users', [], (results, res) => {
-                    var names = [];
-                    for (let i = 0; i < results.length; i++) {
-                        names.push(results[i].username);
-                    }
-                    var unique = false;
-                    while (!unique) {
-                        var username = utils.randomUsername();
-                        if (names.indexOf(username) == -1) { //the username is unique
-                            unique = true;
-                            const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
-                            const queryArray = [realName, username, hashed_password, salt, isAdmin];
-                            utils.mysql_query(res, queryString, queryArray, (results, res) => {
-                                utils.log(userId, utils.actions.CREATE, utils.entities.USER, null, JSON.stringify({"name": username}));
-                                res.status(200).send({'password':password, 'username':username});
-                            });
-                        }
-                    }
+                const queryString = 'UPDATE users SET password = ?, password_salt = ?, force_reset = ? WHERE user_id = ?';
+				let fr = 0;
+                const queryArray = [hashed_password, salt, fr, userId];
+                utils.mysql_query(res, 'SELECT username FROM users WHERE user_id = ?', [userId], (results, res) => {
+                    //Watch out for this line, it caused me an error that MAGICALLY dissapeared
+					if (results.length > 0) {
+						let username = results[0].username;
+						utils.mysql_query(res, queryString, queryArray, (rt, res) => {
+							utils.log(editor, utils.actions.CHANGE, utils.entities.USER, null, JSON.stringify({"name": username}));
+							res.sendStatus(200);
+						});
+					} else {
+						res.sendStatus(400);
+					}
                 });
+
             });
         });
     } catch (err) {
