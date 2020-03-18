@@ -6,11 +6,12 @@ const Joi = require('joi');
 const utils = require('../../../utils');
 
 
-//THIS NEEDS FIXING TO TAKE OUR ACTUAL REQUIREMENTS
+//username is 6 (user accounts), 8 (admin accounts)
+//passwords are between 6 and 16 digits
 function validate(req) {
     const schema = {
-        userName: Joi.string().min(1).max(16).required(),
-        userPassword: Joi.string().min(1).max(16).required()
+        userName: Joi.string().min(6).max(8).required(),
+        userPassword: Joi.string().min(6).max(16).required()
     };
     return Joi.validate(req, schema);
 }

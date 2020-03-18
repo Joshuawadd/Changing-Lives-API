@@ -2,6 +2,17 @@ const express = require('express');
 const router = express.Router();
 const multer  = require('multer');
 const utils = require('../../../utils');
+const Joi = require('joi');
+
+function validate(req) {
+    const schema = {
+        sectionName: Joi.required(),
+        sectionText: Joi.required(),
+        sectionId: Joi.required()
+    };
+    return Joi.validate(req, schema);
+}
+
 const storage = multer.diskStorage({
     destination: './public/files',
     filename: function (req, file, cb) {        
@@ -14,6 +25,13 @@ const upload = multer({ storage: storage });
 
 //Postman can be used to test post request {"section_name": "test", "article_text":"This is a comment"}
 router.post('/', upload.array('section_files[]', 20), (req, res) => {
+
+    const {error} = validate(req.body);
+    if (error) {
+        const errorMessage = error.details[0].message;
+        res.status(400).send(errorMessage);
+        return;
+    }
     try {
         function verify() {
             return new Promise((resolve) => {

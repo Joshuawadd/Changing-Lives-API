@@ -1,9 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const utils = require('../../../../utils');
+const Joi = require('joi');
+
+function validate(req) {
+    const schema = {
+        childId: Joi.required()
+    };
+    return Joi.validate(req, schema);
+}
 
 //Postman can be used to test post request {"childId": 1}
 router.post('/', (req, res) => {
+
+    const {error} = validate(req.body);
+    if (error) {
+        const errorMessage = error.details[0].message;
+        res.status(400).send(errorMessage);
+        return;
+    }
+
     try {
         const childId = req.body.childId;
         //const parentId = req.body.parentId;

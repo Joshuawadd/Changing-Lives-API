@@ -1,10 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
 const utils = require('../../../utils');
+const Joi = require('joi');
+
+//username is 6 (user accounts), 8 (admin accounts)
+//passwords are between 6 and 16 digits
+//realname is required
+function validate(req) {
+    const schema = {
+        username: Joi.string().min(6).max(8).required(),
+        userPapasswordssword: Joi.string().min(6).max(16).required(),
+        realName: Joi.required()
+    };
+    return Joi.validate(req, schema);
+}
 
 //Postman can be used to test post request {"realName": "James", "username": "abcd12", "password": "e2Gf...", "salt": "ef4..", "isAdmin": 0 }
 router.post('/', (req, res) => {
+
+    const {error} = validate(req.body);
+    if (error) {
+        const errorMessage = error.details[0].message;
+        res.status(400).send(errorMessage);
+        return;
+    }
+
     try {
         function verify() {
             return new Promise((resolve) => {

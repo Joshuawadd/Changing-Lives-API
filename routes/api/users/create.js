@@ -2,9 +2,28 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const utils = require('../../../utils');
+const Joi = require('joi');
+
+//nickname is required
+//userid is required
+function validate(req) {
+    const schema = {
+        realName: Joi.required(),
+        isAdmin: Joi.required()
+    };
+    return Joi.validate(req, schema);
+}
 
 //Postman can be used to test post request {"realName": "James"}
 router.post('/', (req, res) => {
+
+    const {error} = validate(req.body);
+    if (error) {
+        const errorMessage = error.details[0].message;
+        res.status(400).send(errorMessage);
+        return;
+    }
+
     try {
         function verify() {
             return new Promise((resolve) => {
