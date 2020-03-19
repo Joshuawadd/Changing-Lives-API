@@ -8,7 +8,7 @@ const Joi = require('joi');
 //passwords are between 6 and 16 digits
 function validate(req) {
     const schema = {
-        userId: Joi.required(),
+        userId: Joi.number().integer().min(0).max(2147483647).required(),
         password: Joi.string().min(6).max(16).required()
     };
     return Joi.validate(req, schema);

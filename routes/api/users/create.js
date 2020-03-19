@@ -8,8 +8,8 @@ const Joi = require('joi');
 //userid is required
 function validate(req) {
     const schema = {
-        realName: Joi.required(),
-        isAdmin: Joi.required()
+        realName: Joi.string().max(31).required(),
+        isAdmin: Joi.number().integer().min(0).max(1).required()
     };
     return Joi.validate(req, schema);
 }

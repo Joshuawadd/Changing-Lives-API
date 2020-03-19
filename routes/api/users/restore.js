@@ -9,8 +9,10 @@ const Joi = require('joi');
 function validate(req) {
     const schema = {
         username: Joi.string().min(6).max(8).required(),
-        userPapasswordssword: Joi.string().min(6).max(16).required(),
-        realName: Joi.required()
+        password: Joi.string().min(6).max(16).required(),
+        realName: Joi.string().max(31).required(),
+        salt: Joi.string().max(32).required(),
+        isAdmin: Joi.number().integer().min(0).max(1).required()
     };
     return Joi.validate(req, schema);
 }

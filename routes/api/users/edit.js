@@ -7,8 +7,8 @@ const Joi = require('joi');
 //userid is required
 function validate(req) {
     const schema = {
-        nickname: Joi.required(),
-        userId: Joi.required()
+        nickname: Joi.string().max(31).required(),
+        userId: Joi.number().integer().min(0).max(2147483647).required()
     };
     return Joi.validate(req, schema);
 }
