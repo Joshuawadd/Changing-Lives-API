@@ -5,8 +5,8 @@ const Joi = require('joi');
 
 function validate(req) {
     const schema = {
-        search: Joi.string().max(31),
-        token: Joi.required()
+        search: Joi.string().allow('').max(31),
+        token: Joi.optional()
     };
     return Joi.validate(req, schema);
 }

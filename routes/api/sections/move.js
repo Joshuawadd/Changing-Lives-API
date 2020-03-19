@@ -5,8 +5,8 @@ const Joi = require('joi');
 
 function validate(req) {
     const schema = {
-        moveUp: Joi.required(),
-        sectionId: Joi.required()
+        moveUp: Joi.string().required(),
+        sectionId: Joi.number().integer().min(0).max(2147483647).required()
     };
     return Joi.validate(req, schema);
 }

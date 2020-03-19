@@ -170,8 +170,9 @@ async function updateSection(event) {
             $('.modal').modal('hide');
             $('#section_modal').modal('show');
         } else {
+            let rt = await response.text();
             document.getElementById('submit_section').style.cursor = '';
-            throw new Error(response.status+' '+response.statusText);
+            throw new Error(response.status+' '+response.statusText+' '+rt);
         }
     } catch(error) {
         alert(error);

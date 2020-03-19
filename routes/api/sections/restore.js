@@ -5,9 +5,9 @@ const Joi = require('joi');
 
 function validate(req) {
     const schema = {
-        sectionName: Joi.required(),
-        sectionText: Joi.required(),
-        sectionFiles: Joi.required()
+        sectionName: Joi.string().max(31).required(),
+        sectionText: Joi.string().max(65535).allow(''),
+        sectionFiles: Joi.optional()
     };
     return Joi.validate(req, schema);
 }

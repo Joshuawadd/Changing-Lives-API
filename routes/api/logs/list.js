@@ -1,6 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const utils = require('../../../utils');
+const Joi = require('joi');
+
+function validate(req) {
+    const schema = {
+        search: Joi.string().allow('').max(31),
+        uname: Joi.string().allow('').max(31),
+        ename: Joi.string().allow('').max(31),
+        action: Joi.string().allow('').max(31),
+        entity: Joi.string().allow('').max(31),
+        sdate: Joi.string().allow('').max(31),
+        edate: Joi.string().allow('').max(31),
+        token: Joi.optional()
+    };
+    return Joi.validate(req, schema);
+}
 
 /*returns a list of all sections ordered by the position variable*/
 
@@ -28,6 +43,12 @@ function compare(a, b) { //sort by date
 }
 
 router.get('/', (req, res) => {
+    const {error} = validate(req.query);
+    if (error) {
+        const errorMessage = error.details[0].message;
+        res.status(400).send(errorMessage);
+        return;
+    }
     try {
         function verify() {
             return new Promise((resolve) => {
