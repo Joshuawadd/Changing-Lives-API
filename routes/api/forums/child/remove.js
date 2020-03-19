@@ -5,7 +5,7 @@ const Joi = require('joi');
 
 function validate(req) {
     const schema = {
-        childId: Joi.required()
+        childId: Joi.number().integer().min(0).max(2147483647).required()
     };
     return Joi.validate(req, schema);
 }

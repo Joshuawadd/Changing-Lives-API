@@ -1,9 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const utils = require('../../../../utils');
+const Joi = require('joi');
+
+function validate(req) {
+    const schema = {
+        search: Joi.string().max(31),
+        token: Joi.required()
+    };
+    return Joi.validate(req, schema);
+}
 
 router.get('/', (req, res) => {
+    const {error} = validate(req.query);
+    if (error) {
+        const errorMessage = error.details[0].message;
+        res.status(400).send(errorMessage);
+        return;
+    }
     try {
         function verify() {
             return new Promise((resolve) => {

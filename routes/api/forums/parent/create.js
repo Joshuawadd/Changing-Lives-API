@@ -5,8 +5,8 @@ const Joi = require('joi');
 
 function validate(req) {
     const schema = {
-        parentTitle: Joi.required(),
-        parentComment: Joi.required()
+        parentTitle: Joi.string().max(31).required(),
+        parentComment: Joi.string().max(65535).required()
     };
     return Joi.validate(req, schema);
 }

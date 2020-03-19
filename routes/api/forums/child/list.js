@@ -1,6 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const utils = require('../../../../utils');
+const Joi = require('joi');
+
+function validate(req) {
+    const schema = {
+        parentId: Joi.number().integer().min(0).max(2147483647).required(),
+        token: Joi.required()
+    };
+    return Joi.validate(req, schema);
+}
 
 function getChildRole(results){
     for (var child of results) {
@@ -19,6 +28,12 @@ function getChildRole(results){
 }
 
 router.get('/', (req, res) => {
+    const {error} = validate(req.query);
+    if (error) {
+        const errorMessage = error.details[0].message;
+        res.status(400).send(errorMessage);
+        return;
+    }
     try {
         function verify() {
             return new Promise((resolve) => {

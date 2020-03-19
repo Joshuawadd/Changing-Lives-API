@@ -5,10 +5,10 @@ const Joi = require('joi');
 
 function validate(req) {
     const schema = {
-        parentId: Joi.required(),
-        creatorId: Joi.required(),
-        parentTitle: Joi.required(),
-        parentComment: Joi.required()
+        parentId: Joi.number().integer().min(0).max(2147483647).required(),
+        creatorId: Joi.number().integer().min(0).max(2147483647).required(),
+        parentTitle: Joi.string().max(31).required(),
+        parentComment: Joi.string().max(65535).required()
     };
     return Joi.validate(req, schema);
 }

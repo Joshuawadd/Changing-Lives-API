@@ -1,14 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const utils = require('../../../../utils');
 const Joi = require('joi');
 
 function validate(req) {
     const schema = {
-        creatorId: Joi.required(),
-        parentId: Joi.required(),
-        childComment: Joi.required()
+        creatorId: Joi.number().integer().min(0).max(2147483647).required(),
+        parentId: Joi.number().integer().min(0).max(2147483647).required(),
+        childComment: Joi.max(65535).required()
     };
     return Joi.validate(req, schema);
 }
