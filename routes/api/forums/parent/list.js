@@ -28,11 +28,11 @@ router.get('/', (req, res) => {
                 isAdmin = rows[0].is_admin;
                 const nestedQueryArray = [`%${search}%`];
                 var nestedQueryString;
-                if (isAdmin) {
+                //if (isAdmin) {
                     nestedQueryString = `SELECT p.parent_id, p.parent_title, p.parent_comment, u.username FROM parent_comments p INNER JOIN users u ON p.user_id = u.user_id WHERE p.parent_title LIKE ?`;
-                } else {
-                    nestedQueryString = `SELECT parent_id, parent_title, parent_comment FROM parent_comments WHERE parent_title LIKE ?`
-                }
+                //} else {
+                    //nestedQueryString = `SELECT parent_id, parent_title, parent_comment FROM parent_comments WHERE parent_title LIKE ?`
+                //}
                 //console.log(nestedQueryString)
                 utils.mysql_query(res, nestedQueryString, nestedQueryArray, (rows, res) => {
                     res.status(200).send(rows);

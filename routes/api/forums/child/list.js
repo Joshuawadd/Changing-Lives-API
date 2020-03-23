@@ -47,11 +47,11 @@ router.get('/', (req, res) => {
                 isAdmin = rows[0].is_admin;
                 const nestedQueryArray = [parentId];
                 var nestedQueryString;
-                if (isAdmin) {
+                //if (isAdmin) {
                     nestedQueryString = `SELECT c.child_id, c.child_comment, u.username, IF(u.is_admin = 1, true, false) AS is_admin, IF(p.user_id = c.user_id, true, false) AS is_creator FROM child_comments c INNER JOIN users u ON c.user_id = u.user_id INNER JOIN parent_comments p ON c.parent_id = p.parent_id  WHERE c.parent_id = ?`
-                } else {
-                    nestedQueryString = `SELECT c.child_id, c.child_comment, IF(u.is_admin = 1, true, false) AS is_admin, IF(p.user_id = c.user_id, true, false) AS is_creator FROM child_comments c INNER JOIN users u ON c.user_id = u.user_id INNER JOIN parent_comments p ON c.parent_id = p.parent_id  WHERE c.parent_id = ?`
-                }
+                //} else {
+                    //nestedQueryString = `SELECT c.child_id, c.child_comment, IF(u.is_admin = 1, true, false) AS is_admin, IF(p.user_id = c.user_id, true, false) AS is_creator FROM child_comments c INNER JOIN users u ON c.user_id = u.user_id INNER JOIN parent_comments p ON c.parent_id = p.parent_id  WHERE c.parent_id = ?`
+                //}
                 utils.mysql_query(res, nestedQueryString, nestedQueryArray, (rows, res) => {
                     getChildRole(rows);
                     res.status(200).send(rows);
