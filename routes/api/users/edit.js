@@ -10,6 +10,7 @@ router.post('/', (req, res) => {
                 resolve(utils.tokenVerify(req.header('Authorization'), true));
             });
         }
+
         verify().then((editor) => {
             if (!editor) {
                 res.sendStatus(403);
@@ -20,7 +21,10 @@ router.post('/', (req, res) => {
             const userId = req.body.userId;
             const queryString = 'UPDATE users SET real_name = ? WHERE user_id = ?';
             const queryArray = [nickname, userId];
-            utils.mysql_query(res, queryString, queryArray, (results, res) => {utils.log(editor, utils.actions.EDIT, utils.entities.USER, null, JSON.stringify({"name": nickname})); res.sendStatus(200);});
+            utils.mysql_query(res, queryString, queryArray, (results, res) => {
+                utils.log(editor, utils.actions.EDIT, utils.entities.USER, null, JSON.stringify({"name": nickname}));
+                res.sendStatus(200);
+            });
 
         });
     } catch (err) {

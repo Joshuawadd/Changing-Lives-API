@@ -12,6 +12,7 @@ const indexRouter = require('./routes/index');
 //file protecting adapted from https://stackoverflow.com/questions/11910956/how-to-protect-a-public-dynamic-folder-in-nodejs
 function userIsAllowed(req, callback) {
     const token = req.query.token;
+
     function checkUser(token) { //this will accept user or staff tokens
         jwt.verify(token, process.env.USER_KEY, (err, decoded) => {
             if (err) {
@@ -21,8 +22,8 @@ function userIsAllowed(req, callback) {
             }
         });
     }
-    
-    function checkStaff (token) {
+
+    function checkStaff(token) {
         jwt.verify(token, process.env.STAFF_KEY, (err, decoded) => {
             if (err) {
                 callback(false); //staff check failed
@@ -31,14 +32,18 @@ function userIsAllowed(req, callback) {
             }
         });
     }
+
     checkUser(token);
 }
-// This function returns a middleware function
-const protectPath = function(regex) {
-    return function(req, res, next) {
-        if (!regex.test(req.url)) { return next(); }
 
-        userIsAllowed(req, function(allowed) {
+// This function returns a middleware function
+const protectPath = function (regex) {
+    return function (req, res, next) {
+        if (!regex.test(req.url)) {
+            return next();
+        }
+
+        userIsAllowed(req, function (allowed) {
             if (allowed) {
                 next(); // send the request to the next handler, which is express.static
             } else {

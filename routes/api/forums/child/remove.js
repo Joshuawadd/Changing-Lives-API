@@ -6,6 +6,7 @@ const utils = require('../../../../utils');
 router.post('/', (req, res) => {
     try {
         const childId = req.body.childId;
+
         //const parentId = req.body.parentId;
 
         function verify(admin) {
@@ -13,6 +14,7 @@ router.post('/', (req, res) => {
                 resolve(utils.tokenVerify(req.header('Authorization'), admin));
             });
         }
+
         verify(true).then((removerStaff) => {
             if (!removerStaff) {
                 verify(false).then((removerUser) => {
@@ -24,22 +26,26 @@ router.post('/', (req, res) => {
                     if (!isNaN(childId)) {
                         const queryString = 'DELETE FROM child_comments WHERE child_id = ?';
                         const queryArray = [childId];
-                        utils.mysql_query(res,'SELECT * FROM child_comments WHERE child_id = ?',[childId], (results, res) => {
+                        utils.mysql_query(res, 'SELECT * FROM child_comments WHERE child_id = ?', [childId], (results, res) => {
                             if (results.length > 0) {
                                 if (results[0].user_id === removerUser) {
-                                    utils.mysql_query(res,'SELECT username FROM users WHERE user_id = ?',[results[0].user_id], (userL, res) => {
-                                        let commentRemove = JSON.stringify({"id": results[0].child_id, "parentId": results[0].parent_id, "name": results[0].child_comment, "userId": results[0].user_id, "creator": userL[0].username});
+                                    utils.mysql_query(res, 'SELECT username FROM users WHERE user_id = ?', [results[0].user_id], (userL, res) => {
+                                        let commentRemove = JSON.stringify({
+                                            "id": results[0].child_id,
+                                            "parentId": results[0].parent_id,
+                                            "name": results[0].child_comment,
+                                            "userId": results[0].user_id,
+                                            "creator": userL[0].username
+                                        });
                                         utils.mysql_query(res, queryString, queryArray, (results, res) => {
                                             if (results.length > 0) {
                                                 utils.log(removerUser, utils.actions.REMOVE, utils.entities.CHILD, null, commentRemove);
                                             }
                                             res.sendStatus(200);
-                                            return;
                                         });
                                     });
                                 } else {
                                     res.sendStatus(403);
-                                    return;
                                 }
                             } else {
                                 res.sendStatus(400);
@@ -54,10 +60,16 @@ router.post('/', (req, res) => {
                 if (!isNaN(childId)) {
                     const queryString = 'DELETE FROM child_comments WHERE child_id = ?';
                     const queryArray = [childId];
-                    utils.mysql_query(res,'SELECT * FROM child_comments WHERE child_id = ?',[childId], (results, res) => {
+                    utils.mysql_query(res, 'SELECT * FROM child_comments WHERE child_id = ?', [childId], (results, res) => {
                         if (results.length > 0) {
-                            utils.mysql_query(res,'SELECT username FROM users WHERE user_id = ?',[results[0].user_id], (userL, res) => {
-                                let commentRemove = JSON.stringify({"id": results[0].child_id, "parentId": results[0].parent_id, "name": results[0].child_comment, "userId": results[0].user_id, "creator": userL[0].username});
+                            utils.mysql_query(res, 'SELECT username FROM users WHERE user_id = ?', [results[0].user_id], (userL, res) => {
+                                let commentRemove = JSON.stringify({
+                                    "id": results[0].child_id,
+                                    "parentId": results[0].parent_id,
+                                    "name": results[0].child_comment,
+                                    "userId": results[0].user_id,
+                                    "creator": userL[0].username
+                                });
                                 utils.mysql_query(res, queryString, queryArray, (results, res) => {
                                     utils.log(removerStaff, utils.actions.REMOVE, utils.entities.CHILD, null, commentRemove);
                                     res.sendStatus(200);
@@ -71,7 +83,7 @@ router.post('/', (req, res) => {
                     res.sendStatus(400);
                 }
             }
-        
+
         });
     } catch (err) {
         res.sendStatus(500);

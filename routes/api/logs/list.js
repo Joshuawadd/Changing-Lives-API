@@ -5,7 +5,7 @@ const utils = require('../../../utils');
 /*returns a list of all sections ordered by the position variable*/
 
 class Log { //the class for a log object
-    constructor(id=0,userId=0,userName='', date='', time = '', action='',entity='', data={}) {
+    constructor(id = 0, userId = 0, userName = '', date = '', time = '', action = '', entity = '', data = {}) {
         this.id = id;
         this.userId = userId;
         this.date = date;
@@ -18,10 +18,10 @@ class Log { //the class for a log object
 }
 
 function compare(a, b) { //sort by date
-    if (a.date+a.time > b.date+b.time) {
+    if (a.date + a.time > b.date + b.time) {
         return -1;
     }
-    if (a.date+a.time < b.date+b.time) {
+    if (a.date + a.time < b.date + b.time) {
         return 1;
     }
     return 0;
@@ -34,6 +34,7 @@ router.get('/', (req, res) => {
                 resolve(utils.tokenVerify(req.query.token), true);
             });
         }
+
         verify().then((userId) => {
             if (!userId) {
                 res.sendStatus(403);
@@ -59,30 +60,30 @@ router.get('/', (req, res) => {
                     andOr = 'OR';
                 }
             }
-            if (andOr != 'OR') {
+            if (andOr !== 'OR') {
                 andOr = 'AND';
             }
-            if (action == 'All') {
+            if (action === 'All') {
                 action = '';
             }
-            if (entity == 'All') {
+            if (entity === 'All') {
                 entity = '';
             }
-            action = '%'+action+'%';
-            entity = '%'+entity+'%';
+            action = '%' + action + '%';
+            entity = '%' + entity + '%';
             const queryString = `SELECT logs.logId, logs.userId, logs.dateTime, logs.action, logs.entity, logs.oldData, users.username 
             FROM logs LEFT JOIN users ON logs.userId = users.user_id WHERE users.username LIKE BINARY ? ${andOr} JSON_EXTRACT(oldData, '$."name"') LIKE ? AND logs.action LIKE ? AND logs.entity LIKE ?`;
-            
-            utils.mysql_query(res, queryString, [uSrch,enSrch, action, entity], (results, res) => {
+
+            utils.mysql_query(res, queryString, [uSrch, enSrch, action, entity], (results, res) => {
                 let logData = results;
                 let logs = [];
                 for (let i = 0; i < logData.length; i++) {
                     let dt = logData[i].dateTime.toISOString();
-                    let date = dt.slice(0,10);
-                    let time = dt.slice(11,19);
-                    let ndt = date+' '+time;
-                    if (startDate === '' ||(ndt >= startDate && ndt <= endDate)) {
-                        logs.push(new Log(logData[i].logId, logData[i].userId,logData[i].username, date, time, logData[i].action, logData[i].entity, logData[i].oldData))
+                    let date = dt.slice(0, 10);
+                    let time = dt.slice(11, 19);
+                    let ndt = date + ' ' + time;
+                    if (startDate === '' || (ndt >= startDate && ndt <= endDate)) {
+                        logs.push(new Log(logData[i].logId, logData[i].userId, logData[i].username, date, time, logData[i].action, logData[i].entity, logData[i].oldData))
                     }
                 }
                 logs.sort(compare);

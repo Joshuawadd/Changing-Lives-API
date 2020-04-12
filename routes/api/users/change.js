@@ -19,10 +19,11 @@ router.post('/', (req, res) => {
             }
             const userId = req.body.userId;
             const password = req.body.password;
-			if (parseInt(userId) !== parseInt(editor)) {
-				res.sendStatus(403);
-				return;
-			}
+            if (parseInt(userId) !== parseInt(editor)) {
+                res.sendStatus(403);
+                return;
+            }
+
             function get_hashed_password(plain_text_password) {
                 return new Promise((resolve) => {
                     bcrypt.genSalt(10).then((salt) => {
@@ -51,19 +52,19 @@ router.post('/', (req, res) => {
                 const salt = result[1];
 
                 const queryString = 'UPDATE users SET password = ?, password_salt = ?, force_reset = ? WHERE user_id = ?';
-				let fr = 0;
+                let fr = 0;
                 const queryArray = [hashed_password, salt, fr, userId];
                 utils.mysql_query(res, 'SELECT username FROM users WHERE user_id = ?', [userId], (results, res) => {
                     //Watch out for this line, it caused me an error that MAGICALLY dissapeared
-					if (results.length > 0) {
-						let username = results[0].username;
-						utils.mysql_query(res, queryString, queryArray, (rt, res) => {
-							utils.log(editor, utils.actions.CHANGE, utils.entities.USER, null, JSON.stringify({"name": username}));
-							res.sendStatus(200);
-						});
-					} else {
-						res.sendStatus(400);
-					}
+                    if (results.length > 0) {
+                        let username = results[0].username;
+                        utils.mysql_query(res, queryString, queryArray, (rt, res) => {
+                            utils.log(editor, utils.actions.CHANGE, utils.entities.USER, null, JSON.stringify({"name": username}));
+                            res.sendStatus(200);
+                        });
+                    } else {
+                        res.sendStatus(400);
+                    }
                 });
 
             });

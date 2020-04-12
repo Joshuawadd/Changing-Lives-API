@@ -30,14 +30,16 @@ router.get('/', (req, res) => {
                 andOr = 'OR';
             }
         }
-        if (andOr != 'OR') {
+        if (andOr !== 'OR') {
             andOr = 'AND';
         }
+
         function verify(admin) {
             return new Promise((resolve) => {
                 resolve(utils.tokenVerify(req.query.token, admin));
             });
         }
+
         verify(true).then((result) => {
             if (!result) {
                 verify(false).then((result2) => {
@@ -54,7 +56,6 @@ router.get('/', (req, res) => {
                             users.push(new User(userData[i].user_id, null, userData[i].username, null));
                         }
                         res.status(200).send(users);
-                        return;
                     });
                 });
             } else {
