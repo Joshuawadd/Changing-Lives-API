@@ -39,9 +39,9 @@ The LOGS tab shows a list of all actions which are taken on the website and app.
 
 ## **Appendix**
 
-### **Converting a word document to a pdf**
+### **Converting a word document to a PDF**
 
-For security and ease of use reasons, the Changing Lives App Manager website only allows file uploads of the type *.pdf. As most of the Changing Lives documents are Word documents, this will guide you through converting them to pdfs.
+For security and ease of use reasons, the Changing Lives App Manager website only allows file uploads of the type PDF. As most of the Changing Lives documents are Word documents, this will guide you through converting them to PDFs.
 
 1. Open the document in Microsoft Word
 2. Click File, then Export
