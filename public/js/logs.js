@@ -107,7 +107,8 @@ async function getLogs() {
             loginPrompt();
             return false;
         } else {
-            throw new Error(response.status+' '+response.statusText);
+            let rt = await response.text();
+            throw new Error(response.status+' '+response.statusText+' '+rt);
         }
     } catch(error) {
         alert(error);

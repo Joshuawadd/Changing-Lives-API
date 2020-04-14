@@ -1,9 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const utils = require('../../../../utils');
+const Joi = require('joi');
+
+function validate(req) {
+    const schema = {
+        parentTitle: Joi.string().max(31).required(),
+        parentComment: Joi.string().max(65535).required()
+    };
+    return Joi.validate(req, schema);
+}
 
 router.post('/', (req, res) => {
+    const {error} = validate(req.body);
+    if (error) {
+        const errorMessage = error.details[0].message;
+        res.status(400).send(errorMessage);
+        return;
+    }
+
     try {
 
         function verify() {
@@ -18,7 +33,7 @@ router.post('/', (req, res) => {
                 res.sendStatus(403);
                 return;
             }
-            //console.log(userId);
+            
             const parentTitle = req.body.parentTitle;
             const parentComment = req.body.parentComment;
 

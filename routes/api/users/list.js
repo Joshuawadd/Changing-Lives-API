@@ -1,6 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const utils = require('../../../utils');
+const Joi = require('joi');
+
+function validate(req) {
+    const schema = {
+        search: Joi.string().allow('').max(31),
+        uname: Joi.string().allow('').max(31),
+        rname: Joi.string().allow('').max(31),
+        token: Joi.optional()
+    };
+    return Joi.validate(req, schema);
+}
 
 class User {
     constructor(id = 0, name = '', username = '', password = '', isAdmin = 0) {
@@ -13,6 +24,12 @@ class User {
 }
 
 router.get('/', (req, res) => {
+    const {error} = validate(req.query);
+    if (error) {
+        const errorMessage = error.details[0].message;
+        res.status(400).send(errorMessage);
+        return;
+    }
     try {
         const search = req.query.search;
         const userName = req.query.uname;

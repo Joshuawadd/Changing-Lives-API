@@ -2,9 +2,28 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const utils = require('../../../utils');
+const Joi = require('joi');
+
+//userid is required
+//passwords are between 6 and 16 digits
+function validate(req) {
+    const schema = {
+        userId: Joi.number().integer().min(0).max(2147483647).required(),
+        password: Joi.string().min(6).max(16).required()
+    };
+    return Joi.validate(req, schema);
+}
 
 //Postman can be used to test post request {"userId": 34, "password": password}
 router.post('/', (req, res) => {
+
+    const {error} = validate(req.body);
+    if (error) {
+        const errorMessage = error.details[0].message;
+        res.status(400).send(errorMessage);
+        return;
+    }
+
     try {
         function verify() {
             return new Promise((resolve) => {
