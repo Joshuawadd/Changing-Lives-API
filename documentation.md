@@ -5,7 +5,7 @@
 ### **Manager Website**
 The website is used to manage the users of the app and edit the content of the app. 
 
-#### A new user
+#### Adding a new user
 If somebody new seeks help from Changing Lives, they can be assigned to a member of staff. This staff member then simply needs to log in to the website using their details and click on the USERS tab in the blue bar near the top. This opens the user management display. From here the new user button can be clicked to easily add a new user with no details required apart from a nickname. This could be the users actual name or otherwise, it is just so that members of staff can tell who's who as all usernames are anonymous. This nickname is never shown in the app. Then once OK is clicked, the new user details are shown which can then be given to the user who is now a part of the Changing Lives app.
 
 #### Editing and removing a user
@@ -31,7 +31,6 @@ First you will need to install Nodejs, which is what the server is built in. To 
 To start the server, open up a terminal in the location of the server files (also the location of this user guide). Then run the following commands:
 
         npm install
-
         npm start
 
 You should see a message indicating that the server is running.
