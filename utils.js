@@ -1,5 +1,12 @@
 const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
+const Filter = require('bad-words'),
+    filter = new Filter();
+
+function profanityFilter(string) {
+    let clean = filter.clean(string);
+    return clean;
+}
 
 // random generate a user name like cis -abcd12
 function randomUsername() {
@@ -157,4 +164,4 @@ const entities = {
     PARENT: 'POST',
 };
 
-module.exports = {randomPassword, randomUsername, log, mysql_query, tokenVerify, actions, entities, verify};
+module.exports = {randomPassword, randomUsername, log, mysql_query, tokenVerify, actions, entities, verify, profanityFilter};

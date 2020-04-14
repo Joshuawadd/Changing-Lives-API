@@ -35,8 +35,8 @@ router.post('/', (req, res) => {
             }
             //console.log(userId);
             const parentId = req.body.parentId;
-            const childComment = req.body.childComment;
-
+            const childCommentRaw = req.body.childComment;
+            const childComment = utils.profanityFilter(childCommentRaw);
             const queryString = 'INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)';
 
             utils.mysql_query(res, queryString, [userId, parentId, childComment], (results, res) =>{
