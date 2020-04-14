@@ -36,3 +36,15 @@ Creating a new section is a easy as pressing the new section button and filling 
 
 #### Reviewing the logs
 The LOGS tab shows a list of all actions which are taken on the website and app. This can be used for security in the event of someone unwanted getting access to a staff account. It is easy to see exactly what each account did. A more important feature is the restore feature. If a member of staff accidentally deletes something (e.g. a section or a user), then all they have to do to bring it back is to find the action in the logs and click on it. Then some more information will appear. Click restore to have the item brought back.
+
+## **Appendix**
+
+### **Converting a word document to a pdf**
+
+For security and ease of use reasons, the Changing Lives App Manager website only allows file uploads of the type *.pdf. As most of the Changing Lives documents are Word documents, this will guide you through converting them to pdfs.
+
+1. Open the document in Microsoft Word
+2. Click File, then Export
+3. Click Create PDF document
+
+This guide was written for the Office 365 version of Word, but should follow similarily for other versions.
