@@ -66,7 +66,7 @@
 | Route | `/api/users/list/?search=string&uname=string&rname=string`|
 |:----------:|----------|
 | Type | GET |
-| Response | <ul><li>No errors: Status 200 and `[user0, user1...]`</li><li>No permission: Status 403</li><li>Errors: Status 500</li></ul> |
+| Response | <ul><li>No errors: Status 200 and `[user0, user1...]` (JSON list)</li><li>No permission: Status 403</li><li>Errors: Status 500</li></ul> |
 
 
 ### Section Endpoints
@@ -122,7 +122,7 @@
 | Route | `/api/sections/list/?sectionId=integer`|
 |:----------:|----------|
 | Type | GET |
-| Response | <ul><li>No errors: Status 200 and `[section0, section1...]`</li><li>No permission: Status 403</li><li>Errors: Status 500</li></ul> |
+| Response | <ul><li>No errors: Status 200 and `[section0, section1...]` (JSON list)</li><li>No permission: Status 403</li><li>Errors: Status 500</li></ul> |
 
 
 ### Log Endpoints
@@ -132,7 +132,7 @@
 | Route | `/api/logs/list/?seach=string&uname=string&ename=string&action=string&entity=string&sdate=string&edate=string`|
 |:----------:|----------|
 | Type | GET |
-| Response | <ul><li>No errors: Status 200 and `[log0, log1...]`</li><li>No permission: Status 403</li><li>Errors: Status 500</li></ul> |
+| Response | <ul><li>No errors: Status 200 and `[log0, log1...]` (JSON list)</li><li>No permission: Status 403</li><li>Errors: Status 500</li></ul> |
 
 
 ### Files Endpoints
@@ -143,7 +143,7 @@
 |:----------:|----------|
 | Type | POST |
 | Body | `{'sectionId': integer}` |
-| Response | <ul><li>No errors: Status 200 and `[file0, file1...]`</li><li>Error querying data: Status 400</li><li>Errors: Status 500</li></ul> |
+| Response | <ul><li>No errors: Status 200 and `[file0, file1...]` (JSON list)</li><li>Error querying data: Status 400</li><li>Errors: Status 500</li></ul> |
 
 
 ### Forums (Parent) Endpoints
@@ -181,7 +181,7 @@
 | Route | `/api/forums/parent/list/?search=string`|
 |:----------:|----------|
 | Type | GET |
-| Response | <ul><li>No errors: Status 200 and `[file0, file1...]`</li><li>Error querying data: Status 400</li><li>Errors: Status 500</li></ul> |
+| Response | <ul><li>No errors: Status 200 and `[file0, file1...]` (JSON list)</li><li>Error querying data: Status 400</li><li>Errors: Status 500</li></ul> |
 
 
 ### Forums (Child) Endpoints
@@ -219,4 +219,4 @@
 | Route | `/api/forums/child/list/?parentId=integer`|
 |:----------:|----------|
 | Type | GET |
-| Response | <ul><li>No errors: Status 200 and `[file0, file1...]`</li><li>Error querying data: Status 400</li><li>Errors: Status 500</li></ul> |
+| Response | <ul><li>No errors: Status 200 and `[file0, file1...]` (JSON list)</li><li>Error querying data: Status 400</li><li>Errors: Status 500</li></ul> |
