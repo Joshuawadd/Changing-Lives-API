@@ -8,14 +8,15 @@ const Joi = require('joi');
 //userid is required
 function validate(req) {
     const schema = {
-        realName: Joi.string().max(31).required(),
-        isAdmin: Joi.number().integer().min(0).max(1).required()
+        realName: Joi.string().max(31).required(), //Check realName is a string with a max length exists
+        isAdmin: Joi.number().integer().min(0).max(1).required() //Check the isAdmin is an integer within a given range exists
     };
-    return Joi.validate(req, schema);
+    return Joi.validate(req, schema); //Validate the body against the schema, if it is valid, return true, else false
 }
 
 //Postman can be used to test post request {"realName": "James"}
 router.post('/', (req, res) => {
+// Get the validation response, if it failed, send a bad request status with an error message
 
     const {error} = validate(req.body);
     if (error) {
@@ -25,21 +26,22 @@ router.post('/', (req, res) => {
     }
 
     try {
+        //Take a user's token and verify they have access for this action
         function verify() {
             return new Promise((resolve) => {
                 resolve(utils.tokenVerify(req.header('Authorization'), true));
             });
         }
-
-        verify().then((userId) => {
-            if (!userId) {
+        //Verify the token
+        verify().then((userId) => { // get the userId
+            if (!userId) { // cannot get userId
                 res.sendStatus(403);
                 return;
             }
             const realName = req.body.realName;
             const isAdmin = parseInt(req.body.isAdmin);
             const password = utils.randomPassword();
-
+            // get the hashed password from the original text 
             function get_hashed_password(plain_text_password) {
                 return new Promise((resolve) => {
                     bcrypt.genSalt(10).then((salt) => {
@@ -54,7 +56,7 @@ router.post('/', (req, res) => {
 
                 // Both error handling has not been tested and was the result of a quick brainstorm of potential issues
                 if (password == null || password === '') {
-                    res.sendStatus(500);
+                    res.sendStatus(500); // password cannot be empty or null
                     return;
                 }
 
@@ -69,17 +71,21 @@ router.post('/', (req, res) => {
 
                 utils.mysql_query(res, 'SELECT username FROM users', [], (results, res) => {
                     var names = [];
+                    // a list for all the usernames in the database
                     for (let i = 0; i < results.length; i++) {
                         names.push(results[i].username);
                     }
                     var unique = false;
                     while (!unique) {
+                        // make sure the username is unique
                         var username = utils.randomUsername();
                         if (names.indexOf(username) === -1) { //the username is unique
                             unique = true;
+                            // insert account information into database
                             const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
                             const queryArray = [realName, username, hashed_password, salt, isAdmin];
                             utils.mysql_query(res, queryString, queryArray, (results, res) => {
+                                // add log information
                                 utils.log(userId, utils.actions.CREATE, utils.entities.USER, null, JSON.stringify({"name": username}));
                                 res.status(200).send({'password': password, 'username': username});
                             });

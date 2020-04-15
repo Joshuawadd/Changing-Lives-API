@@ -10,8 +10,8 @@ const utils = require('../../../utils');
 //passwords are between 6 and 16 digits
 function validate(req) {
     const schema = {
-        userName: Joi.string().min(6).max(8).required(),
-        userPassword: Joi.string().min(6).max(16).required()
+        userName: Joi.string().min(6).max(8).required(), //Check the userName is a string within a given range exists
+        userPassword: Joi.string().min(6).max(16).required() //Check the userPassword is a string within a given range exists
     };
     return Joi.validate(req, schema);
 }
@@ -27,7 +27,7 @@ router.post('/', (req, res) => {
 
     const userName = req.body.userName;
     const password = req.body.userPassword;
-
+    // get the information of the input username from the database
     const queryString = 'SELECT password, password_salt, user_id, is_admin, force_reset FROM users WHERE username = BINARY ?';
     const queryArray = [userName];
 

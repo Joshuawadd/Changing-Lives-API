@@ -6,18 +6,18 @@ const Joi = require('joi');
 
 function validate(req) {
     const schema = {
-        sectionName: Joi.string().max(31).required(),
-        sectionText: Joi.string().max(65535).allow(''),
-        fileTitles: Joi.string().max(31)
+        sectionName: Joi.string().max(31).required(), //Check the parentId is a string within a given range exists
+        sectionText: Joi.string().max(65535).allow(''), //Check the sectionText is a string within a given range exists
+        fileTitles: Joi.string().max(31) //Check the fileTitles is a string within a given range exists
     };
-    return Joi.validate(req, schema);
+    return Joi.validate(req, schema); //Validate the body against the schema, if it is valid, return true, else false
 }
 
 const storage = multer.diskStorage({
-    destination: './public/files',
+    destination: './public/files', // destination of file
     filename: function (req, file, cb) {
         // null as first argument means no error
-        cb(null, file.originalname);
+        cb(null, file.originalname); // callback
     }
 });
 
@@ -26,6 +26,7 @@ const upload = multer({storage: storage});
 //Postman can be used to test post request {"section_name": "test", "article_text":"This is a comment"}
 router.post('/', upload.array('section_files[]', 20), (req, res) => {
 
+    // Get the validation response, if it failed, send a bad request status with an error message
     const {error} = validate(req.body);
     if (error) {
         const errorMessage = error.details[0].message;
@@ -34,14 +35,16 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
     }
 
     try {
+        //Take a user's token and verify they have access for this action
         function verify() {
             return new Promise((resolve) => {
                 resolve(utils.tokenVerify(req.header('Authorization'), true));
             });
         }
-
+        // verify the token and get the userId
         verify().then((userId) => {
             if (!userId) {
+                // cannot get the userId
                 res.sendStatus(403);
                 return;
             }
@@ -56,7 +59,7 @@ router.post('/', upload.array('section_files[]', 20), (req, res) => {
             }
 
             let fileTitles = JSON.parse(req.body.fileTitles);
-
+            // SQL quert to insert a new section into the database
             const queryString = 'INSERT INTO sections (user_id,section_name,article_text, position) VALUES (?,?,?,?)';
             const queryArray = [0, section_name, article_text, -1];
 
