@@ -34,9 +34,10 @@ router.post('/', (req, res) => {
                 return;
             }
             
-            const parentTitle = req.body.parentTitle;
-            const parentComment = req.body.parentComment;
-
+            const parentTitleRaw = req.body.parentTitle;
+            const parentTitle = utils.profanityFilter(parentTitleRaw);
+            const parentCommentRaw = req.body.parentComment;
+            const parentComment = utils.profanityFilter(parentCommentRaw);
             const queryString = 'INSERT INTO parent_comments (user_id,parent_title,parent_comment) VALUES (?, ?, ?)';
 
             utils.mysql_query(res, queryString, [userId, parentTitle, parentComment], (results, res) => {
