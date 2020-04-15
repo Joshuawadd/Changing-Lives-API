@@ -28,6 +28,8 @@ This section is a more technical part which details how to install and run the s
 ### **Default login details**
 
 Website login details `username: clstaff, password: admin20`
+
+
 Database login details `username: ?, password: ?`
 
 ### **Server**
