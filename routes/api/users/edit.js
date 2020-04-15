@@ -7,14 +7,15 @@ const Joi = require('joi');
 //userid is required
 function validate(req) {
     const schema = {
-        nickname: Joi.string().max(31).required(),
-        userId: Joi.number().integer().min(0).max(2147483647).required()
+        nickname: Joi.string().max(31).required(), //Check nickname is a string with a max length exists
+        userId: Joi.number().integer().min(0).max(2147483647).required() //Check the userId is an integer within a given range exists
     };
-    return Joi.validate(req, schema);
+    return Joi.validate(req, schema); //Validate the body against the schema, if it is valid, return true, else false
 }
 
 //Postman can be used to test post request {"nickname":"James", "userId": 0}
 router.post('/', (req, res) => {
+// Get the validation response, if it failed, send a bad request status with an error message
 
     const {error} = validate(req.body);
     if (error) {
@@ -31,17 +32,18 @@ router.post('/', (req, res) => {
         }
 
         verify().then((editor) => {
-            if (!editor) {
+            if (!editor) { // get the userId of account who is doing the operation
                 res.sendStatus(403);
                 return;
             }
 
             const nickname = req.body.nickname;
             const userId = req.body.userId;
-
+            // update the information in the database
             const queryString = 'UPDATE users SET real_name = ? WHERE user_id = ?';
             const queryArray = [nickname, userId];
             utils.mysql_query(res, queryString, queryArray, (results, res) => {
+                // add log information
                 utils.log(editor, utils.actions.EDIT, utils.entities.USER, null, JSON.stringify({"name": nickname}));
                 res.sendStatus(200);
             });
