@@ -12,7 +12,6 @@ function validate(req) {
 }
 
 router.post('/', (req, res) => {
-
     const {error} = validate(req.body);
     if (error) {
         const errorMessage = error.details[0].message;

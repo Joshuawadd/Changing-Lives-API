@@ -56,12 +56,10 @@ router.post('/', (req, res) => {
                                                 utils.log(removerUser, utils.actions.REMOVE, utils.entities.PARENT, null, postRemove);
                                             }
                                             res.sendStatus(200);
-                                            return;
                                         });
                                     });
                                 } else {
                                     res.sendStatus(403);
-                                    return;
                                 }
                             } else {
                                 res.sendStatus(400);

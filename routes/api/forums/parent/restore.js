@@ -14,7 +14,6 @@ function validate(req) {
 }
 
 router.post('/', (req, res) => {
-
     const {error} = validate(req.body);
     if (error) {
         const errorMessage = error.details[0].message;
@@ -39,8 +38,9 @@ router.post('/', (req, res) => {
             const creatorId = req.body.creatorId;
             const parentTitle = req.body.parentTitle;
             const parentComment = req.body.parentComment;
+
             utils.mysql_query(res, 'SELECT parent_id FROM parent_comments WHERE parent_id = ?', [parentId], (results, res) => {
-                if (results.length == 0) {
+                if (results.length === 0) {
                     const queryString = 'INSERT INTO parent_comments (parent_id,user_id,parent_title,parent_comment) VALUES (?, ?, ?, ?)';
                     utils.mysql_query(res, queryString, [parentId, creatorId, parentTitle, parentComment], (results, res) => {
                         utils.log(userId, utils.actions.RESTORE, utils.entities.PARENT, null, JSON.stringify({"name": parentTitle}));

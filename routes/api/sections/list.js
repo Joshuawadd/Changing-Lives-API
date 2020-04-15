@@ -40,13 +40,14 @@ router.get('/', (req, res) => {
                 resolve(utils.tokenVerify(req.query.token, false));
             });
         }
+
         verify().then((userId) => {
             if (!userId) {
                 res.sendStatus(403);
                 return;
             }
             let sectionId = parseInt(req.query.sectionId, 10);
-            if ( (typeof(sectionId) === 'undefined') || (isNaN(sectionId)) ) {
+            if ((typeof (sectionId) === 'undefined') || (isNaN(sectionId))) {
                 sectionId = 'All';
             }
 
@@ -57,7 +58,7 @@ router.get('/', (req, res) => {
 
             const queryString = `SELECT sections.section_id, sections.article_text, sections.section_name, sections.position, files.file_id, files.file_name, files.file_link FROM sections
             LEFT JOIN files ON sections.section_id = files.section_id ${whereString}`;
-            
+
             utils.mysql_query(res, queryString, [], (results, res) => {
                 let contentData = results;
                 let sects = [];
