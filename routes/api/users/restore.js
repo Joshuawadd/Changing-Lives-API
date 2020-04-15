@@ -33,6 +33,7 @@ router.post('/', (req, res) => {
                 resolve(utils.tokenVerify(req.header('Authorization')), true);
             });
         }
+
         verify().then((userId) => {
             if (!userId) {
                 res.sendStatus(403);
@@ -49,10 +50,13 @@ router.post('/', (req, res) => {
                 for (let i = 0; i < results.length; i++) {
                     names.push(results[i].username);
                 }
-                if (names.indexOf(username) == -1) { //the username is unique
+                if (names.indexOf(username) === -1) { //the username is unique
                     const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
                     const queryArray = [realName, username, password, salt, isAdmin];
-                    utils.mysql_query(res, queryString, queryArray, (results, res) => {utils.log(userId, utils.actions.RESTORE, utils.entities.USER, null, JSON.stringify({"name": username}));res.status(200).send(password);});
+                    utils.mysql_query(res, queryString, queryArray, (results, res) => {
+                        utils.log(userId, utils.actions.RESTORE, utils.entities.USER, null, JSON.stringify({"name": username}));
+                        res.status(200).send(password);
+                    });
                 } else {
                     res.status(500).send('Cannot restore user. The username taken by another user.');
                 }

@@ -24,11 +24,12 @@ router.post('/', (req, res) => {
 
         function verify() {
             return new Promise((resolve) => {
-                resolve(utils.tokenVerify(req.header('Authorization')), false); 
+                resolve(utils.tokenVerify(req.header('Authorization')), false);
             });
         }
+
         verify().then((userId) => { // should get the userId from token
-            if (!userId) { 
+            if (!userId) {
                 console.log('can\'t verify with the userId');
                 res.sendStatus(403);
                 return;
@@ -39,7 +40,7 @@ router.post('/', (req, res) => {
 
             const queryString = 'INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)';
 
-            utils.mysql_query(res, queryString, [userId, parentId, childComment], (results, res) =>{
+            utils.mysql_query(res, queryString, [userId, parentId, childComment], (results, res) => {
                 //const newData = {childId: results.insertId, childComment: childComment};
                 //const newDataLog = JSON.stringify(newData)
                 utils.log(userId, utils.actions.CREATE, utils.entities.CHILD, null, JSON.stringify({"name": childComment}));
@@ -47,7 +48,7 @@ router.post('/', (req, res) => {
             });
 
         });
-    } catch (err){
+    } catch (err) {
         console.log(err);
         res.sendStatus(500);
     }

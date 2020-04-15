@@ -75,13 +75,13 @@ router.post('/', (req, res) => {
                     var unique = false;
                     while (!unique) {
                         var username = utils.randomUsername();
-                        if (names.indexOf(username) == -1) { //the username is unique
+                        if (names.indexOf(username) === -1) { //the username is unique
                             unique = true;
                             const queryString = 'INSERT INTO users (real_name, username, password, password_salt, is_admin) VALUES (?,?,?,?,?)';
                             const queryArray = [realName, username, hashed_password, salt, isAdmin];
                             utils.mysql_query(res, queryString, queryArray, (results, res) => {
                                 utils.log(userId, utils.actions.CREATE, utils.entities.USER, null, JSON.stringify({"name": username}));
-                                res.status(200).send({'password':password, 'username':username});
+                                res.status(200).send({'password': password, 'username': username});
                             });
                         }
                     }
