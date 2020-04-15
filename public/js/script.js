@@ -7,6 +7,12 @@ var fileLimbo = []; //stores files 'added' but not yet sent to server
 
 //HELPER FUNCTIONS
 
+function escapeTags(string) {
+    let string2 = string.replace(/&/g,'&amp;');
+    let string3 = string2.replace(/</g,'&lt;');
+    return string3.replace(/>/g,'&gt;');
+}
+
 function getCookie(cname) { //adapted from https://www.w3schools.com/js/js_cookies.asp
     var name = cname + '=';
     var decodedCookie = decodeURIComponent(document.cookie);

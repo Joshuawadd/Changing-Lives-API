@@ -3,13 +3,14 @@ var currentUser;
 
 var getCookie;
 var loginPrompt;
+var escapeTags;
 
 class User {
     constructor(id=0,name='',username='',password='', isAdmin = 0) {
         this.id = id;
-        this.name = name;
-        this.username = username;
-        this.password = password;
+        this.name = escapeTags(name);
+        this.username = escapeTags(username);
+        this.password = escapeTags(password);
         this.isAdmin = isAdmin;
     }
 
