@@ -5,20 +5,21 @@ var fileRemove = [];
 
 var getCookie;
 var loginPrompt;
+var escapeTags;
 
 class SecFile {
     constructor(id=0,title = '',path='') {
         this.id = id;
-        this.title = title;
-        this.path = path;
+        this.title = escapeTags(title);
+        this.path = escapeTags(path);
     }
 
 }
 class Section { //this is the class for an app section or page
     constructor(id=0,name = '',text='No text added',position=0, files = []) {
         this.id = id;
-        this.name = name;
-        this.text = text;
+        this.name = escapeTags(name);
+        this.text = escapeTags(text);
         this.position =position;
         this.files = files;
     }

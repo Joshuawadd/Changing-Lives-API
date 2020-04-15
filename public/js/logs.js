@@ -3,16 +3,17 @@ var getCookie;
 var loginPrompt;
 
 var logsList;
+var escapeTags;
 
 class Log {
     constructor(id=0,userId=0,userName='', date='', time = '', action='',entity='', data={}) {
         this.id = id;
         this.userId = userId;
-        this.date = date;
-        this.time = time;
-        this.action = action;
-        this.entity = entity;
-        this.userName = userName;
+        this.date = escapeTags(date);
+        this.time = escapeTags(time);
+        this.action = escapeTags(action);
+        this.entity = escapeTags(entity);
+        this.userName = escapeTags(userName);
         this.data = data||{'name': 'NULL'};
     }
 
@@ -98,7 +99,7 @@ async function getLogs() {
             let logData = JSON.parse(body);
             let logs = [];
             for (var i = 0; i < logData.length; i++) {
-                let lg = new Log(logData[i].id,logData[i].userId,logData[i].userName,logData[i].date,logData[i].time,logData[i].action,logData[i].entity,JSON.parse(logData[i].data));
+                let lg = new Log(logData[i].id,logData[i].userId,logData[i].userName,logData[i].date,logData[i].time,logData[i].action,logData[i].entity,JSON.parse(escapeTags(logData[i].data)));
                 logs.push(lg);
             }
             return logs;
