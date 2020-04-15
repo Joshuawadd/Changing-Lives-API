@@ -30,8 +30,6 @@ This section is a more technical part which details how to install and run the s
 Website login details `username: clstaff, password: admin20`
 
 
-Database login details `username: ?, password: ?`
-
 ### **Server**
 
 First you will need to install Nodejs, which is what the server is built in. To do this go to https://nodejs.org/en/, download Nodejs and then install the file.
