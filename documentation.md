@@ -38,6 +38,12 @@ You should see a message indicating that the server is running.
 ### **Website**
 Once the server is running, open up an internet browser (Google Chrome, Microsoft Edge or Firefox - Internet Explorer is NOT supported), and type localhost:3000 in the address bar. This will now display the Changing Lives App Manager website.
 
+### ***Temporary server for you to test the project***
+We have hosted a temporary server on Digital Ocean so you can test our product before deciding how you would like to host it. This can be reached at the address 
+
+`134.122.108.72:3000/`
+
+
 ## **Appendix**
 
 ### **Converting a word document to a PDF**

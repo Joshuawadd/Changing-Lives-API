@@ -42,9 +42,9 @@ router.post('/', (req, res) => {
             }
 
             const parentId = req.body.parentId;
-            const childComment = req.body.childComment;
-
             //SQL query to insert the new comment into the databse
+            const childCommentRaw = req.body.childComment;
+            const childComment = utils.profanityFilter(childCommentRaw);
             const queryString = 'INSERT INTO child_comments (user_id,parent_id,child_comment) VALUES (?,?,?)';
 
             // Using out query unit, pass query string and the data to pass into the query string
