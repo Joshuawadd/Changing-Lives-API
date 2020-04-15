@@ -10,12 +10,7 @@ Version: 1.0
 
 @font-face {
   font-family: 'GeogrotesqueBold';
-        src: url('../changinglivesuk/fonts/Ge2003-Bd.eot'); /* IE9 Compat Modes */
-        src: url('../changinglivesuk/fonts/Ge2003-Bd.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-             url('../fonts/Ge2003-Bd.woff2') format('woff2'), /* Modern Browsers */
-             url('../changinglivesuk/fonts/Ge2003-Bd.woff') format('woff'), /* Modern Browsers */
-             url('../changinglivesuk/fonts/Ge2003-Bd.ttf') format('truetype'), /* Safari, Android, iOS */
-             url('../changinglivesuk/fonts/Ge2003-Bd.svg#font') format('svg'); /* Legacy iOS */
+        src: url('../Fonts/Ge2003-Bd.woff2') format('woff2'); /* Modern Browsers */
         font-style: normal;
         font-weight: normal;
         text-rendering: optimizeLegibility;
@@ -23,12 +18,7 @@ Version: 1.0
   
   @font-face {
   font-family: 'GeogrotesqueSemiBold';
-        src: url('../changinglivesuk/fonts/Ge2003-SmBd.eot'); /* IE9 Compat Modes */
-        src: url('../changinglivesuk/fonts/Ge2003-SmBd.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-             url('../fonts/Ge2003-SmBd.woff2') format('woff2'), /* Modern Browsers */
-             url('../changinglivesuk/fonts/Ge2003-SmBd.woff') format('woff'), /* Modern Browsers */
-             url('../changinglivesuk/fonts/Ge2003-SmBd.ttf') format('truetype'), /* Safari, Android, iOS */
-             url('../changinglivesuk/fonts/Ge2003-SmBd.svg#font') format('svg'); /* Legacy iOS */
+        src: url('../Fonts/Ge2003-SmBd.woff2') format('woff2'); /* Modern Browsers */
         font-style: normal;
         font-weight: normal;
         text-rendering: optimizeLegibility;
@@ -36,12 +26,7 @@ Version: 1.0
   
   @font-face {
   font-family: 'GeogrotesqueMedium';
-        src: url('../changinglivesuk/fonts/Ge2003-Md.eot'); /* IE9 Compat Modes */
-        src: url('../changinglivesuk/fonts/Ge2003-Md.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-             url('../fonts/Ge2003-Md.woff2') format('woff2'), /* Modern Browsers */
-             url('../changinglivesuk/fonts/Ge2003-Md.woff') format('woff'), /* Modern Browsers */
-             url('../changinglivesuk/fonts/Ge2003-Md.ttf') format('truetype'), /* Safari, Android, iOS */
-             url('../changinglivesuk/fonts/Ge2003-Md.svg#font') format('svg'); /* Legacy iOS */
+        src: url('../Fonts/Ge2003-Md.woff2') format('woff2'); /* Modern Browsers */
         font-style: normal;
         font-weight: normal;
         text-rendering: optimizeLegibility;
